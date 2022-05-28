@@ -24,7 +24,7 @@
 ##' (\code{\link[stats]{pgamma}}), which we can calculate and express
 ##' on the log scale via
 ##' 
-##' \deqn{\code{pgamma(shape=a, q=x, lower.tail = FALSE, log.p = TRUE)}.}
+##' \deqn{\fcolorbox{red}{aqua}{\code{pgamma(shape=a, q=x, lower.tail = FALSE, log.p = TRUE)}}}
 ##' 
 ##' Since \eqn{\log(\Gamma(a))} can be calculated directly on the
 ##' log scale via \code{\link[base]{lgamma}}, we can do the entire
