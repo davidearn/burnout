@@ -3,34 +3,50 @@
 ##' Compute the logarithm of the lower incomplete gamma function via
 ##' \code{\link[stats]{pgamma}}.
 ##'
-##' The \emph{lower incomplete gamma function} is ([NIST
-##' 8.2.1](https://dlmf.nist.gov/8.2#E1)) \deqn{\gamma(a,z) = \int_0^z
-##' t^{a-1}e^{-t}\,{\rm d}t \,, \qquad \Re{a}>0.}  We use
-##' \eqn{\mathcal{g}} rather than \eqn{\gamma} since \eqn{\gamma} has
-##' a standard meaning in the SIR model.
+##' The \emph{lower incomplete gamma function} ([NIST
+##' 8.2.1](https://dlmf.nist.gov/8.2#E1)) is
+##'
+##' \deqn{\texttt{lig}(a,z) = \int_0^z t^{a-1}e^{-t}\,{\rm d}t \,,
+##' \qquad \Re{a}>0.}
+##'
+##' We are interested only in real arguments, and we write
+##' \eqn{\texttt{lig}(a,x)} rather than the usual \eqn{\gamma(a,x)}
+##' for this function to avoid confusion with the recovery rate in the
+##' SIR model.
+##'
+##' Since \eqn{\Gamma(a) = \texttt{lig}(a,\infty)}, the
+##' \emph{normalized} area under the curve \eqn{t^{a-1}e^{-t}} is
 ##' 
-##' The normalized lower incomplete gamma function is ([NIST
-##' 8.2.4](https://dlmf.nist.gov/8.2#E4)) \deqn{P(a,z) =
-##' \frac{\gamma(a,z)}{\Gamma(a)}}
+##' \deqn{P(a,x) = \frac{\texttt{lig}(a,x)}{\Gamma(a)}}
 ##' 
-##' \code{\link[stats]{pgamma}} is the \emph{normalized} lower
-##' incomplete gamma function.  The normalization constant is given by
-##' \code{\link[base]{lgamma}}, which is \eqn{\log(\Gamma(x))}.
+##' This is the cumulative distribution of the gamma distribution
+##' (\code{\link[stats]{pgamma}}), which we can calculate and express
+##' on the log scale via
 ##' 
-##' \code{pgamma(shape, q, lower.tail = FALSE, log.p = TRUE)} is the
-##' \emph{normalized} area under the curve, calculated and expressed
-##' on the log scale.  \code{lgamma(a)} is the normalization constant.
+##' \deqn{\code{pgamma(shape, q, lower.tail = FALSE, log.p = TRUE)}.}
 ##' 
-##' This approach allows us to compute \code{lig} for very large
-##' values of its arguments (\code{a} and \code{x}) without overflow.
+##' Since \eqn{\log(\Gamma(a))} can be calculated directly on the
+##' log scale via \code{\link[base]{lgamma}}, we can do the entire
+##' calculation on the log scale via
+##'
+##' \deqn{\texttt{llig}(a,z) = P(a,z) + \log(\Gamma(a))}
 ##' 
-##' Any time you need to convert to values of \eqn{{\mathcal g} >
+##' This approach allows us to compute \code{llig} for very large
+##' values of \code{a} and \code{x} without overflow.
+##' 
+##' Any time you need to convert to values of \eqn{\texttt{lig}(a,x) >
 ##' 10^{308}} (i.e., in the non-log scale) you're going to be in
-##' trouble, although there are packages like \code{"Brobdingnag"}
-##' that handle these kinds of large numbers.
+##' trouble, although there are packages like
+##' \code{\link[Brobdingnag]{Brobdingnag}} that handle these kinds of
+##' large numbers.
 ##'
 ##' For our present purposes we can use logspace addition and
 ##' subtraction.
+##'
+##' There are other implementations of the lower incomplete gamma
+##' function, which fail for large arguments (e.g.,
+##' \code{\link[expint]{gammainc}(a,x)},
+##' \code{\link[gsl]{gamma_inc}(a,x)}).
 ##'
 ##' @param a shape parameter (non-negative real number)
 ##' @param x q
@@ -40,7 +56,7 @@
 ##' 
 ##' @examples
 ##' llig( a = 1, x = 1 )
-##' llig( a = 10^8, x = 10^16 )
+##' llig( a = 10^200, x = 10^200 )
 ##' 
 llig <- function(a, x) {
    pgamma(shape = a, q = x, lower.tail = FALSE, log.p = TRUE) +
