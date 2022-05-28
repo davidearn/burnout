@@ -3,6 +3,16 @@
 ##' Compute the logarithm of the lower incomplete gamma function via
 ##' \code{\link[stats]{pgamma}}.
 ##'
+##' The \emph{lower incomplete gamma function} is ([NIST
+##' 8.2.1](https://dlmf.nist.gov/8.2#E1)) \deqn{\gamma(a,z) = \int_0^z
+##' t^{a-1}e^{-t}\,{\rm d}t \,, \qquad \Re{a}>0.}  We use
+##' \eqn{\mathcal{g}} rather than \eqn{\gamma} since \eqn{\gamma} has
+##' a standard meaning in the SIR model.
+##' 
+##' The normalized lower incomplete gamma function is ([NIST
+##' 8.2.4](https://dlmf.nist.gov/8.2#E4)) \deqn{P(a,z) =
+##' \frac{\gamma(a,z)}{\Gamma(a)}}
+##' 
 ##' \code{\link[stats]{pgamma}} is the \emph{normalized} lower
 ##' incomplete gamma function.  The normalization constant is given by
 ##' \code{\link[base]{lgamma}}, which is \eqn{\log(\Gamma(x))}.
