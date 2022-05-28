@@ -23,7 +23,7 @@
 ##' (\code{\link[stats]{pgamma}}), which we can calculate and express
 ##' on the log scale via
 ##' 
-##' \deqn{\code{pgamma(shape, q, lower.tail = FALSE, log.p = TRUE)}.}
+##' \deqn{\code{pgamma(shape=a, q=x, lower.tail = FALSE, log.p = TRUE)}.}
 ##' 
 ##' Since \eqn{\log(\Gamma(a))} can be calculated directly on the
 ##' log scale via \code{\link[base]{lgamma}}, we can do the entire
@@ -38,10 +38,8 @@
 ##' 10^{308}} (i.e., in the non-log scale) you're going to be in
 ##' trouble, although there are packages like
 ##' \code{\link[Brobdingnag]{Brobdingnag}} that handle these kinds of
-##' large numbers.
-##'
-##' For our present purposes we can use logspace addition and
-##' subtraction.
+##' large numbers.  For our purposes with this package, we can use
+##' logspace addition and subtraction.
 ##'
 ##' There are other implementations of the lower incomplete gamma
 ##' function, which fail for large arguments (e.g.,
