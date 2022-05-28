@@ -18,9 +18,9 @@
 ##' \emph{normalized} area under the curve \eqn{t^{a-1}e^{-t}} ([NIST
 ##' 8.2.4](https://dlmf.nist.gov/8.2#E4)) is
 ##' 
-##' \deqn{P(a,x) = \frac{\texttt{lig}(a,x)}{\Gamma(a)} .}
+##' \deqn{P(a,x) = \dfrac{\texttt{lig}(a,x)}{\Gamma(a)} .}
 ##' 
-##' This is the cumulative distribution of the gamma distribution
+##' This is the cumulative distribution of the Gamma distribution
 ##' (\code{\link[stats]{pgamma}}), which we can calculate and express
 ##' on the log scale via
 ##' 
