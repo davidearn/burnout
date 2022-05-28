@@ -49,7 +49,7 @@
 ##' \code{\link[gsl]{gamma_inc}(a,x)}).
 ##'
 ##' @param a shape parameter (non-negative real number)
-##' @param x q
+##' @param x quantile parameter (non-negative real number)
 ##'
 ##' @return real number
 ##' @export
