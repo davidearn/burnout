@@ -11,13 +11,14 @@
 ##'
 ##' We are interested only in real arguments, and we write
 ##' \eqn{\texttt{lig}(a,x)} rather than the usual \eqn{\gamma(a,x)}
-##' for this function to avoid confusion with the recovery rate in the
-##' SIR model.
+##' for this function to avoid confusion with the standard notation
+##' for the recovery rate in the SIR model.
 ##'
 ##' Since \eqn{\Gamma(a) = \texttt{lig}(a,\infty)}, the
-##' \emph{normalized} area under the curve \eqn{t^{a-1}e^{-t}} is
+##' \emph{normalized} area under the curve \eqn{t^{a-1}e^{-t}} ([NIST
+##' 8.2.4](https://dlmf.nist.gov/8.2#E4)) is
 ##' 
-##' \deqn{P(a,x) = \frac{\texttt{lig}(a,x)}{\Gamma(a)}}
+##' \deqn{P(a,x) = \frac{\texttt{lig}(a,x)}{\Gamma(a)} .}
 ##' 
 ##' This is the cumulative distribution of the gamma distribution
 ##' (\code{\link[stats]{pgamma}}), which we can calculate and express
@@ -29,28 +30,34 @@
 ##' log scale via \code{\link[base]{lgamma}}, we can do the entire
 ##' calculation on the log scale via
 ##'
-##' \deqn{\texttt{llig}(a,z) = P(a,z) + \log(\Gamma(a))}
+##' \deqn{\texttt{llig}(a,x) = P(a,x) + \log(\Gamma(a))}
 ##' 
 ##' This approach allows us to compute \code{llig} for very large
 ##' values of \code{a} and \code{x} without overflow.
 ##' 
-##' Any time you need to convert to values of \eqn{\texttt{lig}(a,x) >
-##' 10^{308}} (i.e., in the non-log scale) you're going to be in
-##' trouble, although there are packages like
+##' If you need to convert to the linear scale and have values of
+##' \eqn{\texttt{lig}(a,x) > 10^{308}} you're going to be in trouble
+##' (although there are packages such as
 ##' \code{\link[Brobdingnag]{Brobdingnag}} that handle these kinds of
-##' large numbers.  For our purposes with this package, we can use
-##' logspace addition and subtraction.
+##' large numbers.  For our purposes with the \code{burnout} package,
+##' we can use logspace addition and subtraction and avoid ever
+##' working with excessively large number in the linear scale.
 ##'
 ##' There are other implementations of the lower incomplete gamma
 ##' function, which fail for large arguments (e.g.,
 ##' \code{\link[expint]{gammainc}(a,x)},
 ##' \code{\link[gsl]{gamma_inc}(a,x)}).
 ##'
+##' @note [Champredon _et al_ (2018)](https://epubs.siam.org/doi/10.1137/18M1186411)
+##'     used the notation \eqn{{\cal G}} for \code{lig}.
+##'
 ##' @param a shape parameter (non-negative real number)
 ##' @param x quantile parameter (non-negative real number)
 ##'
 ##' @return real number
 ##' @export
+##'
+##' @aliases log_lig log_lower_incomplete_gamma
 ##' 
 ##' @examples
 ##' llig( a = 1, x = 1 )
