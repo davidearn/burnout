@@ -2,7 +2,6 @@
 % Please edit documentation in R/fizzle.R
 \name{fizzle_prob}
 \alias{fizzle_prob}
-\alias{fizz_prob}
 \title{Fizzle probability}
 \usage{
 fizzle_prob(R0, k = 1)

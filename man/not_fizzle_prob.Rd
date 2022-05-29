@@ -2,7 +2,6 @@
 % Please edit documentation in R/fizzle.R
 \name{not_fizzle_prob}
 \alias{not_fizzle_prob}
-\alias{not_fizz_prob}
 \title{Not fizzle probability}
 \usage{
 not_fizzle_prob(R0, k = 1)

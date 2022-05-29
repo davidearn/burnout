@@ -3,7 +3,6 @@
 \name{llig}
 \alias{llig}
 \alias{log_lig}
-\alias{log_lower_incomplete_gamma}
 \title{log lower incomplete gamma function}
 \usage{
 llig(a, x)

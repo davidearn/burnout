@@ -3,3 +3,7 @@
 export(fizzle_prob)
 export(llig)
 export(not_fizzle_prob)
+export(peak_prev)
+export(x_in)
+importFrom(emdbook,lambertW)
+importFrom(expint,expint_E1)

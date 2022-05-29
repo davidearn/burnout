@@ -57,7 +57,7 @@
 ##' @return real number
 ##' @export
 ##'
-##' @aliases log_lig log_lower_incomplete_gamma
+##' @aliases log_lig
 ##' 
 ##' @examples
 ##' llig( a = 1, x = 1 )

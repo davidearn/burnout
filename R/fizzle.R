@@ -20,8 +20,6 @@
 ##'
 ##' @seealso \code{\link{fizzle_prob}}
 ##'
-##' @aliases fizz_prob
-##' 
 ##' @examples
 ##' fizzle_prob(R0=c(1/2,2))
 ##' fizzle_prob(R0=2, k=2)
@@ -48,14 +46,11 @@ fizzle_prob <- function(R0, k=1) {
 ##'
 ##' @seealso \code{\link{fizzle_prob}}
 ##'
-##' @param R0 basic reproduction number (\eqn{{\cal R}_0})
-##' @param k initial number of infected individuals (\eqn{k})
+##' @inheritParams fizzle_prob
 ##'
 ##' @return real number between 0 and 1
 ##' @export
 ##'
-##' @aliases not_fizz_prob
-##' 
 ##' @examples
 ##' not_fizzle_prob(R0=c(1/2,2))
 ##' not_fizzle_prob(R0=2, k=2)
