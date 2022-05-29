@@ -91,9 +91,16 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 
 ##' Compare exact and approximate calculations of Kendall's \eqn{q}
 ##'
-##' @seealso q_exact, q_approx
+##' @inheritParams peak_prev
+##' @param n number of values of \code{R0} and \code{epsilon}
+##' @param show.progress logical: if \code{TRUE} then spew each
+##'     element of the data frame to \code{stdout} as it is computed
+##'
+##' @seealso \code{\link{q_exact}}, \code{\link{q_approx}}
 ##'
 ##' @export
+##'
+##' @return data frame with \eqn{\code{n}^2} rows
 ##'
 ##' @examples
 ##' (cq <- compare_q(n=3))

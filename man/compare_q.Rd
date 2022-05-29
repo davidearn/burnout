@@ -11,6 +11,21 @@ compare_q(
   show.progress = TRUE
 )
 }
+\arguments{
+\item{n}{number of values of \code{R0} and \code{epsilon}}
+
+\item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
+
+\item{epsilon}{mean infectious period as a proportion of mean
+lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+lifetime, i.e., no mortality)}
+
+\item{show.progress}{logical: if \code{TRUE} then spew each
+element of the data frame to \code{stdout} as it is computed}
+}
+\value{
+data frame with \eqn{\code{n}^2} rows
+}
 \description{
 Compare exact and approximate calculations of Kendall's \eqn{q}
 }
@@ -18,5 +33,5 @@ Compare exact and approximate calculations of Kendall's \eqn{q}
 (cq <- compare_q(n=3))
 }
 \seealso{
-q_exact, q_approx
+\code{\link{q_exact}}, \code{\link{q_approx}}
 }
