@@ -26,9 +26,12 @@ the boundary layer at the end of the first epidemic.
 }
 
 Here, \eqn{W_{0}} denotes the principal branch of the Lambert
-\eqn{W} function (\cite{Corless1996}, \href{https://dlmf.nist.gov/4.13}{NIST 4.13}), \eqn{E_{1}(x) =
+\eqn{W} function
+(\insertCite{Olver2010;textual}{burnout}, \insertCite{Corless1996;textual}{burnout},
+\href{https://dlmf.nist.gov/4.13}{NIST 4.13}),
+\eqn{E_{1}(x) =
 \int_{x}^{\infty} \frac{e^{-t}}{t}\,{\rm d}t} is the exponential
-integral function (\cite{NIST}, \href{https://dlmf.nist.gov/6.2}{NIST 6.2}),
+integral function (\insertCite{Olver2010;textual}{burnout}, \href{https://dlmf.nist.gov/6.2}{NIST 6.2}),
 \eqn{y^\star=\varepsilon(1-\frac{1}{{\cal R}_0})}
 is the equilibrium prevalence,
 and \eqn{y_{\rm max}} is the \link[=peak_prev]{peak prevalence}.
@@ -39,6 +42,11 @@ x_in(R0=2, epsilon=0)
 x_in(R0=c(2,4), epsilon=0.01)
 x_in(R0=2, epsilon=c(0.01, 0.1))
 
+}
+\references{
+\insertRef{Corless1996}{burnout}
+
+\insertRef{Olver2010}{burnout}
 }
 \seealso{
 \code{\link{peak_prev}}, \code{\link[emdbook]{lambertW}},

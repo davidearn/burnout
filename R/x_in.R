@@ -8,10 +8,12 @@
 ##' }
 ##'
 ##' Here, \eqn{W_{0}} denotes the principal branch of the Lambert
-##' \eqn{W} function (\cite{Corless1996}, [NIST
-##' 4.13](https://dlmf.nist.gov/4.13)), \eqn{E_{1}(x) =
+##' \eqn{W} function
+##' (\insertCite{Olver2010;textual}{burnout}, \insertCite{Corless1996;textual}{burnout},
+##' [NIST 4.13](https://dlmf.nist.gov/4.13)),
+##' \eqn{E_{1}(x) =
 ##' \int_{x}^{\infty} \frac{e^{-t}}{t}\,{\rm d}t} is the exponential
-##' integral function (\cite{NIST}, [NIST
+##' integral function (\insertCite{Olver2010;textual}{burnout}, [NIST
 ##' 6.2](https://dlmf.nist.gov/6.2)),
 ##' \eqn{y^\star=\varepsilon(1-\frac{1}{{\cal R}_0})}
 ##' is the equilibrium prevalence,
@@ -25,6 +27,13 @@
 ##' @return real number between 0 and 1
 ##' @importFrom emdbook lambertW
 ##' @importFrom expint expint_E1
+##' @importFrom Rdpack reprompt
+##'
+##' @references
+##' \insertRef{Corless1996}{burnout}
+##' 
+##' \insertRef{Olver2010}{burnout}
+##' 
 ##' @export
 ##'
 ##' @examples
