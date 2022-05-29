@@ -64,6 +64,16 @@
 ##' llig( a = 10^200, x = 10^200 )
 ##' 
 llig <- function(a, x) {
-   pgamma(shape = a, q = x, lower.tail = FALSE, log.p = TRUE) +
-     lgamma(a)
+    pg <- try(pgamma(shape = a, q = x, lower.tail = FALSE, log.p = TRUE),
+              silent = TRUE) # we'll spew error message below
+    if ("try-error" %in% class(pg)) {
+        ## provide helpful info rather than just crashing:
+        message("llig: shape = a = ", a, ",\n      q = x = ", x)
+        if (any(Im(a) != 0)) message("llig: a has non-zero imaginary part")
+        if (any(Im(x) != 0)) message("llig: x has non-zero imaginary part")
+        if (all(Im(x) == 0) && any(x < 0)) message("llig: x is negative")
+        ## now go ahead and crash with default error message:
+        pgamma(shape = a, q = x, lower.tail = FALSE, log.p = TRUE)
+    }
+    return(pg + lgamma(a))
 }
