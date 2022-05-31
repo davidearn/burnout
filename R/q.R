@@ -88,7 +88,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     a <- (R0/epsilon)*(1-1/R0)
     b <- (R0/epsilon)*(1/R0-xin)
     ratio <- (1-1/R0) / (1-xin)
-    log.messy <- (1/2)*(log(2*pi) - log(epsilon*(R0-1))) - b + a*log(ratio)
+    log.messy <- (1/2)*(log(2*pi) - log(epsilon*(R0-1))) + b + a*log(ratio)
     denom <- 1 + exp(log.messy)
     q <- 1/denom
     return(q)
