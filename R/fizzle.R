@@ -60,3 +60,22 @@ fizzle_prob <- function(R0, k=1) {
 not_fizzle_prob <- function(R0, k=1) {
     1 - fizzle_prob(R0, k)
 }
+
+##' Fizzle time
+##'
+##' Time \eqn{t} for which probability of fizzle after \eqn{t} is \eqn{< \delta}
+##'
+##' \deqn{
+##' 	t_{\delta} =  \dfrac{1}{{\cal R}_{0}-1} \ln\left(\dfrac{(1-\delta)^{-\frac{1}{k}}-\frac{1}{{\cal R}_{0}}}{(1-\delta)^{-\frac{1}{k}}-1}\right).
+##' }
+##'
+##' @inheritParams P1_prob
+##' @param delta probability threshold
+##'
+##' @export
+##' 
+fizzle_time <- function(R0, k, delta) {
+    tmp <- (1-delta)^(-(1/k))
+    fizz.time <- 1/(R0-1) * log((tmp - 1/R0) / (tmp - 1))
+    return(fizz.time)
+}

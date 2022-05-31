@@ -3,6 +3,7 @@
 export(P1_prob)
 export(compare_q)
 export(fizzle_prob)
+export(fizzle_time)
 export(llig)
 export(not_fizzle_prob)
 export(peak_prev)
