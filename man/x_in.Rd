@@ -41,6 +41,9 @@ x_in(R0=2, epsilon=0.01)
 x_in(R0=2, epsilon=0)
 x_in(R0=c(2,4), epsilon=0.01)
 x_in(R0=2, epsilon=c(0.01, 0.1))
+curve(x_in(x,epsilon=0.001), from=1.01, to=5, las=1, n=1001)
+curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
+curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 
 }
 \references{
