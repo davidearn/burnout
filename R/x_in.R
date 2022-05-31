@@ -48,7 +48,13 @@
 x_in <- function(R0, epsilon) {
     yeqm <- epsilon*(1-1/R0)
     ymax <- peak_prev(R0, epsilon)
-    xin <- -(1/R0)*emdbook::lambertW(-R0*exp(R0*(yeqm-1)), b=0) +
-        epsilon*exp(R0*yeqm)*(expint::expint_E1(R0*yeqm) - expint::expint_E1(R0*ymax))
+    W0 <- emdbook::lambertW
+    E1 <- expint::expint_E1
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0) +
+        epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
     return(xin)
 }
+##
+## from original code for Xb_approx in Xb.R:
+##  Xb <- -(1/R)*lambertW(-R*exp(R*(Yb-1)), b=0) +
+##               eps*exp(R*Yb)*(expint_E1(R*Yb) - expint_E1(R*Ymax))
