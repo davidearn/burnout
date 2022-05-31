@@ -110,6 +110,7 @@ compare_q <- function(n=10, R0=seq(1.01,4,length=n),
     raw <- expand.grid(R0, epsilon)
     names(raw) <- c("R0", "epsilon")
     ## FIX: I obviously don't know how to use apply() ...
+    ##      I should just use dplyr::mutate
     ## approx_fun <- function(x) q_approx(x['R0'], x['epsilon'])
     ## qapprox <- apply(raw, 1, approx_fun)
     ## print(qapprox) # FIX: debugging
@@ -118,7 +119,8 @@ compare_q <- function(n=10, R0=seq(1.01,4,length=n),
     ## print(qexact) # FIX: debugging
     nn <- nrow(raw)
     qexact <- qapprox <- rep(NA,nn)
-    if (show.progress) cat(sprintf("%s\t%s\t%s\t%s\t%s\n", "i", "R0", "epsilon", "qapprox", "qexact"))
+    if (show.progress) cat(sprintf("%s\t%s\t%s\t%s\t%s\n",
+                                   "i", "R0", "epsilon", "qapprox", "qexact"))
     for (i in 1:nn) {
         r <- raw[i,"R0"]
         e <- raw[i,"epsilon"]

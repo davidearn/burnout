@@ -39,13 +39,13 @@ This is the cumulative distribution of the Gamma distribution
 (\code{\link[stats]{pgamma}}), which we can calculate and express
 on the log scale via
 
-\deqn{\fcolorbox{red}{aqua}{\code{pgamma(shape=a, q=x, lower.tail = FALSE, log.p = TRUE)}}}
+\deqn{\fcolorbox{red}{aqua}{\code{pgamma(shape=a, q=x, lower.tail = TRUE, log.p = TRUE)}}}
 
 Since \eqn{\log(\Gamma(a))} can be calculated directly on the
 log scale via \code{\link[base]{lgamma}}, we can do the entire
 calculation on the log scale via
 
-\deqn{\texttt{llig}(a,x) = P(a,x) + \log(\Gamma(a))}
+\deqn{\texttt{llig}(a,x) = \log\big(P(a,x)\big) + \log\big(\Gamma(a)\big)}
 
 This approach allows us to compute \code{llig} for very large
 values of \code{a} and \code{x} without overflow.
@@ -56,7 +56,7 @@ If you need to convert to the linear scale and have values of
 \code{\link[Brobdingnag]{Brobdingnag}} that handle these kinds of
 large numbers.  For our purposes with the \code{burnout} package,
 we can use logspace addition and subtraction and avoid ever
-working with excessively large number in the linear scale.
+working with excessively large numbers on the linear scale.
 
 There are other implementations of the lower incomplete gamma
 function, which fail for large arguments (e.g.,
@@ -70,5 +70,13 @@ used the notation \eqn{{\cal G}} for \code{lig}.
 \examples{
 llig( a = 1, x = 1 )
 llig( a = 10^200, x = 10^200 )
+xseq <- seq(0,10,length=100)
+aval <- 10
+plot(xseq, llig(a=aval, x=xseq), type="o", pch=21, bg="darkred",
+     cex=0.5, las=1)
+abline(h = lgamma(aval), col="cyan")
 
+}
+\seealso{
+\code{\link[stats]{pgamma}}, \code{\link[base]{lgamma}}
 }
