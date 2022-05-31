@@ -39,6 +39,7 @@ q_exact(R0=2, epsilon=0.01)
 q_exact(R0=2, epsilon=0)
 q_exact(R0=c(2,4), epsilon=0.01)
 q_exact(R0=2, epsilon=c(0.01, 0.1))
+curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1)
 
 }
 \references{
