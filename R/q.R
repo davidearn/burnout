@@ -33,7 +33,9 @@
 ##' q_exact(R0=2, epsilon=0)
 ##' q_exact(R0=c(2,4), epsilon=0.01)
 ##' q_exact(R0=2, epsilon=c(0.01, 0.1))
-##' curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1)
+##' curve(q_exact(x,epsilon=0.001), from=1.01, to=2, las=1, n=1001, ylim=c(0,1))
+##' curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
+##' curve(q_exact(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
 q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     a <- (R0/epsilon)*(1-1/R0)
@@ -78,13 +80,15 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' q_approx(R0=2, epsilon=0)
 ##' q_approx(R0=c(2,4), epsilon=0.01)
 ##' q_approx(R0=2, epsilon=c(0.01, 0.1))
-##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1)
+##' curve(q_approx(x,epsilon=0.001), from=1.01, to=2, las=1, n=1001, ylim=c(0,1))
+##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
+##' curve(q_approx(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
 q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     a <- (R0/epsilon)*(1-1/R0)
     b <- (R0/epsilon)*(1/R0-xin)
     ratio <- (1-1/R0) / (1-xin)
-    log.messy <- (1/2)*(log(2*pi) - log(epsilon*(R0-1))) - b + a*ratio
+    log.messy <- (1/2)*(log(2*pi) - log(epsilon*(R0-1))) - b + a*log(ratio)
     denom <- 1 + exp(log.messy)
     q <- 1/denom
     return(q)
