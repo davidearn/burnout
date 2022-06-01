@@ -41,7 +41,7 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     a <- (R0/epsilon)*(1-1/R0)
     x <- (R0/epsilon)*(1-xin)
     ##denom <- exp(x) * x^(-a) * lig(a,x)
-    log.denom <- x - a*x + llig(a,x)
+    log.denom <- x - a*log(x) + llig(a,x)
     denom <- exp(log.denom)
     q <- 1 / (1 + epsilon/denom)
     return(q)
