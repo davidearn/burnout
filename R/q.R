@@ -138,6 +138,6 @@ compare_q <- function(n=10, R0=seq(1.01,4,length=n),
         qapprox[i] <- qa
         qexact[i] <- qe
     }
-    dd <- cbind(raw, qexact, qapprox)
+    dd <- cbind(raw, Re(qexact), Re(qapprox))
     return(dd)
 }

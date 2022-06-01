@@ -77,13 +77,15 @@ llig <- function(a, x) {
               silent = TRUE) # we'll spew error message below
     if ("try-error" %in% class(pg)) {
         ## provide helpful info rather than just crashing:
-        message("llig: shape = a = ", paste(a,collapse=", "),
+        message("\nllig: shape = a = ", paste(a,collapse=", "),
                 ",\n      q = x = ", paste(x,collapse=", "))
         if (any(Im(a) != 0)) message("llig: a has non-zero imaginary part")
         if (any(Im(x) != 0)) message("llig: x has non-zero imaginary part")
         if (all(Im(x) == 0) && any(x < 0)) message("llig: x is negative")
         ## now go ahead and crash with default error message:
-        pgamma(shape = a, q = x, lower.tail = TRUE, log.p = TRUE)
+        ## pgamma(shape = a, q = x, lower.tail = TRUE, log.p = TRUE)
+        ## actually, instead return NaN:
+        return(NaN)
     }
     return(pg + lgamma(a))
 }
