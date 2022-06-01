@@ -58,8 +58,10 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' 
 ##' \deqn{
 ##' q({\cal R}_0,\varepsilon,x_{\rm in}) \approx
+##' \left(1 +
 ##' \dfrac{1}{1+\sqrt{\frac{2\pi}{\varepsilon ({\cal R}_{0}-1)}} \;e^{\frac{{\cal R}_{0}}{\varepsilon}\big(\frac{1}{{\cal R}_{0}}-x_{\rm in}\big)}
-##' \Big(\frac{1-\frac{1}{{\cal R}_{0}}}{1-x_{\rm in}}\Big)^{\frac{{\cal R}_{0}}{\varepsilon}\big(1-\frac{1}{{\cal R}_{0}}\big)}}\,.
+##' \Big(\frac{1-\frac{1}{{\cal R}_{0}}}{1-x_{\rm in}}\Big)^{\frac{{\cal R}_{0}}{\varepsilon}\big(1-\frac{1}{{\cal R}_{0}}\big)}}
+##' \right)^{-1}\,.
 ##' }
 ##'
 ##'
@@ -84,13 +86,16 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_approx(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
+##q_approx_ORIG <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
-    a <- (R0/epsilon)*(1-1/R0)
-    b <- (R0/epsilon)*(1/R0-xin)
-    ratio <- (1-1/R0) / (1-xin)
-    log.messy <- (1/2)*(log(2*pi) - log(epsilon*(R0-1))) + b + a*log(ratio)
+    a <- (R0/epsilon)*(1 - 1/R0)
+    b <- (R0/epsilon)*(1/R0 - xin)
+    log.fac1 <- (1/2)*(log(2*pi) - log(epsilon*(R0-1)))
+    log.fac2 <- a*(log(1-1/R0) - log(1-xin))
+    log.messy <- log.fac1 + log.fac2 + b
     denom <- 1 + exp(log.messy)
-    q <- 1/denom
+    #q <- 1/denom
+    q <- (1 + 1/denom)^(-1)
     return(q)
 }
 

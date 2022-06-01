@@ -4,7 +4,17 @@
 \alias{plot_P1}
 \title{Plot persistence probability}
 \usage{
-plot_P1(epsilon = 0.01, N = 10^6, npts = 1001, ...)
+plot_P1(
+  epsilon = 0.01,
+  N = 10^6,
+  npts = 1001,
+  P1_fun = P1_prob,
+  add = FALSE,
+  col = "blue",
+  lwd = 2,
+  log = "x",
+  ...
+)
 }
 \arguments{
 \item{epsilon}{mean infectious period as a proportion of mean
