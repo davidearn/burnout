@@ -54,6 +54,8 @@
 ##' @param a shape parameter (non-negative real number)
 ##' @param x quantile parameter (non-negative real number)
 ##'
+##' @importFrom stats pgamma
+##'
 ##' @return real number
 ##' @export
 ##'

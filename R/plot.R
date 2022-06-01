@@ -8,6 +8,9 @@
 ##' @param col,lwd,log standard \link{graphical parameters}
 ##' @param ... additional parameters passed to \code{\link{plot}}
 ##'
+##' @importFrom graphics axis
+##' @importFrom graphics legend
+##' @importFrom graphics lines
 ##' @importFrom latex2exp TeX
 ##'
 ##' @seealso P1_prob
