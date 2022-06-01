@@ -70,6 +70,7 @@ not_fizzle_prob <- function(R0, k=1) {
 ##' }
 ##'
 ##' @inheritParams P1_prob
+##' @inheritParams fizzle_prob
 ##' @param delta probability threshold
 ##'
 ##' @export

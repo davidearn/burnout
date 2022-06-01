@@ -9,6 +9,8 @@ fizzle_time(R0, k, delta)
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
+\item{k}{initial number of infected individuals (\eqn{k})}
+
 \item{delta}{probability threshold}
 }
 \description{

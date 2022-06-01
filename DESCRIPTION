@@ -13,7 +13,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Imports: 
     dplyr,
-    Rdpack
+    Rdpack,
+    emdbook,
+    expint,
+    latex2exp
 RdMacros: Rdpack
 Suggests: 
     testthat

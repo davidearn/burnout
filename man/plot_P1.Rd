@@ -28,6 +28,12 @@ lifetime, i.e., no mortality)}
 
 \item{Rmin, Rmax}{minimum and maximum value of \eqn{{\cal R}_0}}
 
+\item{P1_fun}{function that computes \eqn{{\mathscr P}_1}}
+
+\item{add}{if \code{TRUE}, add to existing plot}
+
+\item{col, lwd, log}{standard \link{graphical parameters}}
+
 \item{show.N, show.epsilon}{if \code{TRUE}, display parameter value in legend}
 
 \item{...}{additional parameters passed to \code{\link{plot}}}
@@ -43,4 +49,7 @@ plot_P1(epsilon=0.01, N=10^6)
 plot_P1(epsilon=0.01, N=10^7)
 par(mfrow = op)
 
+}
+\seealso{
+P1_prob
 }

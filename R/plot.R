@@ -3,8 +3,15 @@
 ##' @inheritParams P1_prob
 ##' @param Rmin,Rmax minimum and maximum value of \eqn{{\cal R}_0}
 ##' @param show.N,show.epsilon if \code{TRUE}, display parameter value in legend
+##' @param P1_fun function that computes \eqn{{\mathscr P}_1}
+##' @param add if \code{TRUE}, add to existing plot
+##' @param col,lwd,log standard \link{graphical parameters}
 ##' @param ... additional parameters passed to \code{\link{plot}}
 ##'
+##' @importFrom latex2exp TeX
+##'
+##' @seealso P1_prob
+##' 
 ##' @export
 ##'
 ##' @examples
@@ -19,8 +26,8 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
                     ##npts = 1001,
                     Rmin = 1.001,
                     Rmax = 64,
-                    P1_fun = P1_prob, add=FALSE, col="black",
-                    lwd=2, log="x",
+                    P1_fun = P1_prob, add=FALSE,
+                    col="black", lwd=2, log="x",
                     show.N = TRUE,
                     show.epsilon = FALSE,
                     ... ) {
@@ -55,8 +62,12 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
         xticks <- 2^(0:6)
         axis(side=1, at=xticks, labels=xticks)
         legend.text <- c()
-        if (show.N) legend.text <- c(legend.text, sprintf("N = %g", N))
-        if (show.epsilon) legend.text <- c(legend.text, sprintf("epsilon = %g", epsilon))
+        N.string <- sprintf("$N = 10^{%g}$", log10(N))
+        epsilon.string <- sprintf("$\\varepsilon = %g$", epsilon)
+        if (show.N)
+            legend.text <- c(legend.text, latex2exp::TeX(N.string))
+        if (show.epsilon)
+            legend.text <- c(legend.text, latex2exp::TeX(epsilon.string))
         legend("topleft", legend = legend.text, bty="n")
     }
 }

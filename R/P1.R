@@ -34,7 +34,9 @@
 ##'     \code{\link{llig}}, \code{\link{q_approx}}, \code{\link{q_exact}}
 ##'
 ##' @inheritParams q_approx
+##' @inheritParams fizzle_prob
 ##' @param N population size
+##' @param q_fun function to compute Kendall's \eqn{q}
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom Rdpack reprompt

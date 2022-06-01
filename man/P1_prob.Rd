@@ -20,9 +20,13 @@ P1_prob(
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
+\item{k}{initial number of infected individuals (\eqn{k})}
+
 \item{N}{population size}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
+
+\item{q_fun}{function to compute Kendall's \eqn{q}}
 }
 \value{
 real number between 0 and 1
