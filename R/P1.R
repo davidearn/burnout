@@ -34,7 +34,7 @@
 ##'     \code{\link{llig}}, \code{\link{q_approx}}, \code{\link{q_exact}}
 ##'
 ##' @inheritParams q_approx
-##' @param n population size
+##' @param N population size
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom Rdpack reprompt

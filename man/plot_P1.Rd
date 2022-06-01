@@ -7,12 +7,15 @@
 plot_P1(
   epsilon = 0.01,
   N = 10^6,
-  npts = 1001,
+  Rmin = 1.001,
+  Rmax = 64,
   P1_fun = P1_prob,
   add = FALSE,
-  col = "blue",
+  col = "black",
   lwd = 2,
   log = "x",
+  show.N = TRUE,
+  show.epsilon = FALSE,
   ...
 )
 }
@@ -21,12 +24,23 @@ plot_P1(
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
+\item{N}{population size}
+
+\item{Rmin, Rmax}{minimum and maximum value of \eqn{{\cal R}_0}}
+
+\item{show.N, show.epsilon}{if \code{TRUE}, display parameter value in legend}
+
 \item{...}{additional parameters passed to \code{\link{plot}}}
 }
 \description{
 Plot persistence probability
 }
 \examples{
-plot_P1(epsilon=0.05, N=10^6)
+op <- par(mfrow = c(2,2))
+plot_P1(epsilon=0.01, N=10^4)
+plot_P1(epsilon=0.01, N=10^5)
+plot_P1(epsilon=0.01, N=10^6)
+plot_P1(epsilon=0.01, N=10^7)
+par(mfrow = op)
 
 }

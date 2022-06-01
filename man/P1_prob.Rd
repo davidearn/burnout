@@ -20,9 +20,9 @@ P1_prob(
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
-\item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
+\item{N}{population size}
 
-\item{n}{population size}
+\item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
 }
 \value{
 real number between 0 and 1
