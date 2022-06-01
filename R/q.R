@@ -119,14 +119,10 @@ compare_q <- function(n=10, R0=seq(1.01,4,length=n),
                       show.progress=TRUE) {
     raw <- expand.grid(R0, epsilon)
     names(raw) <- c("R0", "epsilon")
-    ## FIX: I obviously don't know how to use apply() ...
-    ##      I should just use dplyr::mutate
-    ## approx_fun <- function(x) q_approx(x['R0'], x['epsilon'])
-    ## qapprox <- apply(raw, 1, approx_fun)
-    ## print(qapprox) # FIX: debugging
-    ## exact_fun <- function(x) q_exact(x['R0'], x['epsilon'])
-    ## qexact <- apply(raw, 1, exact_fun)
-    ## print(qexact) # FIX: debugging
+    ## FIX: The following would be much cleaner if dplyr::mutate were
+    ##      applied to the raw data frame, but the loop allows me to
+    ##      print the table as far as it can be be computed, which is
+    ##      helpful.
     nn <- nrow(raw)
     qexact <- qapprox <- rep(NA,nn)
     if (show.progress) cat(sprintf("%s\t%s\t%s\t%s\t%s\n",
