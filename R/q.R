@@ -99,10 +99,14 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     return(q)
 }
 
-##' Compare exact and approximate calculations of Kendall's \eqn{q}
+##' Compare exact vs approximate calculations of Kendall's \eqn{q}
+##'
+##' @details The default \code{R0} value of \code{NULL} yields a
+##'     sensible sprinkling of \code{nR0} \eqn{{\cal R}_0} values.
 ##'
 ##' @inheritParams peak_prev
-##' @param n number of values of \code{R0} and \code{epsilon}
+##' @param Rmin,Rmax minimum and maximum values of \eqn{{\cal R}_0}
+##' @param nR0,nepsilon number of values of \code{R0} and \code{epsilon}
 ##' @param show.progress logical: if \code{TRUE} then spew each
 ##'     element of the data frame to \code{stdout} as it is computed
 ##'
@@ -113,10 +117,25 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' @return data frame with \eqn{\code{n}^2} rows
 ##'
 ##' @examples
-##' (cq <- compare_q(n=3))
-compare_q <- function(n=10, R0=seq(1.01,4,length=n),
-                      epsilon=seq(0.0001,0.01,length=n),
-                      show.progress=TRUE) {
+##' (cq <- compare_q(nR0=3))
+##' 
+compare_q <- function(R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
+                      epsilon = 10^(-(4:1)), nepsilon = length(epsilon),
+                      show.progress=FALSE) {
+
+    if (is.null(R0)) {
+        ## sprinkle R0 values where they are needed to get a smooth curve
+        n1 <- round(0.2*nR0)
+        n2 <- round(0.1*nR0)
+        R0 <- c(seq(Rmin,1.04,length=n1),
+                seq(1.04,1.1,length=n2),
+                seq(1.1,2,length=n2),
+                exp(seq(log(2),log(8),length=n2)),
+                seq(8,Rmax,length=(nR0-3*n2-n1)))
+    } else {
+        nR0 <- length(R0)
+    }
+
     raw <- expand.grid(R0, epsilon)
     names(raw) <- c("R0", "epsilon")
     ## FIX: The following would be much cleaner if dplyr::mutate were
@@ -138,6 +157,14 @@ compare_q <- function(n=10, R0=seq(1.01,4,length=n),
         qapprox[i] <- qa
         qexact[i] <- qe
     }
+    ## FIX: not sure why this is failing...
+    ## nIme <- sum(Im(qexact) != 0)
+    ## nIma <- sum(Im(qapprox) != 0)
+    ## if (nIme != 0) warning(nIme, " complex values of qexact")
+    ## if (nIma != 0) warning(nIma, " complex values of qapprox")
     dd <- cbind(raw, Re(qexact), Re(qapprox))
+    class(dd) <- c("compare_q", "data.frame")
+    ## attr(dd,"nIme") <- nIme
+    ## attr(dd,"nIma") <- nIma
     return(dd)
 }

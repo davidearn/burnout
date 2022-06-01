@@ -84,8 +84,11 @@ llig <- function(a, x) {
         if (all(Im(x) == 0) && any(x < 0)) message("llig: x is negative")
         ## now go ahead and crash with default error message:
         ## pgamma(shape = a, q = x, lower.tail = TRUE, log.p = TRUE)
-        ## actually, instead return NaN:
-        return(NaN)
+        ## actually, instead return the result using the real parts
+        ## of a and x as input:
+        pg <- pgamma(shape = Re(a), q = Re(x), lower.tail = TRUE,
+                     log.p = TRUE)
+        return(pg + lgamma(Re(a)))
     }
     return(pg + lgamma(a))
 }

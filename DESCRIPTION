@@ -15,7 +15,9 @@ Imports:
     Rdpack,
     emdbook,
     expint,
-    latex2exp
+    latex2exp,
+    dplyr,
+    ggplot2
 RdMacros: Rdpack
 Suggests: 
     testthat

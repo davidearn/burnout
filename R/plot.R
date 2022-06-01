@@ -74,3 +74,39 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
         legend("topleft", legend = legend.text, bty="n")
     }
 }
+
+##' Plot exact vs approximate \eqn{q}
+##'
+##' S3 method for \code{\link{compare_q}} objects.
+##'
+##' @param x \code{\link{compare_q}} object, i.e., a
+##'     \code{\link{data.frame}} with particular structure
+##'
+##' @seealso \code{\link{compare_q}}, \code{\link{q_exact}},
+##'     \code{\link{q_approx}}
+##'
+##' @import dplyr
+##' @import ggplot2
+##' 
+##' @export
+plot.compare_q <- function(x, ...) {
+
+    ## scatter plot coloured by epsilon:
+    scatter.plot <- (x
+        %>% ggplot()
+        + geom_point(aes(x=`Re(qexact)`, y=`Re(qapprox)`, colour=epsilon),
+                     size = 0.5, alpha=0.5)
+    )
+
+    line.plot <- (x
+        %>% ggplot()
+        + geom_point(aes(x=`R0`, y=`Re(qapprox)`, colour=epsilon))
+        + geom_point(aes(x=`R0`, y=`Re(qexact)`), colour = "red", size=0.25)
+        + facet_wrap(~epsilon, scales="free_y")
+        + scale_x_continuous(trans='log2')
+    )
+
+    print(scatter.plot)
+    print(line.plot)
+    return(invisible(list(scatter.plot,line.plot)))
+}

@@ -2,19 +2,24 @@
 % Please edit documentation in R/q.R
 \name{compare_q}
 \alias{compare_q}
-\title{Compare exact and approximate calculations of Kendall's \eqn{q}}
+\title{Compare exact vs approximate calculations of Kendall's \eqn{q}}
 \usage{
 compare_q(
-  n = 10,
-  R0 = seq(1.01, 4, length = n),
-  epsilon = seq(1e-04, 0.01, length = n),
-  show.progress = TRUE
+  R0 = NULL,
+  Rmin = 1.001,
+  Rmax = 64,
+  nR0 = 101,
+  epsilon = 10^(-(4:1)),
+  nepsilon = length(epsilon),
+  show.progress = FALSE
 )
 }
 \arguments{
-\item{n}{number of values of \code{R0} and \code{epsilon}}
-
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
+
+\item{Rmin, Rmax}{minimum and maximum values of \eqn{{\cal R}_0}}
+
+\item{nR0, nepsilon}{number of values of \code{R0} and \code{epsilon}}
 
 \item{epsilon}{mean infectious period as a proportion of mean
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
@@ -27,10 +32,15 @@ element of the data frame to \code{stdout} as it is computed}
 data frame with \eqn{\code{n}^2} rows
 }
 \description{
-Compare exact and approximate calculations of Kendall's \eqn{q}
+Compare exact vs approximate calculations of Kendall's \eqn{q}
+}
+\details{
+The default \code{R0} value of \code{NULL} yields a
+sensible sprinkling of \code{nR0} \eqn{{\cal R}_0} values.
 }
 \examples{
-(cq <- compare_q(n=3))
+(cq <- compare_q(nR0=3))
+
 }
 \seealso{
 \code{\link{q_exact}}, \code{\link{q_approx}}
