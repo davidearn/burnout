@@ -7,7 +7,7 @@ Authors@R:
 Description: Compute the probability that an infectious disease -- modelled
     using the standard Susceptible-Infectious-Recovered (SIR) model -- 
     persists beyond an initial outbreak.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
