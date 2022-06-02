@@ -114,7 +114,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'
 ##' @export
 ##'
-##' @return data frame with \eqn{\code{n}^2} rows
+##' @return data frame with \eqn{\code{nR0*nepsilon}} rows
 ##'
 ##' @examples
 ##' (cq <- compare_q(nR0=3))

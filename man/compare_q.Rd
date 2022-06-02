@@ -29,7 +29,7 @@ lifetime, i.e., no mortality)}
 element of the data frame to \code{stdout} as it is computed}
 }
 \value{
-data frame with \eqn{\code{n}^2} rows
+data frame with \eqn{\code{nR0*nepsilon}} rows
 }
 \description{
 Compare exact vs approximate calculations of Kendall's \eqn{q}
