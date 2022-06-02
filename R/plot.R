@@ -77,8 +77,9 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
 
 ##' Plot exact vs approximate \eqn{q}
 ##'
-##' S3 method for \code{\link{compare_q}} objects.
+##' \code{\link{plot}} method for \code{\link{compare_q}} objects.
 ##'
+##' @inheritParams plot_P1
 ##' @param x \code{\link{compare_q}} object, i.e., a
 ##'     \code{\link{data.frame}} with particular structure
 ##'
@@ -100,8 +101,8 @@ plot.compare_q <- function(x, ...) {
 
     line.plot <- (x
         %>% ggplot()
-        + geom_point(aes(x=`R0`, y=`Re(qapprox)`, colour=epsilon))
-        + geom_point(aes(x=`R0`, y=`Re(qexact)`), colour = "red", size=0.25)
+        + geom_point(aes(x=R0, y=`Re(qapprox)`, colour=epsilon))
+        + geom_point(aes(x=R0, y=`Re(qexact)`), colour = "red", size=0.25)
         + facet_wrap(~epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
     )

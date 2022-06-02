@@ -9,9 +9,11 @@
 \arguments{
 \item{x}{\code{\link{compare_q}} object, i.e., a
 \code{\link{data.frame}} with particular structure}
+
+\item{...}{additional parameters passed to \code{\link{plot}}}
 }
 \description{
-S3 method for \code{\link{compare_q}} objects.
+\code{\link{plot}} method for \code{\link{compare_q}} objects.
 }
 \seealso{
 \code{\link{compare_q}}, \code{\link{q_exact}},
