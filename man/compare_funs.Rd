@@ -45,8 +45,6 @@ of \eqn{x_{\rm in}}.
 }
 \examples{
 (cf <- compare_funs(nR0=101))
-(cf <- compare_funs(x_in_exact, x_in, epsilon=0.01, Rmax=2))
-
 }
 \seealso{
 \code{\link{q_exact}}, \code{\link{q_approx}},

@@ -122,8 +122,9 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'
 ##' @examples
 ##' (cf <- compare_funs(nR0=101))
-##' (cf <- compare_funs(x_in_exact, x_in, epsilon=0.01, Rmax=2))
-##' 
+## too slow:
+## (cf <- compare_funs(x_in_exact, x_in, epsilon=0.01, Rmax=2))
+##
 compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
                          R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
                          epsilon = 10^(-(4:1)), nepsilon = length(epsilon),

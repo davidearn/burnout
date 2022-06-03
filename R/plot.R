@@ -113,7 +113,15 @@ plot.compare_funs <- function(x, ...) {
         + scale_x_continuous(trans='log2')
     )
 
+    ##relative.plot <- (x %>% ggplot()
+    relative.plot <- (ggplot(data = x, ...)
+        + geom_point(aes(x=R0, y=(f2-f1)/f1, colour=epsilon))
+        + facet_wrap(~epsilon, scales="free_y")
+        + scale_x_continuous(trans='log2')
+    )
+
     print(scatter.plot)
     print(line.plot)
-    return(invisible(list(scatter.plot,line.plot)))
+    print(relative.plot)
+    return(invisible(list(scatter.plot,line.plot,relative.plot)))
 }
