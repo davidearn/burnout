@@ -99,7 +99,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     return(q)
 }
 
-##' Compare functions of \eqn{{\cal R}_} and \eqn{\varepsilon}
+##' Compare functions of \eqn{{\cal R}_0} and \eqn{\varepsilon}
 ##'
 ##' @details The default \code{R0} value of \code{NULL} yields a
 ##'     sensible sprinkling of \code{nR0} \eqn{{\cal R}_0} values.
@@ -122,6 +122,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'
 ##' @examples
 ##' (cf <- compare_funs(nR0=101))
+##' (cf <- compare_funs(x_in_exact, x_in, epsilon=0.01, Rmax=2))
 ##' 
 compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
                          R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
@@ -129,14 +130,18 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
                          show.progress=FALSE) {
 
     if (is.null(R0)) {
-        ## sprinkle R0 values where they are needed to get a smooth curve
-        n1 <- round(0.2*nR0)
-        n2 <- round(0.1*nR0)
-        R0 <- c(seq(Rmin,1.04,length=n1),
-                seq(1.04,1.1,length=n2),
-                seq(1.1,2,length=n2),
-                exp(seq(log(2),log(8),length=n2)),
-                seq(8,Rmax,length=(nR0-3*n2-n1)))
+        if (Rmax > 8) {
+            ## sprinkle R0 values where they are needed to get a smooth curve
+            n1 <- round(0.2*nR0)
+            n2 <- round(0.1*nR0)
+            R0 <- c(seq(Rmin,1.04,length=n1),
+                    seq(1.04,1.1,length=n2),
+                    seq(1.1,2,length=n2),
+                    exp(seq(log(2),log(8),length=n2)),
+                    seq(8,Rmax,length=(nR0-3*n2-n1)))
+        } else {
+            R0 <- exp(seq(log(Rmin), log(Rmax), length=nR0))
+        }
     } else {
         nR0 <- length(R0)
     }

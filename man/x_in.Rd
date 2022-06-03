@@ -2,7 +2,7 @@
 % Please edit documentation in R/x_in.R
 \name{x_in}
 \alias{x_in}
-\title{Susceptibles at boundary layer}
+\title{Susceptibles at boundary layer (approximation)}
 \usage{
 x_in(R0, epsilon)
 }

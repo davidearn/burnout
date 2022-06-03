@@ -2,7 +2,7 @@
 % Please edit documentation in R/q.R
 \name{compare_funs}
 \alias{compare_funs}
-\title{Compare functions of \eqn{{\cal R}_} and \eqn{\varepsilon}}
+\title{Compare functions of \eqn{{\cal R}_0} and \eqn{\varepsilon}}
 \usage{
 compare_funs(
   fun1 = q_exact,
@@ -34,7 +34,7 @@ element of the data frame to \code{stdout} as it is computed}
 data frame with \eqn{\code{nR0*nepsilon}} rows
 }
 \description{
-Compare functions of \eqn{{\cal R}_} and \eqn{\varepsilon}
+Compare functions of \eqn{{\cal R}_0} and \eqn{\varepsilon}
 }
 \details{
 The default \code{R0} value of \code{NULL} yields a
@@ -45,6 +45,7 @@ of \eqn{x_{\rm in}}.
 }
 \examples{
 (cf <- compare_funs(nR0=101))
+(cf <- compare_funs(x_in_exact, x_in, epsilon=0.01, Rmax=2))
 
 }
 \seealso{
