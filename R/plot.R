@@ -75,22 +75,23 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
     }
 }
 
-##' Plot exact vs approximate \eqn{q}
+##' Plot comparison of two functions.
 ##'
-##' \code{\link{plot}} method for \code{\link{compare_q}} objects.
+##' \code{\link{plot}} method for \code{\link{compare_funs}} objects.
+##' Typical use: exact vs approximate \eqn{q}.
 ##'
 ##' @inheritParams plot_P1
-##' @param x \code{\link{compare_q}} object, i.e., a
+##' @param x \code{\link{compare_funs}} object, i.e., a
 ##'     \code{\link{data.frame}} with particular structure
 ##'
-##' @seealso \code{\link{compare_q}}, \code{\link{q_exact}},
-##'     \code{\link{q_approx}}
+##' @seealso \code{\link{compare_funs}}, \code{\link{q_exact}},
+##'     \code{\link{q_approx}}, \code{\link{x_in}}
 ##'
 ##' @import dplyr
 ##' @import ggplot2
 ##' 
 ##' @export
-plot.compare_q <- function(x, ...) {
+plot.compare_funs <- function(x, ...) {
 
     ## FIX: why am I getting this note from devtools::check():
     ##      plot.compare_q: no visible binding for global variable ‘R0’
@@ -100,14 +101,14 @@ plot.compare_q <- function(x, ...) {
     ## scatter plot coloured by epsilon:
     ##scatter.plot <- (x %>% ggplot()
     scatter.plot <- (ggplot(data = x, ...)
-        + geom_point(aes(x=`Re(qexact)`, y=`Re(qapprox)`, colour=epsilon),
+        + geom_point(aes(x=f1, y=f2, colour=epsilon),
                      size = 0.5, alpha=0.5)
     )
 
     ##line.plot <- (x %>% ggplot()
     line.plot <- (ggplot(data = x, ...)
-        + geom_point(aes(x=R0, y=`Re(qapprox)`, colour=epsilon))
-        + geom_point(aes(x=R0, y=`Re(qexact)`), colour = "red", size=0.25)
+        + geom_point(aes(x=R0, y=f2, colour=epsilon))
+        + geom_point(aes(x=R0, y=f1), colour = "red", size=0.25)
         + facet_wrap(~epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
     )

@@ -99,10 +99,13 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
     return(q)
 }
 
-##' Compare exact vs approximate calculations of Kendall's \eqn{q}
+##' Compare functions of \eqn{{\cal R}_} and \eqn{\varepsilon}
 ##'
 ##' @details The default \code{R0} value of \code{NULL} yields a
 ##'     sensible sprinkling of \code{nR0} \eqn{{\cal R}_0} values.
+##'     Typically uses are to compare exact vs approximate
+##'     calculations of Kendall's \eqn{q}, or different approximations
+##'     of \eqn{x_{\rm in}}.
 ##'
 ##' @inheritParams peak_prev
 ##' @param Rmin,Rmax minimum and maximum values of \eqn{{\cal R}_0}
@@ -110,18 +113,20 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' @param show.progress logical: if \code{TRUE} then spew each
 ##'     element of the data frame to \code{stdout} as it is computed
 ##'
-##' @seealso \code{\link{q_exact}}, \code{\link{q_approx}}
+##' @seealso \code{\link{q_exact}}, \code{\link{q_approx}},
+##'     \code{\link{x_in}}
 ##'
 ##' @export
 ##'
 ##' @return data frame with \eqn{\code{nR0*nepsilon}} rows
 ##'
 ##' @examples
-##' (cq <- compare_q(nR0=3))
+##' (cf <- compare_funs(nR0=101))
 ##' 
-compare_q <- function(R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
-                      epsilon = 10^(-(4:1)), nepsilon = length(epsilon),
-                      show.progress=FALSE) {
+compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
+                         R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
+                         epsilon = 10^(-(4:1)), nepsilon = length(epsilon),
+                         show.progress=FALSE) {
 
     if (is.null(R0)) {
         ## sprinkle R0 values where they are needed to get a smooth curve
@@ -143,27 +148,31 @@ compare_q <- function(R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
     ##      print the table as far as it can be be computed, which is
     ##      helpful.
     nn <- nrow(raw)
-    qexact <- qapprox <- rep(NA,nn)
+    f1 <- f2 <- rep(NA,nn)
+    f1name <- as.character(substitute(fun1))
+    f2name <- as.character(substitute(fun2))
     if (show.progress) cat(sprintf("%s\t%s\t%s\t%s\t%s\n",
-                                   "i", "R0", "epsilon", "qapprox", "qexact"))
+                                   "i", "R0", "epsilon", f1name, f2name))
     for (i in 1:nn) {
         r <- raw[i,"R0"]
         e <- raw[i,"epsilon"]
         if (show.progress) cat(sprintf("%d\t%g\t%g", i, r, e))
-        qa <- q_approx(R0=r, epsilon=e)
-        if (show.progress) cat(sprintf("\t%g", qa))
-        qe <- q_exact(R0=r, epsilon=e)
-        if (show.progress) cat(sprintf("\t%g\n", qe))
-        qapprox[i] <- qa
-        qexact[i] <- qe
+        f1i <- fun1(R0=r, epsilon=e)
+        if (show.progress) cat(sprintf("\t%g", f1i))
+        f2i <- fun2(R0=r, epsilon=e)
+        if (show.progress) cat(sprintf("\t%g\n", f2i))
+        f1[i] <- f1i
+        f2[i] <- f2i
     }
     ## FIX: not sure why this is failing...
     ## nIme <- sum(Im(qexact) != 0)
     ## nIma <- sum(Im(qapprox) != 0)
     ## if (nIme != 0) warning(nIme, " complex values of qexact")
     ## if (nIma != 0) warning(nIma, " complex values of qapprox")
-    dd <- cbind(raw, Re(qexact), Re(qapprox))
-    class(dd) <- c("compare_q", "data.frame")
+    f1 <- Re(f1) # FIX: avoid this hack
+    f2 <- Re(f2) # FIX: avoid this hack
+    dd <- cbind(raw, f1, f2)
+    class(dd) <- c("compare_funs", "data.frame")
     ## attr(dd,"nIme") <- nIme
     ## attr(dd,"nIma") <- nIma
     return(dd)
