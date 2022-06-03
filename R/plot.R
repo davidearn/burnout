@@ -92,15 +92,20 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
 ##' @export
 plot.compare_q <- function(x, ...) {
 
+    ## FIX: why am I getting this note from devtools::check():
+    ##      plot.compare_q: no visible binding for global variable ‘R0’
+    ##      I tried with and without pipe in case that somehow was the
+    ##      but it makes no difference.
+
     ## scatter plot coloured by epsilon:
-    scatter.plot <- (x
-        %>% ggplot()
+    ##scatter.plot <- (x %>% ggplot()
+    scatter.plot <- (ggplot(data = x, ...)
         + geom_point(aes(x=`Re(qexact)`, y=`Re(qapprox)`, colour=epsilon),
                      size = 0.5, alpha=0.5)
     )
 
-    line.plot <- (x
-        %>% ggplot()
+    ##line.plot <- (x %>% ggplot()
+    line.plot <- (ggplot(data = x, ...)
         + geom_point(aes(x=R0, y=`Re(qapprox)`, colour=epsilon))
         + geom_point(aes(x=R0, y=`Re(qexact)`), colour = "red", size=0.25)
         + facet_wrap(~epsilon, scales="free_y")
