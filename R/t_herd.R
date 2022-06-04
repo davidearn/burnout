@@ -17,12 +17,7 @@
 ##'
 ##' @examples
 ##' op <- par(mfrow = c(1,2))
-##' Rseq <- exp(seq(log(1.001),log(2),length=1001))
-##' plot(Rseq, t_herd(Rseq,epsilon=0.01), type="l", lwd=2, bty="L",
-##'      las=1, log="x", col="darkred", ylim=c(0,60),
-##'      xlab = expression(R[0]), ylab = expression(t[H]))
-##' lines(Rseq, t_herd(Rseq,epsilon=0.02), lwd=2, col="darkgreen")
-##' lines(Rseq, t_herd(Rseq,epsilon=0.03), lwd=2, col="darkblue")
+##' plot_t_herd(col = c("darkred", "darkgreen", "darkblue"))
 ##' epsilonseq <- seq(0,0.03,length=1001)
 ##' plot(epsilonseq, t_herd(R0=1.5,epsilonseq), type="l", lwd=2, bty="L",
 ##'      las=1, col="darkred", ylim=c(0,60),
