@@ -34,5 +34,38 @@
 ##' @export
 ##' 
 t_herd <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
-    return((1/epsilon) * log((1-xin)/(1-1/R0)))
+    ##return((1/epsilon) * log((1-xin)/(1-1/R0)))
+    return((1/epsilon) * (log(1-xin) - log(1-1/R0)))
+}
+
+##' Plot herd immunity duration
+##'
+##' @inheritParams t_herd
+##' @param col vector of colours
+##'
+##' @seealso \code{\link{t_herd}}
+##'
+##' @export
+##'
+##' @examples
+##' plot_t_herd(delta = 0.01)
+##'
+plot_t_herd <- function(R0 = exp(seq(log(1.001),log(2),length=1001)),
+                        epsilon = c(0.01, 0.02, 0.03)
+                      , col = 1:length(epsilon)
+                        ##col = c("darkred", "darkgreen", "darkblue")
+                      , lwd=2
+                        ##, log="x"
+                      , ylim=c(0,60)
+                      , ...
+                        ) {
+    plot(R0, t_herd(R0,epsilon=epsilon[1]), type="l", lwd=lwd, bty="L",
+         las=1, col=col[1], ylim=ylim,
+         xlab = expression(R[0]), ylab = expression(t[H]), ...)
+    title(main = latex2exp::TeX("Duration of herd immunity $t_{H}$"))
+    for (iepsilon in 2:length(epsilon)) {
+        lines(R0, t_herd(R0,epsilon=epsilon[iepsilon]), lwd=2, col=col[iepsilon])
+    }
+    legend("topright", bty="n", title=expression(epsilon),
+           legend = epsilon, col = col, lwd=lwd)
 }
