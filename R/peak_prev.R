@@ -15,6 +15,8 @@
 ##'
 ##' The expression is exact for \eqn{\varepsilon = 0}.
 ##'
+##' @seealso \code{\link{peak_prev_nvd}}
+##'
 ##' @inheritParams fizzle_prob
 ##' @param epsilon mean infectious period as a proportion of mean
 ##'     lifetime (\eqn{\varepsilon = 0} corresponds to infinite
@@ -33,5 +35,31 @@ peak_prev <- function( R0, epsilon=0 ) {
     pc <- 1 - 1/R0 # p_crit
     lnR <- log(R0)
     ymax <- 1 - (1/R0)*(1 + lnR) - epsilon*pc*(lnR/pc - 1)/(lnR/pc + R0)
+    return(ymax)
+}
+
+##' Peak prevalence
+##'
+##' Exact peak prevalence in the SIR model with \emph{no vital dynamics} (nvd).
+##'
+##' \deqn{
+##'   y_{\rm max} = 1 -
+##'     \dfrac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big) \,.
+##' }
+##' 
+##' The optional argument (\code{epsilon}) is ignored if given.  The
+##' reason for including it is so this function can be used as an
+##' alternative to the more accurate \code{\link{peak_prev}} function
+##' that does depend on \eqn{\varepsilon}.
+##'
+##' @seealso \code{\link{peak_prev}}, \code{\link{x_in}}
+##' 
+##' @inheritParams fizzle_prob
+##' 
+##' @return real number between 0 and 1
+##' @export
+##'
+peak_prev_nvd <- function( R0, epsilon=0 ) {
+    ymax <- 1 - (1/R0)*(1 + log(R0))
     return(ymax)
 }

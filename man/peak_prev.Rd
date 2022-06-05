@@ -40,3 +40,6 @@ peak_prev(R0=c(2,4), epsilon=0.1)
 peak_prev(R0=c(2,4), epsilon=c(0,0.1)) # FIX: fails when both are vectors
 
 }
+\seealso{
+\code{\link{peak_prev_nvd}}
+}

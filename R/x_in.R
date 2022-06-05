@@ -23,6 +23,8 @@
 ##'     \code{\link[expint]{expint_E1}}
 ##'
 ##' @inheritParams peak_prev
+##' @param peakprev_fun function of \eqn{{\cal R}_0} and
+##'     \eqn{\varepsilon} to use to compute peak prevalence
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom emdbook lambertW
@@ -45,9 +47,9 @@
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in <- function(R0, epsilon) {
-    yeqm <- epsilon*(1-1/R0)
-    ymax <- peak_prev(R0, epsilon)
+x_in <- function(R0, epsilon, peakprev_fun = peak_prev) {
+    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     W0 <- emdbook::lambertW
     E1 <- expint::expint_E1
     xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0) +
@@ -129,6 +131,14 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
     title(main = latex2exp::TeX("Susceptible proportion at boundary layer"))
     for (iepsilon in 1:length(epsilon)) {
         lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
+    }
+    ## plot with dotted curves when using the crude peak prevalence
+    ## ignoring vital dynamics:
+    for (iepsilon in 1:length(epsilon)) {
+        lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon], peakprev_fun=peak_prev_nvd),
+              lwd=lwd,
+              col=col[iepsilon],
+              lty="dotted")
     }
     legend("topright", bty="n", title=expression(epsilon),
            legend = epsilon, col = col, lwd=lwd)

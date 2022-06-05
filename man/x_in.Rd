@@ -4,7 +4,7 @@
 \alias{x_in}
 \title{Susceptibles at boundary layer (approximation)}
 \usage{
-x_in(R0, epsilon)
+x_in(R0, epsilon, peakprev_fun = peak_prev)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -12,6 +12,9 @@ x_in(R0, epsilon)
 \item{epsilon}{mean infectious period as a proportion of mean
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
+
+\item{peakprev_fun}{function of \eqn{{\cal R}_0} and
+\eqn{\varepsilon} to use to compute peak prevalence}
 }
 \value{
 real number between 0 and 1
