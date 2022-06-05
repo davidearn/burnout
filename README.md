@@ -8,3 +8,7 @@ Generate the analytical curves in Figure 3 via
 example(plot_P1)
 ```
 
+Generate Figure B1 via
+```
+example(plot_x_in)
+```

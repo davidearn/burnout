@@ -30,7 +30,10 @@ lifetime, i.e., no mortality)}
 Plot \eqn{x_{\rm in}}
 }
 \examples{
-plot_x_in(delta = 0.01)
+op <- par(mfrow = c(1,2))
+plot_x_in()
+plot_x_in(epsilon = c(0.1,0.2,0.3))
+par(mfrow = op)
 
 }
 \seealso{

@@ -110,7 +110,10 @@ x_in_exact <- Vectorize(x_in_exact_scalar)
 ##' @export
 ##'
 ##' @examples
-##' plot_x_in(delta = 0.01)
+##' op <- par(mfrow = c(1,2))
+##' plot_x_in()
+##' plot_x_in(epsilon = c(0.1,0.2,0.3))
+##' par(mfrow = op)
 ##'
 plot_x_in <- function(Rmin=1.0001, Rmax=20,
                       R0 = exp(seq(log(Rmin),log(Rmax),length=1001)),
@@ -128,7 +131,7 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
     plot(R0, 1/R0, type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
          ylim=ylim, xaxs="i", yaxs="i",
          xlab = expression(R[0]), ylab = expression(x[i][n]), ...)
-    title(main = latex2exp::TeX("Susceptible proportion at boundary layer"))
+    title(main = "Susceptible proportion at\nentry to boundary layer")
     for (iepsilon in 1:length(epsilon)) {
         lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
     }
