@@ -96,3 +96,40 @@ x_in_exact_scalar <- function(R0, epsilon, I0=1e-6) {
 ##' @export
 ##' 
 x_in_exact <- Vectorize(x_in_exact_scalar)
+
+
+##' Plot \eqn{x_{\rm in}}
+##' 
+##' @inheritParams x_in
+##' @param col vector of colours
+##'
+##' @seealso \code{\link{x_in}}, \code{\link{x_in_exact}}
+##'
+##' @export
+##'
+##' @examples
+##' plot_x_in(delta = 0.01)
+##'
+plot_x_in <- function(Rmin=1.0001, Rmax=20,
+                      R0 = exp(seq(log(Rmin),log(Rmax),length=1001)),
+                      epsilon = c(0.01, 0.02, 0.03)
+                    , xin_fun = x_in
+                    , col = 1:length(epsilon)
+                      ##col = c("darkred", "darkgreen", "darkblue")
+                    , lwd=2
+                    , log="x"
+                    , ylim=c(0,1)
+                    , ...
+                      ) {
+    cat("plot_x_in: Rmin = ", Rmin, ", Rmax = ", Rmax, "\n")
+    ## show naive approx as dashed line first:
+    plot(R0, 1/R0, type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
+         ylim=ylim, xaxs="i", yaxs="i",
+         xlab = expression(R[0]), ylab = expression(x[i][n]), ...)
+    title(main = latex2exp::TeX("Susceptible proportion at boundary layer"))
+    for (iepsilon in 1:length(epsilon)) {
+        lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
+    }
+    legend("topright", bty="n", title=expression(epsilon),
+           legend = epsilon, col = col, lwd=lwd)
+}
