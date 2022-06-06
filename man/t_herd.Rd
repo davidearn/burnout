@@ -14,8 +14,6 @@ lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
-
-\item{delta}{probability threshold}
 }
 \description{
 The time \eqn{t_{\rm H}} (after the first epidemic) from when the

@@ -8,6 +8,10 @@ peak_prev_nvd(R0, epsilon = 0)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
+
+\item{epsilon}{mean infectious period as a proportion of mean
+lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+lifetime, i.e., no mortality)}
 }
 \value{
 real number between 0 and 1

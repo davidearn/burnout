@@ -108,6 +108,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'     of \eqn{x_{\rm in}}.
 ##'
 ##' @inheritParams peak_prev
+##' @param fun1,fun2 functions of \code{R0} and \code{epsilon} to be compared
 ##' @param Rmin,Rmax minimum and maximum values of \eqn{{\cal R}_0}
 ##' @param nR0,nepsilon number of values of \code{R0} and \code{epsilon}
 ##' @param show.progress logical: if \code{TRUE} then spew each

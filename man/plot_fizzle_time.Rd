@@ -21,7 +21,7 @@ plot_fizzle_time(
 
 \item{delta}{probability threshold}
 
-\item{col}{vector of colours}
+\item{col, lwd, log, ...}{see \code{\link{graphical parameters}}}
 }
 \description{
 Plot fizzle time

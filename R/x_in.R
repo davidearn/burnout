@@ -80,12 +80,20 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100) {
     return(xin)
 }
 
-##' Susceptibles at boundary layer (exact) [scalar version]
+##' Susceptibles at boundary layer (exact) (scalar version)
 ##'
 ##' @inheritParams x_in
+##' @param I0 initial prevalence (proportion)
 ##'
 ##' @importFrom sirr create_SIRmodel
+##' @importFrom sirr compute_SIRts
 ##' @importFrom dplyr filter
+##
+## The following avoids check() from complaining "no visible binding
+## for global variable ‘type’".
+## https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887/2
+## https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
+##' @importFrom rlang .data
 ##'
 x_in_exact_scalar <- function(R0, epsilon, I0=1e-6) {
     m <- sirr::create_SIRmodel(R0=R0, eps=epsilon)
@@ -98,18 +106,18 @@ x_in_exact_scalar <- function(R0, epsilon, I0=1e-6) {
     if (R0 < 1.05) tmax <- 1000
     if (R0 < 1.01) tmax <- 2000
     if (R0 < 1.005) tmax <- 20000
-    mts <- compute_SIRts(m, saveRoots=TRUE, inits=c(S=1-I0), tmax=tmax)
+    mts <- sirr::compute_SIRts(m, saveRoots=TRUE, inits=c(S=1-I0), tmax=tmax)
     dd <- attr(mts, "rootPoints")
-    Ihat.pts <- dd %>% filter(type == "Ieqm")
+    Ihat.pts <- dd %>% filter(.data$type == "Ieqm")
     xin <- Ihat.pts[2,"S"] # 2nd crossing
     ##Yb <- Ihat.pts[1,"I"]
     ##out <- c(Xb=Xb, Yb=Yb)
     return(xin)
 }
 
-##' Susceptibles at boundary layer (exact) [vector version]
+##' Susceptibles at boundary layer (exact) (vector version)
 ##'
-##' @inheritParams x_in
+##' @inheritParams x_in_exact_scalar
 ##'
 ##' @importFrom sirr create_SIRmodel
 ##' @importFrom dplyr filter
@@ -122,9 +130,18 @@ x_in_exact <- Vectorize(x_in_exact_scalar)
 ##' Plot \eqn{x_{\rm in}}
 ##' 
 ##' @inheritParams x_in
-##' @param col vector of colours
+##' @inheritParams graphics::par
+##' @inheritParams compare_funs
+##'
+##' @param xvar string indicating whether \code{R0} or \code{epsilon}
+##'     is the desired independent variable
+##' @param col,log,lwd,xlim,ylim,... see \code{\link{graphical parameters}}
+##' @param xin_fun function of \code{R0} and \code{epsilon} that
+##'     returns susceptible proportion at entry to boundary layer
 ##'
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_exact}}
+##'
+##' @importFrom graphics title
 ##'
 ##' @export
 ##'

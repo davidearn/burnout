@@ -4,7 +4,10 @@
 ##' See equation (8) of Ballard et al (2016)
 ##'
 ##' @inheritParams P1_prob
+##' @inheritParams stats::integrate
+##' 
 ##' @importFrom emdbook lambertW
+##' @importFrom stats integrate
 ##'
 ##' @export
 ##'
@@ -26,7 +29,7 @@ vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
             1/(s-x1A)
     }
     messy.integral <-
-        try(integrate(f=integrand, lower=x1A, upper=1,
+        try(stats::integrate(f=integrand, lower=x1A, upper=1,
                       subdivisions=subdivisions)$value)
     if ("try-error" %in% class(messy.integral)) return(NA)
 

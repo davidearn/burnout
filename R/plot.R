@@ -11,6 +11,7 @@
 ##' @importFrom graphics axis
 ##' @importFrom graphics legend
 ##' @importFrom graphics lines
+##' @importFrom graphics par
 ##' @importFrom latex2exp TeX
 ##'
 ##' @seealso P1_prob
@@ -89,39 +90,38 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
 ##'
 ##' @import dplyr
 ##' @import ggplot2
+##
+## The following avoids check() from complaining "no visible binding
+## for global variable ‘type’".
+## https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887/2
+## https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
+##' @importFrom rlang .data
 ##' 
 ##' @export
 plot.compare_funs <- function(x, ...) {
 
-    ## FIX: why am I getting this note from devtools::check():
-    ##      plot.compare_q: no visible binding for global variable ‘R0’
-    ##      I tried with and without pipe in case that somehow was the
-    ##      but it makes no difference.
-
     ## scatter plot coloured by epsilon:
-    ##scatter.plot <- (x %>% ggplot()
-    scatter.plot <- (ggplot(data = x, ...)
-        + geom_point(aes(x=f1, y=f2, colour=epsilon),
+    scatter.plot <- (x %>% ggplot()
+        + geom_point(aes(x=.data$f1, y=.data$f2, colour=.data$epsilon),
                      size = 0.5, alpha=0.5)
     )
 
-    ##line.plot <- (x %>% ggplot()
-    line.plot <- (ggplot(data = x, ...)
-        + geom_point(aes(x=R0, y=f2, colour=epsilon))
-        + geom_point(aes(x=R0, y=f1), colour = "red", size=0.25)
-        + facet_wrap(~epsilon, scales="free_y")
+    line.plot <- (x %>% ggplot()
+        + geom_point(aes(x=.data$R0, y=.data$f2, colour=.data$epsilon))
+        + geom_point(aes(x=.data$R0, y=.data$f1), colour = "red", size=0.25)
+        + facet_wrap(~.data$epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
     )
 
-    ##relative.plot <- (x %>% ggplot()
-    relative.plot <- (ggplot(data = x, ...)
-        + geom_point(aes(x=R0, y=(f2-f1)/f1, colour=epsilon))
-        + facet_wrap(~epsilon, scales="free_y")
+    relative.plot <- (x %>% ggplot()
+        + geom_point(aes(x=.data$R0, y=(.data$f2-.data$f1)/.data$f1,
+                         colour=.data$epsilon))
+        + facet_wrap(~.data$epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
     )
 
     print(scatter.plot)
     print(line.plot)
     print(relative.plot)
-    return(invisible(list(scatter.plot,line.plot,relative.plot)))
+    return(invisible(list(scatter.plot, line.plot, relative.plot)))
 }

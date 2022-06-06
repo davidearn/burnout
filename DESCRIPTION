@@ -17,7 +17,9 @@ Imports:
     expint,
     latex2exp,
     dplyr,
-    ggplot2
+    ggplot2,
+    rlang,
+    sirr
 RdMacros: Rdpack
 Suggests: 
     testthat

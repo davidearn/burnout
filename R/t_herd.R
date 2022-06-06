@@ -13,7 +13,6 @@
 ##'
 ##' @inheritParams P1_prob
 ##' @inheritParams fizzle_prob
-##' @param delta probability threshold
 ##'
 ##' @examples
 ##' op <- par(mfrow = c(1,2))
@@ -36,9 +35,12 @@ t_herd <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' Plot herd immunity duration
 ##'
 ##' @inheritParams t_herd
-##' @param col vector of colours
+##' @inheritParams base::plot
+##' @param col,lwd,ylim,... see \code{\link{graphical parameters}}
 ##'
 ##' @seealso \code{\link{t_herd}}
+##'
+##' @importFrom graphics title
 ##'
 ##' @export
 ##'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/x_in.R
 \name{x_in_exact_scalar}
 \alias{x_in_exact_scalar}
-\title{Susceptibles at boundary layer (exact) \link{scalar version}}
+\title{Susceptibles at boundary layer (exact) (scalar version)}
 \usage{
 x_in_exact_scalar(R0, epsilon, I0 = 1e-06)
 }
@@ -12,7 +12,9 @@ x_in_exact_scalar(R0, epsilon, I0 = 1e-06)
 \item{epsilon}{mean infectious period as a proportion of mean
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
+
+\item{I0}{initial prevalence (proportion)}
 }
 \description{
-Susceptibles at boundary layer (exact) \link{scalar version}
+Susceptibles at boundary layer (exact) (scalar version)
 }

@@ -17,6 +17,8 @@ compare_funs(
 )
 }
 \arguments{
+\item{fun1, fun2}{functions of \code{R0} and \code{epsilon} to be compared}
+
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
 \item{Rmin, Rmax}{minimum and maximum values of \eqn{{\cal R}_0}}

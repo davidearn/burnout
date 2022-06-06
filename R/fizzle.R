@@ -90,10 +90,13 @@ fizzle_time <- function(R0, k, delta) {
 ##' Plot fizzle time
 ##'
 ##' @inheritParams fizzle_time
-##' @param col vector of colours
+##' @inheritParams base::plot
+##' @param col,lwd,log,... see \code{\link{graphical parameters}}
 ##'
 ##' @seealso \code{\link{fizzle_time}}
 ##'
+##' @importFrom graphics title
+##' 
 ##' @export
 ##'
 ##' @examples

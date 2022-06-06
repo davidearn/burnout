@@ -54,7 +54,7 @@ peak_prev <- function( R0, epsilon=0 ) {
 ##'
 ##' @seealso \code{\link{peak_prev}}, \code{\link{x_in}}
 ##' 
-##' @inheritParams fizzle_prob
+##' @inheritParams peak_prev
 ##' 
 ##' @return real number between 0 and 1
 ##' @export

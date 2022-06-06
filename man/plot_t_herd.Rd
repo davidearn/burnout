@@ -20,7 +20,7 @@ plot_t_herd(
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
-\item{col}{vector of colours}
+\item{col, lwd, ylim, ...}{see \code{\link{graphical parameters}}}
 }
 \description{
 Plot herd immunity duration

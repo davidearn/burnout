@@ -20,13 +20,21 @@ plot_x_in(
 )
 }
 \arguments{
+\item{Rmin, Rmax}{minimum and maximum values of \eqn{{\cal R}_0}}
+
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
 \item{epsilon}{mean infectious period as a proportion of mean
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
-\item{col}{vector of colours}
+\item{xvar}{string indicating whether \code{R0} or \code{epsilon}
+is the desired independent variable}
+
+\item{xin_fun}{function of \code{R0} and \code{epsilon} that
+returns susceptible proportion at entry to boundary layer}
+
+\item{col, log, lwd, xlim, ylim, ...}{see \code{\link{graphical parameters}}}
 }
 \description{
 Plot \eqn{x_{\rm in}}

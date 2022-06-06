@@ -14,6 +14,8 @@ lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{N}{population size}
+
+\item{subdivisions}{the maximum number of subintervals.}
 }
 \description{
 van Herwaarden (1997) approximation
