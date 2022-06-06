@@ -15,3 +15,22 @@ example(plot_x_in)
 Note that the green/blue curves (i.e., crude/better approximations of
 peak prevalence `ymax`) in Todd's plots correspond to dotted/solid
 curves in this plot.
+
+The function `compare_funs` creates a data frame with values of two
+functions of `R0` and `epsilon` at a grid of points.  It returns an
+object of class `compare_funs`, for which there is a `plot` method.
+So, for example, the following compares the exact and approximate
+expressions for Kendalls's q:
+```
+cf <- compare_funs()
+plot(cf)
+```
+To compare the crude and better approximations of `xin`, use
+```
+cxin <- compare_funs(x_in, x_in_crude, Rmax=20)
+plot(cxin)
+```
+In the above plot (with `Rmax = 20`) the bottom two panels (for `epsilon = 0.01` and
+`0.1`) correspond to Figure B1 in the paper.
+
+FIX: 

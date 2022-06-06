@@ -7,7 +7,7 @@
 plot_x_in(
   Rmin = 1.0001,
   Rmax = 20,
-  R0 = exp(seq(log(Rmin), log(Rmax), length = 1001)),
+  R0 = seq(Rmin, Rmax, length = 1001),
   epsilon = c(0.01, 0.02, 0.03),
   xvar = "R0",
   xin_fun = x_in,
