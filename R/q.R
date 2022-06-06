@@ -103,7 +103,7 @@ q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'
 ##' @details The default \code{R0} value of \code{NULL} yields a
 ##'     sensible sprinkling of \code{nR0} \eqn{{\cal R}_0} values.
-##'     Typically uses are to compare exact vs approximate
+##'     Typical uses are to compare exact vs approximate
 ##'     calculations of Kendall's \eqn{q}, or different approximations
 ##'     of \eqn{x_{\rm in}}.
 ##'
