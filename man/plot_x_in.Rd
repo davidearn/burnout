@@ -13,6 +13,7 @@ plot_x_in(
   col = 1:length(epsilon),
   lwd = 2,
   log = "x",
+  xlim = c(1, Rmax),
   ylim = c(0, 1),
   ...
 )
@@ -31,8 +32,8 @@ Plot \eqn{x_{\rm in}}
 }
 \examples{
 op <- par(mfrow = c(1,2))
-plot_x_in()
-plot_x_in(epsilon = c(0.1,0.2,0.3))
+plot_x_in(epsilon = 0.01)
+plot_x_in(epsilon = 0.1)
 par(mfrow = op)
 
 }

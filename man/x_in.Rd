@@ -4,7 +4,7 @@
 \alias{x_in}
 \title{Susceptibles at boundary layer (approximation)}
 \usage{
-x_in(R0, epsilon, peakprev_fun = peak_prev)
+x_in(R0, epsilon, peakprev_fun = peak_prev, maxiter = 100)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -15,6 +15,9 @@ lifetime, i.e., no mortality)}
 
 \item{peakprev_fun}{function of \eqn{{\cal R}_0} and
 \eqn{\varepsilon} to use to compute peak prevalence}
+
+\item{maxiter}{maximum numbers of iterations for convergence of
+\code{\link[emdbook]{lambertW}}}
 }
 \value{
 real number between 0 and 1
