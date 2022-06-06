@@ -38,3 +38,4 @@ To compare van Herwaarden's (1997) approximation to ours:
 cp <- compare_funs(P1_prob, vanH_prob)
 plot(cp)
 ```
+_Note, however, that the above works only because of a `try` catch inside `vanH_prob`.  We actually need to resolve this._
