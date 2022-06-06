@@ -33,4 +33,8 @@ plot(cxin)
 In the above plot (with `Rmax = 20`) the bottom two panels (for `epsilon = 0.01` and
 `0.1`) correspond to Figure B1 in the paper.
 
-FIX: 
+To compare van Herwaarden's (1997) approximation to ours:
+```
+cp <- compare_funs(P1_prob, vanH_prob)
+plot(cp)
+```

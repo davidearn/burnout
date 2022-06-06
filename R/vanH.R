@@ -40,6 +40,9 @@ vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
               ((gamma+mu)*Gamma((beta-gamma-mu)/mu))
               )
 
+    ## FIX: this is identical to the code in P1_prob() except that
+    ##      the probability of burning out conditional on not fizzling (p0)
+    ##      is calculated above via van H's formulae.
     fizz <- fizzle_prob(R0, k=1)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
