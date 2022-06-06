@@ -2,16 +2,17 @@
 ##'
 ##' Probability of surviving the trough after the first epidemic.
 ##'
-##' If \eqn{p_k} is the probability \emph{not}
+##' If \eqn{p_k} is the probability of \emph{not}
 ##' \code{\link[=fizzle_prob]{fizzling}} if \eqn{k} individuals are
 ##' initially infected, then the probability of burning out
 ##' conditional on not fizzling is
 ##'
 ##' \deqn{ p_k q^{Ny^\star} \,,}
 ##'
-##' where \eqn{N} is the total population size and \eqn{y^\star} is
-##' the equilibrium prevalence, \eqn{\varepsilon(1 - 1/{\cal R}_0)},
-##' and \eqn{q} is Kendall's \eqn{q}.
+##' where \eqn{q} is Kendall's \eqn{q}, the expected total population
+##' size is \eqn{N}, and the equilibrium prevalence is
+##' 
+##' \deqn{y^\star = \varepsilon\Big(1 - \dfrac{1}{{\cal R}_0}\Big) \,.}
 ##' 
 ##' Hence, the probability of \emph{either} fizzling before a first
 ##' major outbreak \emph{or} burning out after a first major outbreak
@@ -19,7 +20,7 @@
 ##'
 ##' \deqn{
 ##'      (1-p_k) + p_k q^{Ny^\star} =
-##'      1 - p_k\big( 1 - q^{Ny^\star} \big)
+##'      1 - p_k\big( 1 - q^{Ny^\star} \big) \,.
 ##' }
 ##' 
 ##' Consequently, the probability of \emph{persisting} beyond the
@@ -27,7 +28,7 @@
 ##' 
 ##' \deqn{
 ##'     {{\mathscr P}_1}({\cal R}_0,\varepsilon,k,N) =
-##'       p_k\big( 1 - q^{Ny^\star} \big)
+##'       p_k\big( 1 - q^{Ny^\star} \big) \,.
 ##' }
 ##'
 ##' @seealso \code{\link{fizzle_prob}}, \code{\link{x_in}},
