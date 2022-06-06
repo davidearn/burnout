@@ -25,6 +25,8 @@
 ##' @inheritParams peak_prev
 ##' @param peakprev_fun function of \eqn{{\cal R}_0} and
 ##'     \eqn{\varepsilon} to use to compute peak prevalence
+##' @param maxiter maximum numbers of iterations for convergence of
+##'     \code{\link[emdbook]{lambertW}}
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom emdbook lambertW
@@ -47,12 +49,12 @@
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in <- function(R0, epsilon, peakprev_fun = peak_prev) {
+x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     W0 <- emdbook::lambertW
     E1 <- expint::expint_E1
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0) +
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter) +
         epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
     return(xin)
 }
@@ -60,6 +62,23 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev) {
 ## from original code for Xb_approx in Xb.R:
 ##  Xb <- -(1/R)*lambertW(-R*exp(R*(Yb-1)), b=0) +
 ##               eps*exp(R*Yb)*(expint_E1(R*Yb) - expint_E1(R*Ymax))
+
+##' Susceptibles at boundary layer (crude approximation)
+##'
+##' @details
+##' Argument \code{peakprev_fun} is ignored but is present so that the argument
+##' list is the same as for \code{\link{x_in}}.
+##'
+##' @inheritParams x_in
+##' @importFrom emdbook lambertW
+##' @export
+##' 
+x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100) {
+    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    W0 <- emdbook::lambertW
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter)
+    return(xin)
+}
 
 ##' Susceptibles at boundary layer (exact) [scalar version]
 ##'
@@ -111,8 +130,8 @@ x_in_exact <- Vectorize(x_in_exact_scalar)
 ##'
 ##' @examples
 ##' op <- par(mfrow = c(1,2))
-##' plot_x_in()
-##' plot_x_in(epsilon = c(0.1,0.2,0.3))
+##' plot_x_in(epsilon = 0.01)
+##' plot_x_in(epsilon = 0.1)
 ##' par(mfrow = op)
 ##'
 plot_x_in <- function(Rmin=1.0001, Rmax=20,
@@ -123,16 +142,22 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
                       ##col = c("darkred", "darkgreen", "darkblue")
                     , lwd=2
                     , log="x"
+                    , xlim=c(1,Rmax)
                     , ylim=c(0,1)
                     , ...
                       ) {
     cat("plot_x_in: Rmin = ", Rmin, ", Rmax = ", Rmax, "\n")
-    ## show naive approx as dashed line first:
+    ## show naive approx (eqm susceptible proportion) as dashed line first:
     plot(R0, 1/R0, type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
-         ylim=ylim, xaxs="i", yaxs="i",
+         xlim=xlim, ylim=ylim, xaxs="i", yaxs="i",
          xlab = expression(R[0]), ylab = expression(x[i][n]), ...)
     title(main = "Susceptible proportion at\nentry to boundary layer")
+
+    ## curves with peak prevalence estimate from approximation of integral:
     for (iepsilon in 1:length(epsilon)) {
+        ## estimate obtained by taking x_in to be x_f from final size formula:
+        lines(R0, x_in_crude(R0,epsilon=epsilon[iepsilon]), lwd=lwd/2, col="pink")
+        ## better estimate
         lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
     }
     ## plot with dotted curves when using the crude peak prevalence
