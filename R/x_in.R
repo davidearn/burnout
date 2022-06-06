@@ -133,41 +133,68 @@ x_in_exact <- Vectorize(x_in_exact_scalar)
 ##' plot_x_in(epsilon = 0.01)
 ##' plot_x_in(epsilon = 0.1)
 ##' par(mfrow = op)
+##' op <- par(mfrow = c(1,3))
+##' plot_x_in(R0 = 2, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
+##' plot_x_in(R0 = 5, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
+##' plot_x_in(R0 = 20, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
+##' par(mfrow = op)
 ##'
 plot_x_in <- function(Rmin=1.0001, Rmax=20,
                       R0 = exp(seq(log(Rmin),log(Rmax),length=1001)),
-                      epsilon = c(0.01, 0.02, 0.03)
+                      epsilon = c(0.01, 0.02, 0.03),
+                      xvar = "R0"
                     , xin_fun = x_in
                     , col = 1:length(epsilon)
                       ##col = c("darkred", "darkgreen", "darkblue")
                     , lwd=2
                     , log="x"
-                    , xlim=c(1,Rmax)
-                    , ylim=c(0,1)
+                    , xlim = if (xvar == "R0") c(1,Rmax) else c(0,1)
+                    , ylim = if (xvar == "R0") c(0,1) else c(0,max(1/R0))
                     , ...
                       ) {
-    cat("plot_x_in: Rmin = ", Rmin, ", Rmax = ", Rmax, "\n")
+    if (xvar == "R0") {
+        cat("plot_x_in: Rmin = ", Rmin, ", Rmax = ", Rmax, "\n")
+        xx <- R0
+    } else {
+        cat("plot_x_in: plotting as a function of epsilon...\n")
+        xx <- epsilon
+        if (length(R0) != 1) stop("only one R0 value allow if xvar is epsilon")
+    }
+    
     ## show naive approx (eqm susceptible proportion) as dashed line first:
-    plot(R0, 1/R0, type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
+    plot(xx,
+         if (xvar == "R0") 1/R0 else rep(1/R0,length(xx)),
+         type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
          xlim=xlim, ylim=ylim, xaxs="i", yaxs="i",
-         xlab = expression(R[0]), ylab = expression(x[i][n]), ...)
+         xlab = if (xvar == "R0") expression(R[0]) else expression(epsilon),
+         ylab = expression(x[i][n]), ...)
     title(main = "Susceptible proportion at\nentry to boundary layer")
 
-    ## curves with peak prevalence estimate from approximation of integral:
-    for (iepsilon in 1:length(epsilon)) {
+    if (xvar == "R0") {
+        ## curves with peak prevalence estimate from approximation of integral:
+        for (iepsilon in 1:length(epsilon)) {
+            ## estimate obtained by taking x_in to be x_f from final size formula:
+            lines(R0, x_in_crude(R0,epsilon=epsilon[iepsilon]), lwd=lwd/2, col="pink")
+            ## better estimate
+            lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
+        }
+        ## plot with dotted curves when using the crude peak prevalence
+        ## ignoring vital dynamics:
+        for (iepsilon in 1:length(epsilon)) {
+            lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon], peakprev_fun=peak_prev_nvd),
+                  lwd=lwd,
+                  col=col[iepsilon],
+                  lty="dotted")
+        }
+        legend("topright", bty="n", title=expression(epsilon),
+               legend = epsilon, col = col, lwd=lwd)
+    } else {
         ## estimate obtained by taking x_in to be x_f from final size formula:
-        lines(R0, x_in_crude(R0,epsilon=epsilon[iepsilon]), lwd=lwd/2, col="pink")
+        lines(xx, x_in_crude(R0,xx), lwd=lwd/2, col="pink")
         ## better estimate
-        lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
+        lines(xx, xin_fun(R0,xx), lwd=lwd, col=col)
+        lines(xx, xin_fun(R0,xx, peakprev_fun=peak_prev_nvd),
+              lwd=lwd, col=col, lty="dotted")
+        title(sub = latex2exp::TeX(sprintf("$R_0 = %g$", R0)))
     }
-    ## plot with dotted curves when using the crude peak prevalence
-    ## ignoring vital dynamics:
-    for (iepsilon in 1:length(epsilon)) {
-        lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon], peakprev_fun=peak_prev_nvd),
-              lwd=lwd,
-              col=col[iepsilon],
-              lty="dotted")
-    }
-    legend("topright", bty="n", title=expression(epsilon),
-           legend = epsilon, col = col, lwd=lwd)
 }

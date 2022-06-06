@@ -9,12 +9,13 @@ plot_x_in(
   Rmax = 20,
   R0 = exp(seq(log(Rmin), log(Rmax), length = 1001)),
   epsilon = c(0.01, 0.02, 0.03),
+  xvar = "R0",
   xin_fun = x_in,
   col = 1:length(epsilon),
   lwd = 2,
   log = "x",
-  xlim = c(1, Rmax),
-  ylim = c(0, 1),
+  xlim = if (xvar == "R0") c(1, Rmax) else c(0, 1),
+  ylim = if (xvar == "R0") c(0, 1) else c(0, max(1/R0)),
   ...
 )
 }
@@ -34,6 +35,11 @@ Plot \eqn{x_{\rm in}}
 op <- par(mfrow = c(1,2))
 plot_x_in(epsilon = 0.01)
 plot_x_in(epsilon = 0.1)
+par(mfrow = op)
+op <- par(mfrow = c(1,3))
+plot_x_in(R0 = 2, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
+plot_x_in(R0 = 5, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
+plot_x_in(R0 = 20, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 par(mfrow = op)
 
 }

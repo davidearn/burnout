@@ -8,10 +8,10 @@ Generate the analytical curves in Figure 3 via
 example(plot_P1)
 ```
 
-Generate Figure B1 via
+Generate Figures B1 and B2 via
 ```
 example(plot_x_in)
 ```
 Note that the green/blue curves (i.e., crude/better approximations of
-peak prevalence `ymax`) in Todd's plots correspoind to dotted/solid
+peak prevalence `ymax`) in Todd's plots correspond to dotted/solid
 curves in this plot.
