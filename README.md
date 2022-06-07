@@ -16,6 +16,8 @@ Note that the green/blue curves (i.e., crude/better approximations of
 peak prevalence `ymax`) in Todd's plots correspond to dotted/solid
 curves in this plot.
 
+# comparing approximations
+
 The function `compare_funs` creates a data frame with values of two
 functions of `R0` and `epsilon` at a grid of points.  It returns an
 object of class `compare_funs`, for which there is a `plot` method.
@@ -35,8 +37,8 @@ In the above plot (with `Rmax = 20`) the bottom two panels (for `epsilon = 0.01`
 
 To compare van Herwaarden's (1997) approximation to ours:
 ```
-cp <- compare_funs(P1_prob, vanH_prob)
-plot(cp)
+ch <- compare_funs(P1_prob, P1_prob_vanH)
+plot(ch)
 ```
 _Note, however, that the above works only because of a `try` catch inside `vanH_prob`.  We actually need to resolve this._
 
@@ -48,4 +50,10 @@ conditional on not fizzling:
 ```
 cb <- compare_funs(burnout_prob, burnout_prob_vanH)
 plot(cb)
+```
+
+To compare van Meerson and Sasorov's (2009) approximation to ours:
+```
+cms <- compare_funs(P1_prob, P1_prob_MS)
+plot(cp)
 ```
