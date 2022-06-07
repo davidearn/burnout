@@ -20,7 +20,7 @@ P1_prob_vanH <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
     ## FIX: This is identical to the code in P1_prob() except that the
     ##      probability of burning out conditional on not fizzling
     ##      (p0) is calculated above via van H's formulae.
-    fizz <- fizzle_prob(R0, k=1)
+    fizz <- fizzle_prob(R0=R0, k=k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
     ## probability of not fizzling and then burning out:
