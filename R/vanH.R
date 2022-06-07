@@ -1,17 +1,52 @@
-##' van Herwaarden (1997) approximation
+##' Persistence probability via van Herwaarden (1997) approximation
+##'
+##' @seealso \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob}}
+##' 
+##' @inheritParams P1_prob
+##' @inheritParams stats::integrate
+##' @param ... additional arguments pass to \code{\link[stats]{integrate}}
+##'
+##' @importFrom emdbook lambertW
+##' @importFrom stats integrate
+##'
+##' @export
+##'
+P1_prob_vanH <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
+
+    ## Ballard et al (2016) use the notation p0:
+    p0 <- burnout_prob_vanH(R0 = R0, epsilon = epsilon, N = N,
+                            subdivisions = subdivisions, ...)
+
+    ## FIX: This is identical to the code in P1_prob() except that the
+    ##      probability of burning out conditional on not fizzling
+    ##      (p0) is calculated above via van H's formulae.
+    fizz <- fizzle_prob(R0, k=1)
+    ## pk = probability of not fizzling:
+    notfizz <- 1 - fizz
+    ## probability of not fizzling and then burning out:
+    notfizz.and.burn <- notfizz * p0
+    ## probability of either fizzling or burning out:
+    fizz.or.burn <- fizz + notfizz.and.burn
+    ## persist after neither fizzling nor burning out:
+    P1 <- 1 - fizz.or.burn
+    return(P1)
+}
+
+##' Burnout probability based on van Herwaarden (1997)
 ##'
 ##' @details
 ##' See equation (8) of Ballard et al (2016)
 ##'
-##' @inheritParams P1_prob
-##' @inheritParams stats::integrate
+##' @seealso \code{\link{P1_prob_vanH}}
+##'
+##' @inheritParams P1_prob_vanH
 ##' 
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @export
 ##'
-vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
+burnout_prob_vanH <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
     ## choose units such that gamma+mu = 1, i.e., mean time infected is 1:
     beta <- R0
     mu <- epsilon
@@ -20,7 +55,6 @@ vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
     W0 <- emdbook::lambertW
 
     bog <- beta/gamma
-    
     x1A <- (-1/bog)*W0(-bog*exp(-bog))
 
     integrand <- function(s) {
@@ -30,7 +64,7 @@ vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
     }
     messy.integral <-
         try(stats::integrate(f=integrand, lower=x1A, upper=1,
-                      subdivisions=subdivisions)$value)
+                      subdivisions=subdivisions, ...)$value)
     if ("try-error" %in% class(messy.integral)) return(NA)
 
     C3 <- -log(-beta*x1A / (beta*x1A - gamma)) - messy.integral
@@ -43,18 +77,5 @@ vanH_prob <- function( R0, epsilon, N=10^6, subdivisions=1000L ) {
               ((gamma+mu)*Gamma((beta-gamma-mu)/mu))
               )
 
-    ## FIX: this is identical to the code in P1_prob() except that
-    ##      the probability of burning out conditional on not fizzling (p0)
-    ##      is calculated above via van H's formulae.
-    fizz <- fizzle_prob(R0, k=1)
-    ## pk = probability of not fizzling:
-    notfizz <- 1 - fizz
-    ystar <- epsilon * (1 - 1/R0)
-    ## probability of not fizzling and then burning out:
-    notfizz.and.burn <- notfizz * p0
-    ## probability of either fizzling or burning out:
-    fizz.or.burn <- fizz + notfizz.and.burn
-    ## persist after neither fizzling nor burning out:
-    P1 <- 1 - fizz.or.burn
-    return(P1)
+    return(p0)
 }
