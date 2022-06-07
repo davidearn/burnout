@@ -39,3 +39,13 @@ cp <- compare_funs(P1_prob, vanH_prob)
 plot(cp)
 ```
 _Note, however, that the above works only because of a `try` catch inside `vanH_prob`.  We actually need to resolve this._
+
+A better test is to compare the burnout probabilities (conditional on
+not fizzling), as opposed to the persistence probabiities, because
+`P1` is derived from the burnout probability identically in all cases.
+The formulae that are different are the components from burning out
+conditional on not fizzling:
+```
+cb <- compare_funs(burnout_prob, burnout_prob_vanH)
+plot(cb)
+```
