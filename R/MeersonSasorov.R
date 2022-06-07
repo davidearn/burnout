@@ -62,7 +62,7 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
     K <- beta/mu
     delta <- 1 - 1/R0
     W0 <- emdbook::lambertW
-    xm <- (-1/R0) * W0((-1/R0)*exp(-1/R0)) - 1
+    xm <- (-1/R0) * W0(-R0*exp(-R0)) - 1
 
     integrand <- function(s) {
         s*(s+delta) / ((1+s)^2 * (s - (1-delta)*log(1+s))) -
