@@ -68,14 +68,41 @@ P1_prob <- function(R0, epsilon, k=1, N=10^6, xin = x_in(R0,epsilon),
     fizz <- fizzle_prob(R0, k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
-    ystar <- epsilon * (1 - 1/R0)
-    ## Kendall's q:
-    q <- q_fun(R0, epsilon, xin)
+    ## burnout probability (conditional on not fizzling):
+    burn <- burnout_prob(R0=R0, epsilon=epsilon, N=N, xin = xin,
+                         q_fun=q_fun)
     ## probability of not fizzling and then burning out:
-    notfizz.and.burn <- notfizz * q^(N*ystar)
+    notfizz.and.burn <- notfizz * burn
     ## probability of either fizzling or burning out:
     fizz.or.burn <- fizz + notfizz.and.burn
     ## persist after neither fizzling nor burning out:
     P1 <- 1 - fizz.or.burn # P1 <- pk * (1 - q^(N*ystar))
     return(P1)
+}
+
+##' Burnout probability based on Kendall's \eqn{q}
+##'
+##' \deqn{
+##'     q^{Ny^\star}
+##' }
+##'
+##' @seealso \code{\link{fizzle_prob}}, \code{\link{x_in}},
+##'     \code{\link{llig}}, \code{\link{q_approx}}, \code{\link{q_exact}}
+##'
+##' @inheritParams P1_prob
+##'
+##' @return real number between 0 and 1
+##' @importFrom Rdpack reprompt
+##'
+##' @references
+##' \insertRef{Kendall1948b}{burnout}
+##' 
+##' @export
+burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
+                         q_fun = q_approx) {
+    ## Kendall's q:
+    q <- q_fun(R0, epsilon, xin)
+    ## burnout probability (conditional on not fizzling):
+    ystar <- epsilon * (1 - 1/R0)
+    return( q^(N*ystar) )
 }

@@ -2,6 +2,7 @@
 
 S3method(plot,compare_funs)
 export(P1_prob)
+export(burnout_prob)
 export(compare_funs)
 export(fizzle_prob)
 export(fizzle_time)
