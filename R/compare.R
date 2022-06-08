@@ -7,11 +7,16 @@
 ##'     of \eqn{x_{\rm in}}.
 ##'
 ##' @inheritParams peak_prev
-##' @param fun1,fun2 functions of \code{R0} and \code{epsilon} to be compared
+##' @inheritParams P1_prob
+##' @param fun1,fun2 functions of \code{R0} and \code{epsilon} to be
+##'     compared
 ##' @param Rmin,Rmax minimum and maximum values of \eqn{{\cal R}_0}
-##' @param nR0,nepsilon number of values of \code{R0} and \code{epsilon}
+##' @param nR0,nepsilon number of values of \code{R0} and
+##'     \code{epsilon}
 ##' @param show.progress logical: if \code{TRUE} then spew each
 ##'     element of the data frame to \code{stdout} as it is computed
+##' @param ... additional parameters passed to \code{fun1} and
+##'     \code{fun2}
 ##'
 ##' @seealso \code{\link{q_exact}}, \code{\link{q_approx}},
 ##'     \code{\link{x_in}}
@@ -28,6 +33,8 @@
 compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
                          R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
                          epsilon = 10^(-(4:1)), nepsilon = length(epsilon),
+                         N = 10^6,
+                         ...,
                          show.progress=FALSE) {
 
     if (is.null(R0)) {
@@ -55,17 +62,17 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
     ##      helpful.
     nn <- nrow(raw)
     f1 <- f2 <- rep(NA,nn)
-    f1name <- as.character(substitute(fun1))
-    f2name <- as.character(substitute(fun2))
+    f1name <- deparse(substitute(fun1))
+    f2name <- deparse(substitute(fun2))
     if (show.progress) cat(sprintf("%s\t%s\t%s\t%s\t%s\n",
                                    "i", "R0", "epsilon", f1name, f2name))
     for (i in 1:nn) {
         r <- raw[i,"R0"]
         e <- raw[i,"epsilon"]
         if (show.progress) cat(sprintf("%d\t%g\t%g", i, r, e))
-        f1i <- fun1(R0=r, epsilon=e)
+        f1i <- fun1(R0=r, epsilon=e, N=N, ...)
         if (show.progress) cat(sprintf("\t%g", f1i))
-        f2i <- fun2(R0=r, epsilon=e)
+        f2i <- fun2(R0=r, epsilon=e, N=N, ...)
         if (show.progress) cat(sprintf("\t%g\n", f2i))
         f1[i] <- f1i
         f2[i] <- f2i
@@ -81,5 +88,6 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
     class(dd) <- c("compare_funs", "data.frame")
     ## attr(dd,"nIme") <- nIme
     ## attr(dd,"nIma") <- nIma
+    attr(dd,"N") <- N
     return(dd)
 }

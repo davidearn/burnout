@@ -19,6 +19,8 @@
 ##'
 ##' @inheritParams peak_prev
 ##' @param xin by default set via the approximation coded in \code{\link{x_in}}
+##' @param N population size (ignored, but present so this function
+##'     can be passed to \code{\link{compare_funs}})
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom Rdpack reprompt
@@ -37,7 +39,7 @@
 ##' curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_exact(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
+q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon), N=NULL) {
     a <- (R0/epsilon)*(1-1/R0)
     x <- (R0/epsilon)*(1-xin)
     ##denom <- exp(x) * x^(-a) * lig(a,x)
@@ -86,15 +88,13 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_approx(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-##q_approx_ORIG <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
-q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
+q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon), N=NULL) {
     a <- (R0/epsilon)*(1 - 1/R0)
     b <- (R0/epsilon)*(1/R0 - xin)
     log.fac1 <- (1/2)*(log(2*pi) - log(epsilon*(R0-1)))
     log.fac2 <- a*(log(1-1/R0) - log(1-xin))
     log.messy <- log.fac1 + log.fac2 + b
     denom <- 1 + exp(log.messy)
-    #q <- 1/denom
     q <- (1 + 1/denom)^(-1)
     return(q)
 }

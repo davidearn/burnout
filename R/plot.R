@@ -84,6 +84,8 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
 ##' @inheritParams plot_P1
 ##' @param x \code{\link{compare_funs}} object, i.e., a
 ##'     \code{\link{data.frame}} with particular structure
+##' @param show.plots logical: if \code{FALSE} then return plots in a
+##'     list without displaying them
 ##'
 ##' @seealso \code{\link{compare_funs}}, \code{\link{q_exact}},
 ##'     \code{\link{q_approx}}, \code{\link{x_in}}
@@ -98,30 +100,44 @@ plot_P1 <- function(epsilon = 0.01, N = 10^6,
 ##' @importFrom rlang .data
 ##' 
 ##' @export
-plot.compare_funs <- function(x, ...) {
+plot.compare_funs <- function(x, show.plots=TRUE, ...) {
+
+    ## make title
+    N <- attr(x,"N")
+    title.text <- sprintf("$N = 10^{%d}$, facet by $\\epsilon$", log10(N))
 
     ## scatter plot coloured by epsilon:
     scatter.plot <- (x %>% ggplot()
+        + geom_abline(slope=1, colour="magenta")
         + geom_point(aes(x=.data$f1, y=.data$f2, colour=.data$epsilon),
                      size = 0.5, alpha=0.5)
+        + ggtitle(latex2exp::TeX(paste("scatter plot:", title.text)))
     )
 
     line.plot <- (x %>% ggplot()
-        + geom_point(aes(x=.data$R0, y=.data$f2, colour=.data$epsilon))
+        + geom_point(aes(x=.data$R0, y=.data$f2), colour = "black")
         + geom_point(aes(x=.data$R0, y=.data$f1), colour = "red", size=0.25)
         + facet_wrap(~.data$epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
+        + ggtitle(latex2exp::TeX(paste("line plot:", title.text)))
     )
+    ##FIX: allowing for 3rd data column... not working as expected...
+    ##if ("f0" %in% names(x)) line.plot  <- line.plot + geom_point(aes(x=.data$R0, y=.data$f0), colour = "blue", size=0.1)
 
     relative.plot <- (x %>% ggplot()
-        + geom_point(aes(x=.data$R0, y=(.data$f2-.data$f1)/.data$f1,
-                         colour=.data$epsilon))
+        + geom_point(aes(x=.data$R0, y=(.data$f2-.data$f1)/.data$f1),
+                         colour="black")
         + facet_wrap(~.data$epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
+        + ggtitle(latex2exp::TeX(paste("relative plot:", title.text)))
     )
 
-    print(scatter.plot)
-    print(line.plot)
-    print(relative.plot)
-    return(invisible(list(scatter.plot, line.plot, relative.plot)))
+    if (show.plots) {
+        print(scatter.plot)
+        print(line.plot)
+        print(relative.plot)
+    }
+    out <- list(scatter = scatter.plot, line = line.plot,
+                relative = relative.plot)
+    return(invisible(out))
 }
