@@ -4,11 +4,14 @@
 \alias{plot.compare_funs}
 \title{Plot comparison of two functions.}
 \usage{
-\method{plot}{compare_funs}(x, ...)
+\method{plot}{compare_funs}(x, show.plots = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{\link{compare_funs}} object, i.e., a
 \code{\link{data.frame}} with particular structure}
+
+\item{show.plots}{logical: if \code{FALSE} then return plots in a
+list without displaying them}
 
 \item{...}{additional parameters passed to \code{\link{plot}}}
 }

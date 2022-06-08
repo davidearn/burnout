@@ -4,7 +4,7 @@
 \alias{q_approx}
 \title{Kendall's \eqn{q} (Laplace approximation)}
 \usage{
-q_approx(R0, epsilon, xin = x_in(R0, epsilon))
+q_approx(R0, epsilon, xin = x_in(R0, epsilon), N = NULL)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -14,6 +14,9 @@ lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
+
+\item{N}{population size (ignored, but present so this function
+can be passed to \code{\link{compare_funs}})}
 }
 \value{
 real number between 0 and 1

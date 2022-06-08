@@ -13,21 +13,30 @@ compare_funs(
   nR0 = 101,
   epsilon = 10^(-(4:1)),
   nepsilon = length(epsilon),
+  N = 10^6,
+  ...,
   show.progress = FALSE
 )
 }
 \arguments{
-\item{fun1, fun2}{functions of \code{R0} and \code{epsilon} to be compared}
+\item{fun1, fun2}{functions of \code{R0} and \code{epsilon} to be
+compared}
 
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
 \item{Rmin, Rmax}{minimum and maximum values of \eqn{{\cal R}_0}}
 
-\item{nR0, nepsilon}{number of values of \code{R0} and \code{epsilon}}
+\item{nR0, nepsilon}{number of values of \code{R0} and
+\code{epsilon}}
 
 \item{epsilon}{mean infectious period as a proportion of mean
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
+
+\item{N}{population size}
+
+\item{...}{additional parameters passed to \code{fun1} and
+\code{fun2}}
 
 \item{show.progress}{logical: if \code{TRUE} then spew each
 element of the data frame to \code{stdout} as it is computed}
