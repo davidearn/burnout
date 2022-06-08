@@ -4,7 +4,7 @@
 \alias{x_in_exact}
 \title{Susceptibles at boundary layer (exact) (vector version)}
 \usage{
-x_in_exact(R0, epsilon, I0 = 1e-06)
+x_in_exact(R0, epsilon, I0 = 1e-06, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -14,6 +14,8 @@ lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{I0}{initial prevalence (proportion)}
+
+\item{...}{additional arguments are ignored}
 }
 \description{
 Susceptibles at boundary layer (exact) (vector version)

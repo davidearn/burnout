@@ -96,7 +96,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 ## https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
 ##' @importFrom rlang .data
 ##'
-x_in_exact_scalar <- function(R0, epsilon, I0=1e-6) {
+x_in_exact_scalar <- function(R0, epsilon, I0=1e-6, ...) {
     m <- sirr::create_SIRmodel(R0=R0, eps=epsilon)
     ## FIX: tmax=100 works for a large range of R0, but is still too
     ## short as R0 --> 1.  I need to have a stopcrit that ends when
