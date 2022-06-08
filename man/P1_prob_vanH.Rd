@@ -19,7 +19,8 @@ lifetime, i.e., no mortality)}
 
 \item{subdivisions}{the maximum number of subintervals.}
 
-\item{...}{additional arguments pass to \code{\link[stats]{integrate}}}
+\item{...}{additional arguments pass to
+\code{\link[stats]{integrate}}}
 }
 \description{
 Persistence probability via van Herwaarden (1997) approximation

@@ -21,13 +21,18 @@ P1_prob_other(
 lifetime (\eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
+\item{burnout_prob_fun}{function with which to calculate burnout
+probability (either \code{\link{burnout_prob_vanH}} or
+\code{\link{burnout_prob_MS}})}
+
 \item{k}{initial number of infected individuals (\eqn{k})}
 
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
 
-\item{...}{additional arguments pass to \code{\link[stats]{integrate}}}
+\item{...}{additional arguments pass to
+\code{\link[stats]{integrate}}}
 }
 \description{
 This computes \eqn{{\mathscr P}_1} using the burnout probability

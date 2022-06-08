@@ -17,7 +17,8 @@ lifetime, i.e., no mortality)}
 
 \item{subdivisions}{the maximum number of subintervals.}
 
-\item{...}{additional arguments pass to \code{\link[stats]{integrate}}}
+\item{...}{additional arguments pass to
+\code{\link[stats]{integrate}}}
 }
 \description{
 Burnout probability based on van Herwaarden (1997)
