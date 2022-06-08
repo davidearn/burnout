@@ -27,13 +27,22 @@ expressions for Kendalls's q:
 cf <- compare_funs()
 plot(cf)
 ```
+
 To compare the crude and better approximations of `xin`, use
 ```
-cxin <- compare_funs(x_in, x_in_crude, Rmax=20)
-plot(cxin)
+cxinc <- compare_funs(x_in, x_in_crude, Rmax=20)
+plot(cxinc)
 ```
-In the above plot (with `Rmax = 20`) the bottom two panels (for `epsilon = 0.01` and
-`0.1`) correspond to Figure B1 in the paper.
+In the above plot (with `Rmax = 20`) the bottom two panels (for
+`epsilon = 0.01` and `0.1`) correspond to Figure B1 in the paper.
+
+To compare the approximate and exact `xin`, use
+```
+cxine <- compare_funs(x_in, x_in_exact, Rmax=8, epsilon=0.01)
+plot(cxine)
+```
+(Note that this is slow because the numerical integration is slow.
+Also note that larger `Rmax` causes `lsoda` to crash.)
 
 To compare van Herwaarden's (1997) approximation to ours:
 ```
