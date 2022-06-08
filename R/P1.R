@@ -106,3 +106,47 @@ burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
     ystar <- epsilon * (1 - 1/R0)
     return( q^(N*ystar) )
 }
+
+##' Persistence probability via other approximations
+##'
+##' This computes \eqn{{\mathscr P}_1} using the burnout probability
+##' approximations of van Herwaarden (1997) or Meerson and Sasorov
+##' (2009).
+##'
+##' @seealso \code{\link{burnout_prob_MS}},
+##'     \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob}}
+##' 
+##' @inheritParams P1_prob
+##' @inheritParams stats::integrate
+##' @param burnout_prob_fun function with which to calculate burnout
+##'     probability (either \code{\link{burnout_prob_vanH}} or
+##'     \code{\link{burnout_prob_MS}})
+##' @param ... additional arguments pass to
+##'     \code{\link[stats]{integrate}}
+##'
+##' @importFrom emdbook lambertW
+##' @importFrom stats integrate
+##'
+##' @export
+##'
+P1_prob_other <- function(R0, epsilon, burnout_prob_fun, k=1, N=10^6,
+                          subdivisions=1000L, ... ) {
+
+    ## Ballard et al (2016) use the notation p0:
+    p0 <- burnout_prob_fun(R0 = R0, epsilon = epsilon, N = N,
+                            subdivisions = subdivisions, ...)
+
+    ## FIX: This is identical to the code in P1_prob() except that the
+    ##      probability of burning out conditional on not fizzling
+    ##      (p0) is calculated above via van H or MS's formulae.
+    fizz <- fizzle_prob(R0=R0, k=k)
+    ## pk = probability of not fizzling:
+    notfizz <- 1 - fizz
+    ## probability of not fizzling and then burning out:
+    notfizz.and.burn <- notfizz * p0
+    ## probability of either fizzling or burning out:
+    fizz.or.burn <- fizz + notfizz.and.burn
+    ## persist after neither fizzling nor burning out:
+    P1 <- 1 - fizz.or.burn
+    return(P1)
+}

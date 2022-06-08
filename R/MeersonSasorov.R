@@ -3,9 +3,7 @@
 ##' @seealso \code{\link{burnout_prob_MS}}, \code{\link{P1_prob_MS}},
 ##'     \code{\link{P1_prob}}
 ##' 
-##' @inheritParams P1_prob
-##' @inheritParams stats::integrate
-##' @param ... additional arguments pass to \code{\link[stats]{integrate}}
+##' @inheritParams P1_prob_other
 ##'
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
@@ -14,25 +12,9 @@
 ##'
 P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 
-    ## FIX: this is identical to P1_prob_vanH except that burnout_prob_MS
-    ##      replaces burnout_prob_vanH.   This is dumb.
-
-    ## Ballard et al (2016) use the notation p0:
-    p0 <- burnout_prob_MS(R0 = R0, epsilon = epsilon, N = N,
-                            subdivisions = subdivisions, ...)
-
-    ## FIX: This is identical to the code in P1_prob() except that the
-    ##      probability of burning out conditional on not fizzling
-    ##      (p0) is calculated above via van H's formulae.
-    fizz <- fizzle_prob(R0=R0, k=k)
-    ## pk = probability of not fizzling:
-    notfizz <- 1 - fizz
-    ## probability of not fizzling and then burning out:
-    notfizz.and.burn <- notfizz * p0
-    ## probability of either fizzling or burning out:
-    fizz.or.burn <- fizz + notfizz.and.burn
-    ## persist after neither fizzling nor burning out:
-    P1 <- 1 - fizz.or.burn
+    P1 <- P1_prob_other(R0 = R0, epsilon = epsilon,
+                        burnout_prob_fun = burnout_prob_MS, k = k, N = N,
+                        subdivisions = subdivisions, ... )
     return(P1)
 }
 

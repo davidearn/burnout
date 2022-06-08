@@ -3,6 +3,7 @@
 S3method(plot,compare_funs)
 export(P1_prob)
 export(P1_prob_MS)
+export(P1_prob_other)
 export(P1_prob_vanH)
 export(burnout_prob)
 export(burnout_prob_MS)
