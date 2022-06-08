@@ -27,6 +27,7 @@
 ##'     \eqn{\varepsilon} to use to compute peak prevalence
 ##' @param maxiter maximum numbers of iterations for convergence of
 ##'     \code{\link[emdbook]{lambertW}}
+##' @param ... additional arguments are ignored
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom emdbook lambertW
@@ -49,7 +50,7 @@
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100) {
+x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     W0 <- emdbook::lambertW
@@ -73,7 +74,7 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100) {
 ##' @importFrom emdbook lambertW
 ##' @export
 ##' 
-x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100) {
+x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     W0 <- emdbook::lambertW
     xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter)

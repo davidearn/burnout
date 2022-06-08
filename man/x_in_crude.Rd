@@ -4,7 +4,7 @@
 \alias{x_in_crude}
 \title{Susceptibles at boundary layer (crude approximation)}
 \usage{
-x_in_crude(R0, epsilon, peakprev_fun = NULL, maxiter = 100)
+x_in_crude(R0, epsilon, peakprev_fun = NULL, maxiter = 100, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -18,6 +18,8 @@ lifetime, i.e., no mortality)}
 
 \item{maxiter}{maximum numbers of iterations for convergence of
 \code{\link[emdbook]{lambertW}}}
+
+\item{...}{additional arguments are ignored}
 }
 \description{
 Susceptibles at boundary layer (crude approximation)
