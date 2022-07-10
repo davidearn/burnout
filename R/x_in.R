@@ -53,9 +53,9 @@
 x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
-    W0 <- emdbook::lambertW
+    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
     E1 <- expint::expint_E1
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter) +
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
         epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
     return(xin)
 }
@@ -63,6 +63,23 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ## from original code for Xb_approx in Xb.R:
 ##  Xb <- -(1/R)*lambertW(-R*exp(R*(Yb-1)), b=0) +
 ##               eps*exp(R*Yb)*(expint_E1(R*Yb) - expint_E1(R*Ymax))
+
+##' Crude "Kermack-McKendrick" version of \eqn{x_{\rm in}}
+##'
+##' FIX: this is the same as \code{\link{x_in_crude}}, but coded
+##' differently.
+##'
+##' This is just the case where \eqn{\varepsilon=0},
+##' \deqn{x_{\rm in,KM}({\mathcal R}_0) = x_{\rm in}({\mathcal R}_0, 0)}
+##'
+##' @inheritParams x_in
+##' @seealso \code{\link{x_in}}
+##'
+##' @export
+x_in_KM <- function(R0, maxiter=100, ...) {
+    xin <- x_in(R0, epsilon=0, maxiter=maxiter, ...)
+    return(xin)
+}
 
 ##' Susceptibles at boundary layer (crude approximation)
 ##'
@@ -78,6 +95,30 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     W0 <- emdbook::lambertW
     xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter)
+    return(xin)
+}
+
+##' Susceptibles at boundary layer (corner/boundary layer approximation)
+##'
+##' @details
+##' \deqn{
+##' 	x_{\rm in} = \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
+##' }
+##'
+##' @inheritParams x_in
+##' @importFrom emdbook lambertW
+##' @seealso \code{\link{x_in}}
+##' @export
+##' 
+x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
+    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
+    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
+    Wm1 <- function(x) {emdbook::lambertW(x, b=-1, maxiter=maxiter, ...)}
+    pc <- 1 - 1/R0 # p_crit
+    xf <- -(1/R0)*W0(-R0*exp(-R0))
+    Z <- 1 - xf
+    xin <- pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
     return(xin)
 }
 
