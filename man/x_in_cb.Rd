@@ -26,7 +26,7 @@ Susceptibles at boundary layer (corner/boundary layer approximation)
 }
 \details{
 \deqn{
-	x_{\rm in} = \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
+	x_{\rm in} = 1 + \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
 }
 }
 \seealso{

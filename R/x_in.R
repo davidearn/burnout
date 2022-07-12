@@ -102,7 +102,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 ##'
 ##' @details
 ##' \deqn{
-##' 	x_{\rm in} = \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
+##' 	x_{\rm in} = 1 + \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
 ##' }
 ##'
 ##' @inheritParams x_in
@@ -116,9 +116,9 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
     Wm1 <- function(x) {emdbook::lambertW(x, b=-1, maxiter=maxiter, ...)}
     pc <- 1 - 1/R0 # p_crit
-    xf <- -(1/R0)*W0(-R0*exp(-R0))
+    xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
     Z <- 1 - xf
-    xin <- pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
+    xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
     return(xin)
 }
 
