@@ -34,7 +34,8 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##' @export
 ##'
 burnout_prob_vanH <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
-    ## choose units such that gamma+mu = 1, i.e., mean time infected is 1:
+    ## choose units such that gamma+mu = 1, i.e., mean time infected
+    ## period is 1:
     beta <- R0
     mu <- epsilon
     gamma <- 1-epsilon

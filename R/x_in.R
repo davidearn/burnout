@@ -129,25 +129,40 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##' \deqn{
 ##' \tilde{Y}_{1}(x{\rm f}) =  \int_{x_{\rm f}}^{1} \left(\frac{1}{{\mathcal R}_{0}t} -1\right) \frac{1-t}{{\mathcal R}_{0} t Y_{0}(t)} + \frac{1-x_{\rm f}}{{\mathcal R}_{0}x_{\rm f}}\frac{1}{t-x_{\rm f}} \, dt
 ##' }
+##' @param tiny amount by which to avoid integration limits
 ##' 
 ##' @importFrom stats integrate
 ##'
 ##' @export
-Ytilde_1 <- function(xf, R0, ...) {
+Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
     Y0 <- function(x) {1 - x - (1/R0)*log(x)}
     integrand <- function(t) {
-        (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + (1-xf)/(R0*xf)/(t-xf)
+        ## using tiny adjustment instead of cases:
+        ##out <- ifelse(
+        ##    t==1, 
+        ##    (1/(R0*t) - 1)/(R0*t) + (1-xf)/(R0*xf)/(t-xf),
+        ##ifelse(
+        ##    t==xf,
+        ##    (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + 1/(R0*xf),
+        ##    (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + (1-xf)/(R0*xf)/(t-xf)
+        ##)
+        ##)
+        ##return(out)
+        return( (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + (1-xf)/(R0*xf)/(t-xf) )
     }
+    tiny <- 1e-8
     the.integral <-
-        try(stats::integrate(f=integrand, lower=xf, upper=1,
-                             ##subdivisions=subdivisions,
-                             ...)$value)
+        try(stats::integrate(f=integrand, lower=xf+tiny, upper=1-tiny
+                             , subdivisions=subdivisions
+                             , ...)$value)
     if ("try-error" %in% class(the.integral)) {
         warning("Ytilde_1: try error with xf = ", xf, "; returning NA")
         return(NA)
     }
     return(the.integral)
 }
+##' @export
+Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 
 ##' Susceptibles at boundary layer (higher order corner/boundary layer approximation)
 ##'
@@ -289,7 +304,7 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
             ## estimate obtained by taking x_in to be x_f from final size formula:
             lines(R0, x_in_crude(R0,epsilon=epsilon[iepsilon]), lwd=lwd/2, col="pink")
             ## better estimate
-            lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon])
+            lines(R0, xin_fun(R0,epsilon=epsilon[iepsilon]), lwd=lwd, col=col[iepsilon], ...)
         }
         ## plot with dotted curves when using the crude peak prevalence
         ## ignoring vital dynamics:
@@ -342,12 +357,12 @@ plot_all_x_in <- function(Rmin=1.0001, Rmax=20,
     on.exit(par(mfrow = omf))
 
     ##plot_x_in(xin_fun = x_in_exact) # too slow
-    plot_x_in(xin_fun = x_in_crude)
+    plot_x_in(xin_fun = x_in_crude, ...)
     legend("top", bty="n", legend="x_in_crude")
-    plot_x_in(xin_fun = x_in)
+    plot_x_in(xin_fun = x_in, ...)
     legend("top", bty="n", legend="x_in")
-    plot_x_in(xin_fun = x_in_cb)
+    plot_x_in(xin_fun = x_in_cb, ...)
     legend("top", bty="n", legend="x_in_cb")
-    plot_x_in(xin_fun = x_in_hocb)
+    plot_x_in(xin_fun = x_in_hocb, ...)
     legend("top", bty="n", legend="x_in_hocb")
 }
