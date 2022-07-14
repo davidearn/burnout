@@ -2,7 +2,7 @@
 % Please edit documentation in R/x_in.R
 \name{x_in}
 \alias{x_in}
-\title{Susceptibles at boundary layer (approximation)}
+\title{Susceptibles at boundary layer (boundary/boundary layer approximation)}
 \usage{
 x_in(R0, epsilon, peakprev_fun = peak_prev, maxiter = 100, ...)
 }
@@ -61,5 +61,6 @@ curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 }
 \seealso{
 \code{\link{peak_prev}}, \code{\link[emdbook]{lambertW}},
-\code{\link[expint]{expint_E1}}
+\code{\link[expint]{expint_E1}}, , \code{\link{x_in_cb}},
+\code{\link{x_in_exact}}
 }

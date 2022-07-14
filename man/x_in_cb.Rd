@@ -30,5 +30,5 @@ Susceptibles at boundary layer (corner/boundary layer approximation)
 }
 }
 \seealso{
-\code{\link{x_in}}
+\code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 }

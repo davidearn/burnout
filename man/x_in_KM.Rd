@@ -23,5 +23,5 @@ This is just the case where \eqn{\varepsilon=0},
 \deqn{x_{\rm in,KM}({\mathcal R}_0) = x_{\rm in}({\mathcal R}_0, 0)}
 }
 \seealso{
-\code{\link{x_in}}
+\code{\link{x_in}}, \code{\link{x_in_crude}}
 }

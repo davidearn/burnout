@@ -1,4 +1,4 @@
-##' Susceptibles at boundary layer (approximation)
+##' Susceptibles at boundary layer (boundary/boundary layer approximation)
 ##'
 ##' Fraction of hosts that are susceptible when the trajectory enters
 ##' the boundary layer at the end of the first epidemic.
@@ -20,7 +20,8 @@
 ##' and \eqn{y_{\rm max}} is the \link[=peak_prev]{peak prevalence}.
 ##'
 ##' @seealso \code{\link{peak_prev}}, \code{\link[emdbook]{lambertW}},
-##'     \code{\link[expint]{expint_E1}}
+##'     \code{\link[expint]{expint_E1}}, , \code{\link{x_in_cb}},
+##'     \code{\link{x_in_exact}}
 ##'
 ##' @inheritParams peak_prev
 ##' @param peakprev_fun function of \eqn{{\cal R}_0} and
@@ -73,7 +74,7 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##' \deqn{x_{\rm in,KM}({\mathcal R}_0) = x_{\rm in}({\mathcal R}_0, 0)}
 ##'
 ##' @inheritParams x_in
-##' @seealso \code{\link{x_in}}
+##' @seealso \code{\link{x_in}}, \code{\link{x_in_crude}}
 ##'
 ##' @export
 x_in_KM <- function(R0, maxiter=100, ...) {
@@ -107,7 +108,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 ##'
 ##' @inheritParams x_in
 ##' @importFrom emdbook lambertW
-##' @seealso \code{\link{x_in}}
+##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
 ##' 
 x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
@@ -119,6 +120,53 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
     Z <- 1 - xf
     xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
+    return(xin)
+}
+
+##' \eqn{{\tilde Y}_1(x_{\rm f})}
+##'
+##' @details
+##' \deqn{
+##' \tilde{Y}_{1}(x{\rm f}) =  \int_{x_{\rm f}}^{1} \left(\frac{1}{{\mathcal R}_{0}t} -1\right) \frac{1-t}{{\mathcal R}_{0} t Y_{0}(t)} + \frac{1-x_{\rm f}}{{\mathcal R}_{0}x_{\rm f}}\frac{1}{t-x_{\rm f}} \, dt
+##' }
+##' 
+##' @importFrom stats integrate
+##'
+##' @export
+Ytilde_1 <- function(xf, ...) {
+    the.integral <-
+        try(stats::integrate(f=integrand, lower=x1A, upper=1,
+                      subdivisions=subdivisions, ...)$value)
+    if ("try-error" %in% class(the.integral)) {
+        warning("Ytilde_1: try error with xf = ", xf, "; returning NA")
+        return(NA)
+    }
+    return(the.integral)
+}
+
+##' Susceptibles at boundary layer (higher order corner/boundary layer approximation)
+##'
+##' @details
+##' \deqn{
+##' 	x_{\rm in} = 1+\left(1-\frac{1}{{\mathcal R}_{0}}\right)
+##'   W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}\left(\dfrac{1-x_{\rm f}}{y^*}\dfrac{\frac{1}{{\mathcal R}_{0}}-x_{\rm f}}{x_{\rm f}}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}
+##' e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}-\varepsilon\frac{x_{\rm f}}{(1-x_{\rm f})\left(1-\frac{1}{{\mathcal R}_{0}}\right)}\tilde{Y}_{1}(x_{\rm f})}\right)
+##' }
+##'
+##' @inheritParams x_in
+##' @importFrom emdbook lambertW
+##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
+##' @export
+##' 
+x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
+    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
+    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
+    Wm1 <- function(x) {emdbook::lambertW(x, b=-1, maxiter=maxiter, ...)}
+    pc <- 1 - 1/R0 # p_crit
+    xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
+    Z <- 1 - xf
+    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf)))
     return(xin)
 }
 
@@ -257,4 +305,44 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
               lwd=lwd, col=col, lty="dotted")
         title(sub = latex2exp::TeX(sprintf("$R_0 = %g$", R0)))
     }
+}
+
+##' Plot all approximations to \eqn{x_{\rm in}}
+##' 
+##' @inheritParams plot_x_in
+##' @inheritParams graphics::par
+##' @inheritParams compare_funs
+##'
+##' @seealso \code{\link{plot_x_in}}, \code{\link{x_in}},
+##'     \code{\link{x_in_exact}}
+##'
+##' @importFrom graphics title
+##'
+##' @export
+##'
+plot_all_x_in <- function(Rmin=1.0001, Rmax=20,
+                      ##R0 = exp(seq(log(Rmin),log(Rmax),length=1001)),
+                      R0 = seq(Rmin,Rmax,length=1001),
+                      epsilon = c(0.01, 0.02, 0.03),
+                      xvar = "R0"
+                    , col = 1:length(epsilon)
+                      ##col = c("darkred", "darkgreen", "darkblue")
+                    , lwd=2
+                    , log="x"
+                    , xlim = if (xvar == "R0") c(1,Rmax) else c(0,1)
+                    , ylim = if (xvar == "R0") c(0,1) else c(0,max(1/R0))
+                    , ...
+                      ) {
+    omf <- par(mfrow = c(2,2))
+    on.exit(par(mfrow = omf))
+
+    ##plot_x_in(xin_fun = x_in_exact) # too slow
+    plot_x_in(xin_fun = x_in_crude)
+    legend("top", bty="n", legend="x_in_crude")
+    plot_x_in(xin_fun = x_in)
+    legend("top", bty="n", legend="x_in")
+    plot_x_in(xin_fun = x_in_cb)
+    legend("top", bty="n", legend="x_in_cb")
+    plot_x_in(xin_fun = x_in_hocb)
+    legend("top", bty="n", legend="x_in_hocb")
 }
