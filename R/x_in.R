@@ -133,10 +133,15 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##' @importFrom stats integrate
 ##'
 ##' @export
-Ytilde_1 <- function(xf, ...) {
+Ytilde_1 <- function(xf, R0, ...) {
+    Y0 <- function(x) {1 - x - (1/R0)*log(x)}
+    integrand <- function(t) {
+        (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + (1-xf)/(R0*xf)/(t-xf)
+    }
     the.integral <-
-        try(stats::integrate(f=integrand, lower=x1A, upper=1,
-                      subdivisions=subdivisions, ...)$value)
+        try(stats::integrate(f=integrand, lower=xf, upper=1,
+                             ##subdivisions=subdivisions,
+                             ...)$value)
     if ("try-error" %in% class(the.integral)) {
         warning("Ytilde_1: try error with xf = ", xf, "; returning NA")
         return(NA)
@@ -166,7 +171,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     pc <- 1 - 1/R0 # p_crit
     xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
     Z <- 1 - xf
-    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf)))
+    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
     return(xin)
 }
 

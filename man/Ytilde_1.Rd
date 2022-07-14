@@ -4,7 +4,7 @@
 \alias{Ytilde_1}
 \title{\eqn{{\tilde Y}_1(x_{\rm f})}}
 \usage{
-Ytilde_1(xf, ...)
+Ytilde_1(xf, R0, ...)
 }
 \description{
 \eqn{{\tilde Y}_1(x_{\rm f})}
