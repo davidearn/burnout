@@ -123,15 +123,29 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     return(xin)
 }
 
-##' \eqn{{\tilde Y}_1(x_{\rm f})}
+##' \eqn{{\tilde Y}_1(x_{\rm f})} (scalar version)
 ##'
 ##' @details
 ##' \deqn{
-##' \tilde{Y}_{1}(x{\rm f}) =  \int_{x_{\rm f}}^{1} \left(\frac{1}{{\mathcal R}_{0}t} -1\right) \frac{1-t}{{\mathcal R}_{0} t Y_{0}(t)} + \frac{1-x_{\rm f}}{{\mathcal R}_{0}x_{\rm f}}\frac{1}{t-x_{\rm f}} \, dt
+##' \tilde{Y}_{1}(x_{\rm f}) =  \int_{x_{\rm f}}^{1} \left[\left(\frac{1}{{\mathcal R}_{0}t} -1\right) \frac{1-t}{{\mathcal R}_{0}\,t\,Y_{0}(t)} + \frac{1-x_{\rm f}}{{\mathcal R}_{0}x_{\rm f}}\frac{1}{t-x_{\rm f}}\right] dt
 ##' }
+##' where
+##' \deqn{
+##' 	Y_{0}(x) = 1-x-\frac{1}{{\mathcal R}_{0}}\ln{x}
+##' }
+##'
+##' @note \code{subdivisions} and \code{...} are arguments to
+##'     \code{\link[stats]{integrate}}.  The function \code{f} to
+##'     which \code{...} is passed is the integrand.
+##'
+##' @inheritParams peak_prev
+##' @inheritParams stats::integrate
+##' 
+##' @param xf final size (\eqn{0<x_{\rm f}<1})
 ##' @param tiny amount by which to avoid integration limits
 ##' 
 ##' @importFrom stats integrate
+##' @seealso \code{\link{Ytilde_1}}
 ##'
 ##' @export
 Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
@@ -161,6 +175,12 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
     }
     return(the.integral)
 }
+
+##' \eqn{{\tilde Y}_1(x_{\rm f})} (vector version)
+##'
+##' @inheritParams Ytilde_1_scalar
+##' @seealso \code{\link{Ytilde_1_scalar}}
+##'
 ##' @export
 Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 

@@ -4,6 +4,7 @@
 ##'     \code{\link{P1_prob}}
 ##' 
 ##' @inheritParams P1_prob_other
+##' @inheritParams stats::integrate
 ##'
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
