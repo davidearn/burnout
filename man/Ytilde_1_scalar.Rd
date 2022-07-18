@@ -26,7 +26,7 @@ Ytilde_1_scalar(xf, R0, tiny = 1e-12, subdivisions = 1000L, ...)
 }
 where
 \deqn{
-	Y_{0}(x) = 1-x-\frac{1}{{\mathcal R}_{0}}\ln{x}
+	Y_{0}(x) = 1-x+\frac{1}{{\mathcal R}_{0}}\ln{x}
 }
 }
 \note{

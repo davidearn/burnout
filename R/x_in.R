@@ -131,7 +131,7 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##' }
 ##' where
 ##' \deqn{
-##' 	Y_{0}(x) = 1-x-\frac{1}{{\mathcal R}_{0}}\ln{x}
+##' 	Y_{0}(x) = 1-x+\frac{1}{{\mathcal R}_{0}}\ln{x}
 ##' }
 ##'
 ##' @note \code{subdivisions} and \code{...} are arguments to
@@ -149,7 +149,7 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##'
 ##' @export
 Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
-    Y0 <- function(x) {1 - x - (1/R0)*log(x)}
+    Y0 <- function(x) {1 - x + (1/R0)*log(x)}
     integrand <- function(t) {
         ## using tiny adjustment instead of cases:
         ##out <- ifelse(
@@ -162,9 +162,8 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
         ##)
         ##)
         ##return(out)
-        return( (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) + (1-xf)/(R0*xf)/(t-xf) )
+        return( (1/(R0*t) - 1)*(1-t)/(R0*t*Y0(t)) - (1-xf)/(R0*xf)/(t-xf) )
     }
-    tiny <- 1e-8
     the.integral <-
         try(stats::integrate(f=integrand, lower=xf+tiny, upper=1-tiny
                              , subdivisions=subdivisions
@@ -206,7 +205,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     pc <- 1 - 1/R0 # p_crit
     xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
     Z <- 1 - xf
-    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
+    xin <- 1 + pc * W0(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) + epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
     return(xin)
 }
 
