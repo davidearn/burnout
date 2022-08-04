@@ -172,7 +172,7 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
         warning("Ytilde_1: try error with xf = ", xf, "; returning NA")
         return(NA)
     }
-    return(the.integral)
+    return(-the.integral)
 }
 
 ##' \eqn{{\tilde Y}_1(x_{\rm f})} (vector version)
@@ -181,31 +181,54 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
 ##' @seealso \code{\link{Ytilde_1_scalar}}
 ##'
 ##' @export
+##' @examples
+##' R0 <- 2
+##' xf <- 1 - final_size(R0)
+##' Ytilde_1(xf,R0)
+##' 
 Ytilde_1  <- Vectorize(Ytilde_1_scalar)
+
+W0 <- function(x, ...) {emdbook::lambertW(x, b=0, maxiter=100, ...)}
+Wm1 <- function(x, ...) {emdbook::lambertW(x, b=-1, maxiter=100, ...)}
+
+##' Standard final size
+##'
+##' for a newly invading infectious disease (so \eqn{I_0\to0}, \eqn{S_0\to1}).
+##' \deqn{
+##'   Z = 1 + \frac{1}{{\mathcal R}_{0}} W_{0}\left(-{\mathcal R}_{0} e^{-{\mathcal R}_{0}}\right)
+##' }
+##' @inheritParams x_in
+##' @export
+##' @examples
+##' final_size(R0 = 2)
+final_size <- function(R0) {1 + (1/R0)*W0(-R0*exp(-R0))}
 
 ##' Susceptibles at boundary layer (higher order corner/boundary layer approximation)
 ##'
 ##' @details
 ##' \deqn{
-##' 	x_{\rm in} = 1+\left(1-\frac{1}{{\mathcal R}_{0}}\right)
-##'   W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}\left(\dfrac{1-x_{\rm f}}{y^*}\dfrac{\frac{1}{{\mathcal R}_{0}}-x_{\rm f}}{x_{\rm f}}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}
-##' e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}-\varepsilon\frac{x_{\rm f}}{(1-x_{\rm f})\left(1-\frac{1}{{\mathcal R}_{0}}\right)}\tilde{Y}_{1}(x_{\rm f})}\right)
+##' 	x_{\rm in} = 1+\Big(1-\frac{1}{{\mathcal R}_{0}}\Big)  W_{-1}\left[-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}\left(\frac{\left(\frac{1}{x_{\rm f}}-1\right)\left(\frac{1}{{\mathcal R}_{0}}-x_{\rm f}\right)}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}} \exp\left({-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}-\varepsilon\frac{1}{\left(\frac{1}{x_{\rm f}}-1\right)\left(1-\frac{1}{{\mathcal R}_{0}}\right)}\tilde{Y}_{1}(x_{\rm f})}\right)\right]
 ##' }
-##'
+##' where
+##' \deqn{
+##' \tilde{Y}_{1}(x_{\rm f}) =  -\int_{x_{\rm f}}^{1} \left[\Big(\frac{1}{{\mathcal R}_{0}\,t} -1\Big) \frac{1-t}{{\mathcal R}_{0}\,t\,Y_{0}(t)} - \frac{1-x_{\rm f}}{{\mathcal R}_{0}\,x_{\rm f}}\frac{1}{t-x_{\rm f}}\right] {\rm d}t \,.
+##' }
+##' \deqn{
+##' Y_{0}(x) = 1-x+\frac{1}{{\mathcal R}_{0}}\ln{x}
+##' }
+##' and \eqn{x_{\rm f} = 1 - Z}, where \eqn{Z} is the standard \code{\link{final_size}}.
 ##' @inheritParams x_in
 ##' @importFrom emdbook lambertW
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
 ##' 
 x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
-    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
-    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
-    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
-    Wm1 <- function(x) {emdbook::lambertW(x, b=-1, maxiter=maxiter, ...)}
+    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence [aka y_in]
+    ##ymax <- peakprev_fun(R0, epsilon) # peak prevalence [not needed for hocb]
     pc <- 1 - 1/R0 # p_crit
-    xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
-    Z <- 1 - xf
-    xin <- 1 + pc * W0(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) + epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
+    Z <- final_size(R0)
+    xf <- 1 - Z
+    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)), ...)
     return(xin)
 }
 

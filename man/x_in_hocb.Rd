@@ -26,10 +26,16 @@ Susceptibles at boundary layer (higher order corner/boundary layer approximation
 }
 \details{
 \deqn{
-	x_{\rm in} = 1+\left(1-\frac{1}{{\mathcal R}_{0}}\right)
-  W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}\left(\dfrac{1-x_{\rm f}}{y^*}\dfrac{\frac{1}{{\mathcal R}_{0}}-x_{\rm f}}{x_{\rm f}}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}
-e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}-\varepsilon\frac{x_{\rm f}}{(1-x_{\rm f})\left(1-\frac{1}{{\mathcal R}_{0}}\right)}\tilde{Y}_{1}(x_{\rm f})}\right)
+	x_{\rm in} = 1+\Big(1-\frac{1}{{\mathcal R}_{0}}\Big)  W_{-1}\left[-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}\left(\frac{\left(\frac{1}{x_{\rm f}}-1\right)\left(\frac{1}{{\mathcal R}_{0}}-x_{\rm f}\right)}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}} \exp\left({-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}-\varepsilon\frac{1}{\left(\frac{1}{x_{\rm f}}-1\right)\left(1-\frac{1}{{\mathcal R}_{0}}\right)}\tilde{Y}_{1}(x_{\rm f})}\right)\right]
 }
+where
+\deqn{
+\tilde{Y}_{1}(x_{\rm f}) =  -\int_{x_{\rm f}}^{1} \left[\Big(\frac{1}{{\mathcal R}_{0}\,t} -1\Big) \frac{1-t}{{\mathcal R}_{0}\,t\,Y_{0}(t)} - \frac{1-x_{\rm f}}{{\mathcal R}_{0}\,x_{\rm f}}\frac{1}{t-x_{\rm f}}\right] {\rm d}t \,.
+}
+\deqn{
+Y_{0}(x) = 1-x+\frac{1}{{\mathcal R}_{0}}\ln{x}
+}
+and \eqn{x_{\rm f} = 1 - Z}, where \eqn{Z} is the standard \code{\link{final_size}}.
 }
 \seealso{
 \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}

@@ -20,6 +20,12 @@ Ytilde_1(xf, R0, tiny = 1e-12, subdivisions = 1000L, ...)
 \description{
 \eqn{{\tilde Y}_1(x_{\rm f})} (vector version)
 }
+\examples{
+R0 <- 2
+xf <- 1 - final_size(R0)
+Ytilde_1(xf,R0)
+
+}
 \seealso{
 \code{\link{Ytilde_1_scalar}}
 }
