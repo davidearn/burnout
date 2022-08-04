@@ -54,9 +54,8 @@
 x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
-    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
     E1 <- expint::expint_E1
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
         epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
     return(xin)
 }
@@ -94,8 +93,7 @@ x_in_KM <- function(R0, maxiter=100, ...) {
 ##' 
 x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
-    W0 <- emdbook::lambertW
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), b=0, maxiter=maxiter)
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
     return(xin)
 }
 
@@ -114,11 +112,9 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
-    W0 <- function(x) {emdbook::lambertW(x, b=0, maxiter=maxiter, ...)}
-    Wm1 <- function(x) {emdbook::lambertW(x, b=-1, maxiter=maxiter, ...)}
     pc <- 1 - 1/R0 # p_crit
-    xf <- -(1/R0)*W0(-R0*exp(-R0)) # standard final size
-    Z <- 1 - xf
+    Z <- final_size(R0)
+    xf <- 1-Z
     xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
     return(xin)
 }
@@ -188,8 +184,8 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
 ##' 
 Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 
-W0 <- function(x, ...) {emdbook::lambertW(x, b=0, maxiter=100, ...)}
-Wm1 <- function(x, ...) {emdbook::lambertW(x, b=-1, maxiter=100, ...)}
+W0 <- function(x, ...) {emdbook::lambertW(x, b=0, ...)}
+Wm1 <- function(x, ...) {emdbook::lambertW(x, b=-1, ...)}
 
 ##' Standard final size
 ##'
