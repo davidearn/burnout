@@ -224,7 +224,8 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
     xf <- 1 - Z
-    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)), ...)
+    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)),
+                        maxiter=maxiter)
     return(xin)
 }
 
