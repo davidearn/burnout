@@ -55,8 +55,12 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
-        epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
+    if (yeqm < ymax) {
+        xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
+            epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
+    } else { # epsilon correction is garbage so ignore it
+        xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
+    }
     return(xin)
 }
 ##
@@ -115,7 +119,11 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
     xf <- 1-Z
-    xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
+    if (yeqm < ymax) {
+        xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
+    } else { # epsilon correction is garbage so ignore it
+        xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)))
+    }
     return(xin)
 }
 
