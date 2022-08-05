@@ -104,7 +104,7 @@ plot.compare_funs <- function(x, show.plots=TRUE, ...) {
 
     ## make title
     N <- attr(x,"N")
-    title.text <- sprintf("$N = 10^{%d}$, facet by $\\epsilon$", log10(N))
+    title.text <- sprintf("$N = 10^{%d}$", log10(N))
 
     ## scatter plot coloured by epsilon:
     scatter.plot <- (x %>% ggplot()
@@ -114,12 +114,15 @@ plot.compare_funs <- function(x, show.plots=TRUE, ...) {
         + ggtitle(latex2exp::TeX(paste("scatter plot:", title.text)))
     )
 
+    title.text <- paste0(title.text, ", facet by $\\epsilon$")
+    f1name <- attr(x,"f1name")
+    f2name <- attr(x,"f2name")
     line.plot <- (x %>% ggplot()
         + geom_point(aes(x=.data$R0, y=.data$f2), colour = "black")
         + geom_point(aes(x=.data$R0, y=.data$f1), colour = "red", size=0.25)
         + facet_wrap(~.data$epsilon, scales="free_y")
         + scale_x_continuous(trans='log2')
-        + ggtitle(latex2exp::TeX(paste("line plot:", title.text)))
+        + ggtitle(latex2exp::TeX(paste("line plot:", title.text, " (red = ", f1name, ", black = ", f2name, ")")))
     )
     ##FIX: allowing for 3rd data column... not working as expected...
     ##if ("f0" %in% names(x)) line.plot  <- line.plot + geom_point(aes(x=.data$R0, y=.data$f0), colour = "blue", size=0.1)
