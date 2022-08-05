@@ -8,6 +8,9 @@
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
+##' @references
+##' \insertRef{Meerson2009}{burnout}
+##' 
 ##' @export
 ##'
 P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
@@ -23,7 +26,7 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##' @details
 ##' See equation (9) of Ballard et al (2016)
 ##'
-##' The derivation assume \eqn{N S_0 \gg 1}, where \eqn{S_0} is
+##' The derivation assumes \eqn{N S_0 \gg 1}, where \eqn{S_0} is
 ##' defined in equation (9) of Ballard et al (2016).
 ##'
 ##' @seealso \code{\link{P1_prob_MS}}
@@ -33,6 +36,9 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
+##' @references
+##' \insertRef{Meerson2009}{burnout}
+##' 
 ##' @export
 ##'
 burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {

@@ -26,8 +26,11 @@ Burnout probability based on Meerson and Sasorov (2009)
 \details{
 See equation (9) of Ballard et al (2016)
 
-The derivation assume \eqn{N S_0 \gg 1}, where \eqn{S_0} is
+The derivation assumes \eqn{N S_0 \gg 1}, where \eqn{S_0} is
 defined in equation (9) of Ballard et al (2016).
+}
+\references{
+\insertRef{Meerson2009}{burnout}
 }
 \seealso{
 \code{\link{P1_prob_MS}}

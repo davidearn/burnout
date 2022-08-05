@@ -25,6 +25,11 @@ lifetime, i.e., no mortality)}
 \description{
 Persistence probability via van Herwaarden (1997) approximation
 }
+\references{
+\insertRef{Ballard2016}{burnout}
+
+\insertRef{vanH1997}{burnout}
+}
 \seealso{
 \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob_MS}},
 \code{\link{P1_prob}}

@@ -25,6 +25,9 @@ lifetime, i.e., no mortality)}
 \description{
 Persistence probability via Meerson and Sasorov (2009) approximation
 }
+\references{
+\insertRef{Meerson2009}{burnout}
+}
 \seealso{
 \code{\link{burnout_prob_MS}}, \code{\link{P1_prob_MS}},
 \code{\link{P1_prob}}

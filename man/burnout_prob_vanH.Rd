@@ -26,6 +26,11 @@ Burnout probability based on van Herwaarden (1997)
 \details{
 See equation (8) of Ballard et al (2016)
 }
+\references{
+\insertRef{Ballard2016}{burnout}
+
+\insertRef{vanH1997}{burnout}
+}
 \seealso{
 \code{\link{P1_prob_vanH}}
 }

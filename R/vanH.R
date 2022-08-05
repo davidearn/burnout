@@ -9,6 +9,11 @@
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
+##' @references
+##' \insertRef{Ballard2016}{burnout}
+##' 
+##' \insertRef{vanH1997}{burnout}
+##'
 ##' @export
 ##'
 P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
@@ -32,6 +37,11 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
+##' @references
+##' \insertRef{Ballard2016}{burnout}
+##' 
+##' \insertRef{vanH1997}{burnout}
+##' 
 ##' @export
 ##'
 burnout_prob_vanH <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
