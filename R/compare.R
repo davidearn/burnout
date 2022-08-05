@@ -70,9 +70,11 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
         r <- raw[i,"R0"]
         e <- raw[i,"epsilon"]
         if (show.progress) cat(sprintf("%d\t%g\t%g", i, r, e))
-        f1i <- fun1(R0=r, epsilon=e, N=N, ...)
+        f1i <- try(fun1(R0=r, epsilon=e, N=N, ...))
+        if ("try-error" %in% class(f1i)) f1i <- NA
         if (show.progress) cat(sprintf("\t%g", f1i))
-        f2i <- fun2(R0=r, epsilon=e, N=N, ...)
+        f2i <- try(fun2(R0=r, epsilon=e, N=N, ...))
+        if ("try-error" %in% class(f2i)) f2i <- NA
         if (show.progress) cat(sprintf("\t%g\n", f2i))
         f1[i] <- f1i
         f2[i] <- f2i
@@ -89,5 +91,8 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
     ## attr(dd,"nIme") <- nIme
     ## attr(dd,"nIma") <- nIma
     attr(dd,"N") <- N
+    ## save names of functions that were compared:
+    attr(dd,"f1name") <- deparse(substitute(fun1))
+    attr(dd,"f2name") <- deparse(substitute(fun2))
     return(dd)
 }
