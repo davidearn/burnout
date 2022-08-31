@@ -33,6 +33,8 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##' @seealso \code{\link{P1_prob_vanH}}
 ##'
 ##' @inheritParams P1_prob_vanH
+##' @param tiny amount which to avoid integration limits (where
+##'     integrand blow up)
 ##' 
 ##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
@@ -44,7 +46,10 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##' 
 ##' @export
 ##'
-burnout_prob_vanH <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
+burnout_prob_vanH <- function( R0, epsilon, N=10^6,
+                              subdivisions=1000L,
+                              tiny=1e-12,
+                              ... ) {
     ## choose units such that gamma+mu = 1, i.e., mean time infected
     ## period is 1:
     beta <- R0
@@ -62,8 +67,9 @@ burnout_prob_vanH <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
             1/(s-x1A)
     }
     messy.integral <-
-        try(stats::integrate(f=integrand, lower=x1A, upper=1,
+        try(stats::integrate(f=integrand, lower=x1A+tiny, upper=1-tiny,
                       subdivisions=subdivisions, ...)$value)
+    ## FIX: this destroys the automatic vectorization:
     if ("try-error" %in% class(messy.integral)) return(NA)
 
     C3 <- -log(-beta*x1A / (beta*x1A - gamma)) - messy.integral

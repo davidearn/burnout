@@ -107,6 +107,31 @@ burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
     return( q^(N*ystar) )
 }
 
+##' Burnout probability using higher order corner/boundary
+##' approximation of \eqn{x_{\rm in}}
+##'
+##' This is just a convenient wrapper of \code{\link{burnout_prob}} to
+##' use \code{\link{x_in_hocb}} rather than \code{\link{x_in}}.
+##'
+##' @seealso \code{\link{burnout_prob}}
+##'
+##' @inheritParams burnout_prob
+##'
+##' @return real number between 0 and 1
+##' @importFrom Rdpack reprompt
+##'
+##' @references
+##' \insertRef{Kendall1948b}{burnout}
+##' 
+##' @export
+burnout_prob_hocb <- function(R0, epsilon, N=10^6,
+                              xin = x_in_hocb(R0,epsilon),
+                              q_fun = q_approx) {
+    return( burnout_prob(R0, epsilon, N=N,
+                         xin = xin,
+                         q_fun = q_fun) )
+}
+
 ##' Persistence probability via other approximations
 ##'
 ##' This computes \eqn{{\mathscr P}_1} using the burnout probability

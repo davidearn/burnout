@@ -55,12 +55,12 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
-    if (yeqm < ymax) {
-        xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
+    xin <- ifelse (yeqm < ymax
+        , -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
             epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
-    } else { # epsilon correction is garbage so ignore it
-        xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
-    }
+        , # epsilon correction is garbage so ignore it
+          -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
+    )
     return(xin)
 }
 ##

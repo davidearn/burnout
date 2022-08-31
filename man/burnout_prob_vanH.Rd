@@ -4,7 +4,14 @@
 \alias{burnout_prob_vanH}
 \title{Burnout probability based on van Herwaarden (1997)}
 \usage{
-burnout_prob_vanH(R0, epsilon, N = 10^6, subdivisions = 1000L, ...)
+burnout_prob_vanH(
+  R0,
+  epsilon,
+  N = 10^6,
+  subdivisions = 1000L,
+  tiny = 1e-12,
+  ...
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -16,6 +23,9 @@ lifetime, i.e., no mortality)}
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
+
+\item{tiny}{amount which to avoid integration limits (where
+integrand blow up)}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}
