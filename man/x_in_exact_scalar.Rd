@@ -24,6 +24,12 @@ lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{I0}{initial prevalence (proportion)}
+
+\item{tmax}{max integration time (default is 100/(R0-1))}
+
+\item{nt}{number of time steps}
+
+\item{return_traj}{(logical) return trajectory?}
 }
 \description{
 Susceptibles at boundary layer (exact) (scalar version)

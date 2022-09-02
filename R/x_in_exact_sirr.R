@@ -4,7 +4,12 @@
 ##' @export
 ##' @inheritParams x_in
 ##' @param I0 initial prevalence (proportion)
-##'
+##' @param nt number of time steps
+##' @param tmax max integration time (default is 100/(R0-1))
+##' @param return_traj (logical) return trajectory?
+##' 
+##' @importFrom deSolve lsodar
+##' @importFrom utils tail
 x_in_exact_scalar <- function(R0, epsilon, I0=1e-6, tmax = NULL,
                                nt = 100,
                                return_traj = FALSE) {
