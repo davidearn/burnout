@@ -9,8 +9,8 @@ q_exact(R0, epsilon, xin = x_in(R0, epsilon), N = NULL)
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period as a proportion of mean
-lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
+lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}

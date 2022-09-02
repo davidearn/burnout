@@ -19,7 +19,6 @@ Imports:
     dplyr,
     ggplot2,
     rlang,
-    sirr
 RdMacros: Rdpack
 Suggests: 
-    testthat
+    testthat, sirr

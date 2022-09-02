@@ -2,21 +2,31 @@
 % Please edit documentation in R/x_in_exact_sirr.R
 \name{x_in_exact_scalar}
 \alias{x_in_exact_scalar}
+\alias{x_in_exact}
 \title{Susceptibles at boundary layer (exact) (scalar version)}
 \usage{
-x_in_exact_scalar(R0, epsilon, I0 = 1e-06, ...)
+x_in_exact_scalar(
+  R0,
+  epsilon,
+  I0 = 1e-06,
+  tmax = NULL,
+  nt = 100,
+  return_traj = FALSE
+)
+
+x_in_exact(R0, epsilon, I0 = 1e-06, tmax = NULL, nt = 100, return_traj = FALSE)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period as a proportion of mean
-lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
+lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{I0}{initial prevalence (proportion)}
-
-\item{...}{additional arguments are ignored}
 }
 \description{
 Susceptibles at boundary layer (exact) (scalar version)
+
+Susceptibles at boundary layer (exact) (vector version)
 }

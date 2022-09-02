@@ -18,8 +18,8 @@
 ##' @seealso \code{\link{peak_prev_nvd}}
 ##'
 ##' @inheritParams fizzle_prob
-##' @param epsilon mean infectious period as a proportion of mean
-##'     lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+##' @param epsilon mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
+##'     lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 ##'     lifetime, i.e., no mortality)
 ##'
 ##' @return real number between 0 and 1

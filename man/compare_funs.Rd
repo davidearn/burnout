@@ -29,8 +29,8 @@ compared}
 \item{nR0, nepsilon}{number of values of \code{R0} and
 \code{epsilon}}
 
-\item{epsilon}{mean infectious period as a proportion of mean
-lifetime (\eqn{\varepsilon = 0} corresponds to infinite
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
+lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{N}{population size}
