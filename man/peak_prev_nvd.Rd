@@ -22,7 +22,7 @@ Exact peak prevalence in the SIR model with \emph{no vital dynamics} (nvd).
 \details{
 \deqn{
   y_{\rm max} = 1 -
-    \dfrac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big) \,.
+    \frac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big) \,.
 }
 
 The optional argument (\code{epsilon}) is ignored if given.  The

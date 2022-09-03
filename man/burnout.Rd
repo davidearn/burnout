@@ -15,7 +15,7 @@ model.
 The primary functions are \code{\link{P1_prob}},
 \code{\link{fizzle_prob}}, \code{\link{fizzle_time}}, and
 \code{\link{t_herd}}.  There are also functions to compare
-approximations of \eqn{{\mathscr P}_1} and component
+approximations of \eqn{{\cal P}_1} and component
 calculations.
 }
 

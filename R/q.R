@@ -8,7 +8,7 @@
 ##' 
 ##' \deqn{
 ##' 	q({\cal R}_0,\varepsilon,x_{\rm in}) =
-##' \left(1+\dfrac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
+##' \left(1+\frac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
 ##' \left(\frac{{\cal R}_{0}}{\varepsilon}
 ##' (1-x_{\rm in})\right)^{-\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right)}
 ##' {\cal g}\left(\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right),\frac{{\cal R}_{0}}{\varepsilon}(1-x_{\rm in})\right)}\right)^{-1}.
@@ -61,7 +61,7 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon), N=NULL) {
 ##' \deqn{
 ##' q({\cal R}_0,\varepsilon,x_{\rm in}) \approx
 ##' \left(1 +
-##' \dfrac{1}{1+\sqrt{\frac{2\pi}{\varepsilon ({\cal R}_{0}-1)}} \;e^{\frac{{\cal R}_{0}}{\varepsilon}\big(\frac{1}{{\cal R}_{0}}-x_{\rm in}\big)}
+##' \frac{1}{1+\sqrt{\frac{2\pi}{\varepsilon ({\cal R}_{0}-1)}} \;e^{\frac{{\cal R}_{0}}{\varepsilon}\big(\frac{1}{{\cal R}_{0}}-x_{\rm in}\big)}
 ##' \Big(\frac{1-\frac{1}{{\cal R}_{0}}}{1-x_{\rm in}}\Big)^{\frac{{\cal R}_{0}}{\varepsilon}\big(1-\frac{1}{{\cal R}_{0}}\big)}}
 ##' \right)^{-1}\,.
 ##' }

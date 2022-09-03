@@ -31,7 +31,7 @@ to the stochastic SIR model with one infected individual yields
 
 \deqn{
 	q({\cal R}_0,\varepsilon,x_{\rm in}) =
-\left(1+\dfrac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
+\left(1+\frac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
 \left(\frac{{\cal R}_{0}}{\varepsilon}
 (1-x_{\rm in})\right)^{-\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right)}
 {\cal g}\left(\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right),\frac{{\cal R}_{0}}{\varepsilon}(1-x_{\rm in})\right)}\right)^{-1}.

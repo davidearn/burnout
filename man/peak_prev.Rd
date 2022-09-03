@@ -24,10 +24,10 @@ The peak prevalence is
 
 \deqn{
   y_{\rm max} \approx 1-
-    \dfrac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big)
+    \frac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big)
     - \varepsilon 
-  \Big(1-\dfrac{1}{{\cal R}_0}\Big)
-  \dfrac{(\ln{{\cal R}_0})\big/\big(1-\frac{1}{{\cal R}_0}\big) - 1}
+  \Big(1-\frac{1}{{\cal R}_0}\Big)
+  \frac{(\ln{{\cal R}_0})\big/\big(1-\frac{1}{{\cal R}_0}\big) - 1}
   {(\ln{{\cal R}_0})\big/\big(1-\frac{1}{{\cal R}_0}\big) + {\cal R}_0} \,.
 }
 

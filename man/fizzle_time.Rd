@@ -19,7 +19,7 @@ Time \eqn{t_\delta} for which probability of fizzle after
 }
 \details{
 \deqn{
-	t_{\delta} =  \dfrac{1}{{\cal R}_{0}-1} \ln\left(\dfrac{(1-\delta)^{-\frac{1}{k}}-\frac{1}{{\cal R}_{0}}}{(1-\delta)^{-\frac{1}{k}}-1}\right).
+	t_{\delta} =  \frac{1}{{\cal R}_{0}-1} \ln\left(\frac{(1-\delta)^{-\frac{1}{k}}-\frac{1}{{\cal R}_{0}}}{(1-\delta)^{-\frac{1}{k}}-1}\right).
 }
 }
 \examples{
