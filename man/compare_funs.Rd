@@ -13,7 +13,7 @@ compare_funs(
   nR0 = 101,
   epsilon = 10^(-(4:1)),
   nepsilon = length(epsilon),
-  N = 10^6,
+  N = NULL,
   ...,
   show.progress = FALSE
 )

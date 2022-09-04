@@ -33,7 +33,7 @@
 compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
                          R0 = NULL, Rmin = 1.001, Rmax = 64, nR0 = 101,
                          epsilon = 10^(-(4:1)), nepsilon = length(epsilon),
-                         N = 10^6,
+                         N = NULL,
                          ...,
                          show.progress=FALSE) {
 
@@ -70,10 +70,18 @@ compare_funs <- function(fun1 = q_exact, fun2 = q_approx,
         r <- raw[i,"R0"]
         e <- raw[i,"epsilon"]
         if (show.progress) cat(sprintf("%d\t%g\t%g", i, r, e))
-        f1i <- try(fun1(R0=r, epsilon=e, N=N, ...))
+        if (is.null(N)) {
+            f1i <- try(fun1(R0=r, epsilon=e, ...))
+        } else {
+            f1i <- try(fun1(R0=r, epsilon=e, N=N, ...))
+        }
         if ("try-error" %in% class(f1i)) f1i <- NA
         if (show.progress) cat(sprintf("\t%g", f1i))
-        f2i <- try(fun2(R0=r, epsilon=e, N=N, ...))
+        if (is.null(N)) {
+            f2i <- try(fun2(R0=r, epsilon=e, ...))
+        } else {
+            f2i <- try(fun2(R0=r, epsilon=e, N=N, ...))
+        }
         if ("try-error" %in% class(f2i)) f2i <- NA
         if (show.progress) cat(sprintf("\t%g\n", f2i))
         f1[i] <- f1i

@@ -104,7 +104,8 @@ plot.compare_funs <- function(x, show.plots=TRUE, ...) {
 
     ## make title
     N <- attr(x,"N")
-    title.text <- sprintf("$N = 10^{%d}$", log10(N))
+    title.text <- if (is.null(N)) "" else sprintf("$N = 10^{%d}$",
+                                                  log10(N))
 
     ## scatter plot coloured by epsilon:
     scatter.plot <- (x %>% ggplot()
