@@ -7,8 +7,8 @@
 ##' proportion susceptible next rises above the threshold.
 ##'
 ##' \deqn{
-##' 	t_{\rm H} =  \dfrac{1}{\varepsilon}
-##'     \ln\Big( \dfrac{1-x_{\rm in}}{1 - \frac{1}{{\cal R}_0}} \Big)
+##' 	t_{\rm H} =  \frac{1}{\varepsilon}
+##'     \ln\Big( \frac{1-x_{\rm in}}{1 - \frac{1}{{\cal R}_0}} \Big)
 ##' }
 ##'
 ##' @inheritParams P1_prob

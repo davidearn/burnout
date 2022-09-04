@@ -1,17 +1,22 @@
 Package: burnout
 Title: Compute Probability of Epidemic Burnout
 Version: 0.0.1
-Authors@R: 
-    person("David", "Earn", , "earn@math.mcmaster.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-7562-1341"))
+Authors@R: c(person("David", "Earn",
+  email = "earn@math.mcmaster.ca",
+  comment = c(ORCID = "0000-0002-7562-1341"),
+  role = c("aut", "cre")),
+  person("Ben", "Bolker",
+  role = c("aut"),
+  comment=c(ORCID="0000-0002-2127-0443"))
+  )
 Description: Compute the probability that an infectious disease -- modelled
-    using the standard Susceptible-Infectious-Recovered (SIR) model -- 
+    using the standard Susceptible-Infectious-Recovered (SIR) model --
     persists beyond an initial outbreak.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-Imports: 
+Imports:
     Rdpack,
     emdbook,
     expint,
@@ -21,5 +26,5 @@ Imports:
     rlang,
     deSolve
 RdMacros: Rdpack
-Suggests: 
+Suggests:
     testthat, sirr

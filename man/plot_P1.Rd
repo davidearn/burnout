@@ -28,7 +28,7 @@ lifetime, i.e., no mortality)}
 
 \item{Rmin, Rmax}{minimum and maximum value of \eqn{{\cal R}_0}}
 
-\item{P1_fun}{function that computes \eqn{{\mathscr P}_1}}
+\item{P1_fun}{function that computes \eqn{{\cal P}_1}}
 
 \item{add}{if \code{TRUE}, add to existing plot}
 

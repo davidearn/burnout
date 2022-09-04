@@ -4,7 +4,7 @@
 ##' the boundary layer at the end of the first epidemic.
 ##'
 ##' \deqn{
-##' 	x_{\rm in} = -\dfrac{1}{{\cal R}_{0}} W_{0}\left(-{\cal R}_{0} e^{-{\cal R}_{0}\left(1-y^{\star}\right)}\right) + \varepsilon\, e^{{\cal R}_{0} y^{\star}}\big(E_{1}({\cal R}_{0} y^{\star}) - E_{1}({\cal R}_{0} y_{\rm max}) \big) \,.
+##' 	x_{\rm in} = -\frac{1}{{\cal R}_{0}} W_{0}\left(-{\cal R}_{0} e^{-{\cal R}_{0}\left(1-y^{\star}\right)}\right) + \varepsilon\, e^{{\cal R}_{0} y^{\star}}\big(E_{1}({\cal R}_{0} y^{\star}) - E_{1}({\cal R}_{0} y_{\rm max}) \big) \,.
 ##' }
 ##'
 ##' Here, \eqn{W_{0}} denotes the principal branch of the Lambert
@@ -105,7 +105,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 ##'
 ##' @details
 ##' \deqn{
-##' 	x_{\rm in} = 1 + \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\dfrac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\dfrac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
+##' 	x_{\rm in} = 1 + \left(1-\frac{1}{{\mathcal R}_{0}}\right) W_{-1}\left(-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}} e^{-\frac{1-x_{\rm f}}{1-\frac{1}{{\mathcal R}_{0}}}}\left(\frac{y_{\rm max}}{y^*}\right)^{\frac{\varepsilon}{{\mathcal R}_{0}}\frac{1}{1-\frac{1}{{\mathcal R}_{0}}}}\right)
 ##' }
 ##'
 ##' @inheritParams x_in

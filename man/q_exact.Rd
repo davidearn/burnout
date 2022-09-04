@@ -4,7 +4,7 @@
 \alias{q_exact}
 \title{Kendall's \eqn{q} (exact expression)}
 \usage{
-q_exact(R0, epsilon, xin = x_in(R0, epsilon), N = NULL)
+q_exact(R0, epsilon, xin = x_in(R0, epsilon))
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -14,9 +14,6 @@ lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
-
-\item{N}{population size (ignored, but present so this function
-can be passed to \code{\link{compare_funs}})}
 }
 \value{
 real number between 0 and 1
@@ -31,7 +28,7 @@ to the stochastic SIR model with one infected individual yields
 
 \deqn{
 	q({\cal R}_0,\varepsilon,x_{\rm in}) =
-\left(1+\dfrac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
+\left(1+\frac{\varepsilon}{e^{\frac{{\cal R}_{0}}{\varepsilon} (1-x_{\rm in})}
 \left(\frac{{\cal R}_{0}}{\varepsilon}
 (1-x_{\rm in})\right)^{-\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right)}
 {\cal g}\left(\frac{{\cal R}_{0}}{\varepsilon}\left(1-\frac{1}{{\cal R}_{0}}\right),\frac{{\cal R}_{0}}{\varepsilon}(1-x_{\rm in})\right)}\right)^{-1}.

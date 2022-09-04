@@ -6,10 +6,12 @@
 ##' The fizzle probability is
 ##' 
 ##' \deqn{1 - p_k =
-##'   \begin{cases}
+##'   \left\{
+##'   \begin{array}{rl}
 ##'      1\,, & 0 \le {\cal R}_0 \le 1, \\
-##'      \left(\dfrac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
-##'   \end{cases}
+##'      \left(\frac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
+##'   \end{array}
+##'   \right.
 ##' }
 ##'
 ##' @param R0 basic reproduction number (\eqn{{\cal R}_0})
@@ -38,10 +40,12 @@ fizzle_prob <- function(R0, k=1) {
 ##' The probability of not fizzling is
 ##' 
 ##' \deqn{p_k =
-##'   \begin{cases}
+##'   \left\{
+##'   \begin{array}{rl}
 ##'      0\,, & 0 \le {\cal R}_0 \le 1, \\
-##'      1 - \left(\dfrac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
-##'   \end{cases}
+##'      1 - \left(\frac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
+##'   \end{array}
+##'   \right.
 ##' }
 ##'
 ##' @seealso \code{\link{fizzle_prob}}
@@ -67,7 +71,7 @@ not_fizzle_prob <- function(R0, k=1) {
 ##' \eqn{t_\delta} is \eqn{< \delta}
 ##'
 ##' \deqn{
-##' 	t_{\delta} =  \dfrac{1}{{\cal R}_{0}-1} \ln\left(\dfrac{(1-\delta)^{-\frac{1}{k}}-\frac{1}{{\cal R}_{0}}}{(1-\delta)^{-\frac{1}{k}}-1}\right).
+##' 	t_{\delta} =  \frac{1}{{\cal R}_{0}-1} \ln\left(\frac{(1-\delta)^{-\frac{1}{k}}-\frac{1}{{\cal R}_{0}}}{(1-\delta)^{-\frac{1}{k}}-1}\right).
 ##' }
 ##'
 ##' @inheritParams P1_prob

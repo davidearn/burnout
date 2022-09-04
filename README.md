@@ -1,7 +1,12 @@
 
 The `burnout` package requires R ≥ 4.2.0 in order for the documentation to be displayed as desired.  As mentioned [here](https://cran.r-project.org/doc/manuals/r-devel/NEWS.html), 4.2.0 automatically supports [KaTeX](https://katex.org/docs/support_table.html) and [MathJax](https://www.mathjax.org/), which I use liberally in [roxygen](https://roxygen2.r-lib.org/) documentation.
 
-The `sirr` package (only suggested: needed for some auxiliary tests) is in a private repository (`https://github.com/davidean/sirr`).  If desired, clone it and install from a local directory, or use `remotes::install_github` with the `auth_token=` argument.
+- LaTeX issues: `\\mathscr` (`mathrsfs` package?, 
+   Debugging: `R CMD Rdconv man/burnout.Rd`
+   
+```
+R CMD Rd2pdf burnout/man/burnout.Rd
+```
 
 # generating graphs from Parsons _et al_ (2022)
 
@@ -40,11 +45,14 @@ In the above plot (with `Rmax = 20`) the bottom two panels (for
 
 To compare the approximate and exact `xin`, use
 ```
+cxine <- compare_funs(x_in, x_in_exact)
+plot(cxine)
+```
+or, to look a little more closely use, for example,
+```
 cxine <- compare_funs(x_in, x_in_exact, Rmax=8, epsilon=0.01)
 plot(cxine)
 ```
-(Note that this is slow because the numerical integration is slow.
-Also note that larger `Rmax` causes `lsoda` to crash.)
 
 To compare van Herwaarden's (1997) approximation to ours:
 ```

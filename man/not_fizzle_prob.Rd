@@ -22,10 +22,12 @@ causing a substantial outbreak.
 The probability of not fizzling is
 
 \deqn{p_k =
-  \begin{cases}
+  \left\{
+  \begin{array}{rl}
      0\,, & 0 \le {\cal R}_0 \le 1, \\
-     1 - \left(\dfrac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
-  \end{cases}
+     1 - \left(\frac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
+  \end{array}
+  \right.
 }
 }
 \examples{

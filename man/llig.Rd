@@ -33,13 +33,13 @@ for the recovery rate in the SIR model.
 Since \eqn{\Gamma(a) = \texttt{lig}(a,\infty)}, the
 \emph{normalized} area under the curve \eqn{t^{a-1}e^{-t}} (\href{https://dlmf.nist.gov/8.2#E4}{NIST 8.2.4}) is
 
-\deqn{P(a,x) = \dfrac{\texttt{lig}(a,x)}{\Gamma(a)} .}
+\deqn{P(a,x) = \frac{\texttt{lig}(a,x)}{\Gamma(a)} .}
 
 This is the cumulative distribution of the Gamma distribution
 (\code{\link[stats]{pgamma}}), which we can calculate and express
 on the log scale via
 
-\deqn{\fcolorbox{red}{aqua}{\code{pgamma(shape=a, q=x, lower.tail = TRUE, log.p = TRUE)}}}
+\deqn{\fcolorbox{red}{blue}{\code{pgamma(shape=a, q=x, lower.tail = TRUE, log.p = TRUE)}}}
 
 Since \eqn{\log(\Gamma(a))} can be calculated directly on the
 log scale via \code{\link[base]{lgamma}}, we can do the entire

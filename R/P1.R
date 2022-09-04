@@ -12,7 +12,7 @@
 ##' where \eqn{q} is Kendall's \eqn{q}, the expected total population
 ##' size is \eqn{N}, and the equilibrium prevalence is
 ##' 
-##' \deqn{y^\star = \varepsilon\Big(1 - \dfrac{1}{{\cal R}_0}\Big) \,.}
+##' \deqn{y^\star = \varepsilon\Big(1 - \frac{1}{{\cal R}_0}\Big) \,.}
 ##' 
 ##' Hence, the probability of \emph{either} fizzling before a first
 ##' major outbreak \emph{or} burning out after a first major outbreak
@@ -27,7 +27,7 @@
 ##' first epidemic is
 ##' 
 ##' \deqn{
-##'     {{\mathscr P}_1}({\cal R}_0,\varepsilon,k,N) =
+##'     {{\cal P}_1}({\cal R}_0,\varepsilon,k,N) =
 ##'       p_k\big( 1 - q^{Ny^\star} \big) \,.
 ##' }
 ##'
@@ -134,7 +134,7 @@ burnout_prob_hocb <- function(R0, epsilon, N=10^6,
 
 ##' Persistence probability via other approximations
 ##'
-##' This computes \eqn{{\mathscr P}_1} using the burnout probability
+##' This computes \eqn{{\cal P}_1} using the burnout probability
 ##' approximations of van Herwaarden (1997) or Meerson and Sasorov
 ##' (2009).
 ##'

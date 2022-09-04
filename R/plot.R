@@ -3,7 +3,7 @@
 ##' @inheritParams P1_prob
 ##' @param Rmin,Rmax minimum and maximum value of \eqn{{\cal R}_0}
 ##' @param show.N,show.epsilon if \code{TRUE}, display parameter value in legend
-##' @param P1_fun function that computes \eqn{{\mathscr P}_1}
+##' @param P1_fun function that computes \eqn{{\cal P}_1}
 ##' @param add if \code{TRUE}, add to existing plot
 ##' @param col,lwd,log standard \link{graphical parameters}
 ##' @param ... additional parameters passed to \code{\link{plot}}
@@ -104,7 +104,8 @@ plot.compare_funs <- function(x, show.plots=TRUE, ...) {
 
     ## make title
     N <- attr(x,"N")
-    title.text <- sprintf("$N = 10^{%d}$", log10(N))
+    title.text <- if (is.null(N)) "" else sprintf("$N = 10^{%d}$",
+                                                  log10(N))
 
     ## scatter plot coloured by epsilon:
     scatter.plot <- (x %>% ggplot()

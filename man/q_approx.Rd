@@ -4,7 +4,7 @@
 \alias{q_approx}
 \title{Kendall's \eqn{q} (Laplace approximation)}
 \usage{
-q_approx(R0, epsilon, xin = x_in(R0, epsilon), N = NULL)
+q_approx(R0, epsilon, xin = x_in(R0, epsilon))
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -14,9 +14,6 @@ lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
-
-\item{N}{population size (ignored, but present so this function
-can be passed to \code{\link{compare_funs}})}
 }
 \value{
 real number between 0 and 1
@@ -32,7 +29,7 @@ obtain
 \deqn{
 q({\cal R}_0,\varepsilon,x_{\rm in}) \approx
 \left(1 +
-\dfrac{1}{1+\sqrt{\frac{2\pi}{\varepsilon ({\cal R}_{0}-1)}} \;e^{\frac{{\cal R}_{0}}{\varepsilon}\big(\frac{1}{{\cal R}_{0}}-x_{\rm in}\big)}
+\frac{1}{1+\sqrt{\frac{2\pi}{\varepsilon ({\cal R}_{0}-1)}} \;e^{\frac{{\cal R}_{0}}{\varepsilon}\big(\frac{1}{{\cal R}_{0}}-x_{\rm in}\big)}
 \Big(\frac{1-\frac{1}{{\cal R}_{0}}}{1-x_{\rm in}}\Big)^{\frac{{\cal R}_{0}}{\varepsilon}\big(1-\frac{1}{{\cal R}_{0}}\big)}}
 \right)^{-1}\,.
 }

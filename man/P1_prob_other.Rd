@@ -35,7 +35,7 @@ probability (either \code{\link{burnout_prob_vanH}} or
 \code{\link[stats]{integrate}}}
 }
 \description{
-This computes \eqn{{\mathscr P}_1} using the burnout probability
+This computes \eqn{{\cal P}_1} using the burnout probability
 approximations of van Herwaarden (1997) or Meerson and Sasorov
 (2009).
 }

@@ -22,10 +22,12 @@ substantial outbreak.
 The fizzle probability is
 
 \deqn{1 - p_k =
-  \begin{cases}
+  \left\{
+  \begin{array}{rl}
      1\,, & 0 \le {\cal R}_0 \le 1, \\
-     \left(\dfrac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
-  \end{cases}
+     \left(\frac{1}{{\cal R}_0}\right)^{k} \,, & 1\le{\cal R}_0.
+  \end{array}
+  \right.
 }
 }
 \examples{
