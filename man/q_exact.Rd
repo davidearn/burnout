@@ -4,7 +4,7 @@
 \alias{q_exact}
 \title{Kendall's \eqn{q} (exact expression)}
 \usage{
-q_exact(R0, epsilon, xin = x_in(R0, epsilon), N = NULL)
+q_exact(R0, epsilon, xin = x_in(R0, epsilon))
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -14,9 +14,6 @@ lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
-
-\item{N}{population size (ignored, but present so this function
-can be passed to \code{\link{compare_funs}})}
 }
 \value{
 real number between 0 and 1
