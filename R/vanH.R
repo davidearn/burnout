@@ -2,7 +2,9 @@
 ##'
 ##' @seealso \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob_MS}},
 ##'     \code{\link{P1_prob}}
-##' 
+##'
+##' @params debug print debugging info?
+##' @params persist return persistence probability rather than burnout probability
 ##' @inheritParams P1_prob_other
 ##' @inheritParams stats::integrate
 ##'
@@ -17,6 +19,7 @@
 ##' @export
 ##'
 P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
+                         persist = FALSE,
                          ... ) {
 
     P1 <- P1_prob_other(R0 = R0, epsilon = epsilon,
@@ -49,7 +52,13 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 burnout_prob_vanH <- function( R0, epsilon, N=10^6,
                               subdivisions=1000L,
                               tiny=1e-12,
+                              debug = FALSE,
+                              persist = FALSE,
                               ... ) {
+
+    dfun <- function(x) {
+        if (debug) cat(x, get(x), "\n")
+    }
     ## choose units such that gamma+mu = 1, i.e., mean time infected
     ## period is 1:
     beta <- R0
@@ -61,6 +70,7 @@ burnout_prob_vanH <- function( R0, epsilon, N=10^6,
     bog <- beta/gamma
     x1A <- (-1/bog)*W0(-bog*exp(-bog))
 
+    dfun("x1A")
     integrand <- function(s) {
         (x1A/(1-x1A)) * gamma*(s - s*log(s) - 1) /
             ((beta*s^2)*(1-s+(1/bog)*log(s))) +
@@ -68,19 +78,36 @@ burnout_prob_vanH <- function( R0, epsilon, N=10^6,
     }
     messy.integral <-
         try(stats::integrate(f=integrand, lower=x1A+tiny, upper=1-tiny,
-                      subdivisions=subdivisions, ...)$value)
+                             subdivisions=subdivisions, ...)$value)
+
+    if (debug) curve(integrand(x), from = x1A+tiny, to = 1-tiny)
+    
+    dfun("messy.integral")
+    
     ## FIX: this destroys the automatic vectorization:
     if ("try-error" %in% class(messy.integral)) return(NA)
 
     C3 <- -log(-beta*x1A / (beta*x1A - gamma)) - messy.integral
 
+    dfun("C3")
+    
     K <- (1/mu)*exp(((1/mu)*(beta*x1A + (beta-gamma)*log(1-x1A))) + C3)
 
-    Gamma <- base::gamma
+    logK <- -log(mu) + (((1/mu)*(beta*x1A + (beta-gamma)*log(1-x1A))) + C3)
 
-    p0 <- exp(-K*N*mu^2*(beta/mu)^((beta-gamma-mu)/mu) * exp(-beta/mu) /
-              ((gamma+mu)*Gamma((beta-gamma-mu)/mu))
-              )
+    dfun("K")
+    
+
+    x1 <- (beta-gamma-mu)/mu
+    lnum <- logK + log(N) + 2*log(mu) + (x1*log(beta/mu) - beta/mu)
+    ldenom <- log(gamma+mu)  + lgamma(x1)
+    log_p <- -1*exp(lnum-ldenom)
+    p0 <- if (!persist) exp(log_p) else -expm1(log_p)
+
+    ## Gamma <- base::gamma
+    ## p0 <- exp(-K*N*mu^2*(beta/mu)^((beta-gamma-mu)/mu) * exp(-beta/mu) /
+    ##           ((gamma+mu)*Gamma((beta-gamma-mu)/mu))
+    ##           )
 
     return(p0)
 }
