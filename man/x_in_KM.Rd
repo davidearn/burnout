@@ -4,13 +4,10 @@
 \alias{x_in_KM}
 \title{Crude "Kermack-McKendrick" version of \eqn{x_{\rm in}}}
 \usage{
-x_in_KM(R0, maxiter = 100, ...)
+x_in_KM(R0, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
-
-\item{maxiter}{maximum numbers of iterations for convergence of
-\code{\link[emdbook]{lambertW}}}
 
 \item{...}{additional arguments are ignored}
 }

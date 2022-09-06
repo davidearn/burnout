@@ -3,12 +3,10 @@
 ##' @seealso \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob_MS}},
 ##'     \code{\link{P1_prob}}
 ##'
-##' @params debug print debugging info?
-##' @params persist return persistence probability rather than burnout probability
+##' @param persist return persistence probability rather than burnout probability
 ##' @inheritParams P1_prob_other
 ##' @inheritParams stats::integrate
 ##'
-##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @references
@@ -30,6 +28,7 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 
 ##' Burnout probability based on van Herwaarden (1997)
 ##'
+##' @param debug print debugging info?
 ##' @details
 ##' See equation (8) of Ballard et al (2016)
 ##'
@@ -39,7 +38,6 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##' @param tiny amount which to avoid integration limits (where
 ##'     integrand blow up)
 ##' 
-##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @references
@@ -65,8 +63,6 @@ burnout_prob_vanH <- function( R0, epsilon, N=10^6,
     mu <- epsilon
     gamma <- 1-epsilon
 
-    W0 <- emdbook::lambertW
-
     bog <- beta/gamma
     x1A <- (-1/bog)*W0(-bog*exp(-bog))
 
@@ -80,7 +76,7 @@ burnout_prob_vanH <- function( R0, epsilon, N=10^6,
         try(stats::integrate(f=integrand, lower=x1A+tiny, upper=1-tiny,
                              subdivisions=subdivisions, ...)$value)
 
-    if (debug) curve(integrand(x), from = x1A+tiny, to = 1-tiny)
+    ## if (debug) curve(integrand(x), from = x1A+tiny, to = 1-tiny)
     
     dfun("messy.integral")
     

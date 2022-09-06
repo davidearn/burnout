@@ -19,19 +19,16 @@
 ##' is the equilibrium prevalence,
 ##' and \eqn{y_{\rm max}} is the \link[=peak_prev]{peak prevalence}.
 ##'
-##' @seealso \code{\link{peak_prev}}, \code{\link[emdbook]{lambertW}},
+##' @seealso \code{\link{peak_prev}}, \code{\link[gsl]{lambert_W0}},
 ##'     \code{\link[expint]{expint_E1}}, , \code{\link{x_in_cb}},
 ##'     \code{\link{x_in_exact}}
 ##'
 ##' @inheritParams peak_prev
 ##' @param peakprev_fun function of \eqn{{\cal R}_0} and
 ##'     \eqn{\varepsilon} to use to compute peak prevalence
-##' @param maxiter maximum numbers of iterations for convergence of
-##'     \code{\link[emdbook]{lambertW}}
 ##' @param ... additional arguments are ignored
 ##'
 ##' @return real number between 0 and 1
-##' @importFrom emdbook lambertW
 ##' @importFrom expint expint_E1
 ##' @importFrom Rdpack reprompt
 ##'
@@ -51,15 +48,15 @@
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
+x_in <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax
-        , -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter) +
+        , -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
             epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
         , # epsilon correction is garbage so ignore it
-          -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
+          -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
     )
     return(xin)
 }
@@ -80,8 +77,8 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_crude}}
 ##'
 ##' @export
-x_in_KM <- function(R0, maxiter=100, ...) {
-    xin <- x_in(R0, epsilon=0, maxiter=maxiter, ...)
+x_in_KM <- function(R0, ...) {
+    xin <- x_in(R0, epsilon=0, ...)
     return(xin)
 }
 
@@ -92,12 +89,11 @@ x_in_KM <- function(R0, maxiter=100, ...) {
 ##' list is the same as for \code{\link{x_in}}.
 ##'
 ##' @inheritParams x_in
-##' @importFrom emdbook lambertW
 ##' @export
 ##' 
-x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
+x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
-    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)), maxiter=maxiter)
+    xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
     return(xin)
 }
 
@@ -109,11 +105,10 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, maxiter=100, ...) {
 ##' }
 ##'
 ##' @inheritParams x_in
-##' @importFrom emdbook lambertW
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
 ##' 
-x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
+x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     pc <- 1 - 1/R0 # p_crit
@@ -192,9 +187,6 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
 ##' 
 Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 
-W0 <- function(x, ...) {emdbook::lambertW(x, b=0, ...)}
-Wm1 <- function(x, ...) {emdbook::lambertW(x, b=-1, ...)}
-
 ##' Standard final size
 ##'
 ##' for a newly invading infectious disease (so \eqn{I_0\to0}, \eqn{S_0\to1}).
@@ -222,18 +214,17 @@ final_size <- function(R0) {1 + (1/R0)*W0(-R0*exp(-R0))}
 ##' }
 ##' and \eqn{x_{\rm f} = 1 - Z}, where \eqn{Z} is the standard \code{\link{final_size}}.
 ##' @inheritParams x_in
-##' @importFrom emdbook lambertW
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
 ##' 
-x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, maxiter=100, ...) {
+x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence [aka y_in]
     ##ymax <- peakprev_fun(R0, epsilon) # peak prevalence [not needed for hocb]
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
     xf <- 1 - Z
-    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)),
-                        maxiter=maxiter)
+    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
+
     return(xin)
 }
 

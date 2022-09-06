@@ -19,3 +19,13 @@ transparent_colour <- function(col,alpha=150/255) {
     tcol <- rgb(v["red"],v["green"],v["blue"],alpha=alpha,maxColorValue = 255)
     return(tcol)
 }
+
+##' utility - single location for all Lambert W imports
+##' gsl seems the best option from {emdbook, lamW, LambertW, pracma, VGAM, gsl}
+##' @noRd
+##' @importFrom gsl lambert_W0
+
+W0 <- gsl::lambert_W0
+Wm1 <- gsl::lambert_Wm1
+
+

@@ -5,7 +5,6 @@
 ##' 
 ##' @inheritParams P1_prob_other
 ##'
-##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @references
@@ -33,7 +32,6 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##'
 ##' @inheritParams P1_prob_MS
 ##' 
-##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @references
@@ -49,7 +47,6 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
 
     K <- beta/mu
     delta <- 1 - 1/R0
-    W0 <- emdbook::lambertW
     xm <- (-1/R0) * W0(-R0*exp(-R0)) - 1
 
     integrand <- function(s) {

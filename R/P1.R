@@ -149,7 +149,6 @@ burnout_prob_hocb <- function(R0, epsilon, N=10^6,
 ##' @param ... additional arguments pass to
 ##'     \code{\link[stats]{integrate}}
 ##'
-##' @importFrom emdbook lambertW
 ##' @importFrom stats integrate
 ##'
 ##' @export

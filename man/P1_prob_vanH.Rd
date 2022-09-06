@@ -4,7 +4,15 @@
 \alias{P1_prob_vanH}
 \title{Persistence probability via van Herwaarden (1997) approximation}
 \usage{
-P1_prob_vanH(R0, epsilon, k = 1, N = 10^6, subdivisions = 1000L, ...)
+P1_prob_vanH(
+  R0,
+  epsilon,
+  k = 1,
+  N = 10^6,
+  subdivisions = 1000L,
+  persist = FALSE,
+  ...
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -18,6 +26,8 @@ lifetime, i.e., no mortality)}
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
+
+\item{persist}{return persistence probability rather than burnout probability}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}

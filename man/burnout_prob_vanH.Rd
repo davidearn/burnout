@@ -10,6 +10,8 @@ burnout_prob_vanH(
   N = 10^6,
   subdivisions = 1000L,
   tiny = 1e-12,
+  debug = FALSE,
+  persist = FALSE,
   ...
 )
 }
@@ -26,6 +28,10 @@ lifetime, i.e., no mortality)}
 
 \item{tiny}{amount which to avoid integration limits (where
 integrand blow up)}
+
+\item{debug}{print debugging info?}
+
+\item{persist}{return persistence probability rather than burnout probability}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}

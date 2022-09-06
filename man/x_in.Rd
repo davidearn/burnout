@@ -4,7 +4,7 @@
 \alias{x_in}
 \title{Susceptibles at boundary layer (boundary/boundary layer approximation)}
 \usage{
-x_in(R0, epsilon, peakprev_fun = peak_prev, maxiter = 100, ...)
+x_in(R0, epsilon, peakprev_fun = peak_prev, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -15,9 +15,6 @@ lifetime, i.e., no mortality)}
 
 \item{peakprev_fun}{function of \eqn{{\cal R}_0} and
 \eqn{\varepsilon} to use to compute peak prevalence}
-
-\item{maxiter}{maximum numbers of iterations for convergence of
-\code{\link[emdbook]{lambertW}}}
 
 \item{...}{additional arguments are ignored}
 }
@@ -60,7 +57,7 @@ curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 \insertRef{Olver2010}{burnout}
 }
 \seealso{
-\code{\link{peak_prev}}, \code{\link[emdbook]{lambertW}},
+\code{\link{peak_prev}}, \code{\link[gsl]{lambert_W0}},
 \code{\link[expint]{expint_E1}}, , \code{\link{x_in_cb}},
 \code{\link{x_in_exact}}
 }
