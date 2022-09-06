@@ -19,6 +19,7 @@ RoxygenNote: 7.2.1
 Imports:
     Rdpack,
     gsl,
+    emdbook,
     expint,
     latex2exp,
     dplyr,

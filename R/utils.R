@@ -25,7 +25,17 @@ transparent_colour <- function(col,alpha=150/255) {
 ##' @noRd
 ##' @importFrom gsl lambert_W0
 
-W0 <- gsl::lambert_W0
-Wm1 <- gsl::lambert_Wm1
+W0 <- function(...) {
+    switch(getOption("burnout.lambertW", "gsl"),
+           gsl = gsl::lambert_W0(...),
+           emdbook = emdbook::lambertW(..., maxiter = 1000)
+           )
+}
+Wm1 <- function(...) {
+    switch(getOption("burnout.lambertW", "gsl"),
+           gsl = gsl::lambert_Wm1(...),
+           emdbook = emdbook::lambertW(..., b = -1, maxiter = 1000)
+           )
+}
 
 
