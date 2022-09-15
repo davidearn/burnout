@@ -28,4 +28,6 @@ Imports:
     deSolve
 RdMacros: Rdpack
 Suggests:
-    testthat, sirr
+    testthat (>= 3.0.0),
+    sirr
+Config/testthat/edition: 3

@@ -5,11 +5,15 @@
 \title{Plot herd immunity duration}
 \usage{
 plot_t_herd(
-  R0 = exp(seq(log(1.001), log(2), length = 1001)),
+  R0 = exp(seq(log(1.001), log(5), length = 1001)),
   epsilon = c(0.01, 0.02, 0.03),
+  x_in_fun = x_in_exact,
   col = 1:length(epsilon),
   lwd = 2,
+  lty = "solid",
   ylim = c(0, 60),
+  main = latex2exp::TeX("Duration of herd immunity $t_{H}$"),
+  add = FALSE,
   ...
 )
 }
@@ -20,13 +24,23 @@ plot_t_herd(
 lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
 
+\item{x_in_fun}{function to use to estimate \eqn{x_{\rm in}}}
+
 \item{col, lwd, ylim, ...}{see \code{\link{graphical parameters}}}
+
+\item{add}{if \code{TRUE} then add to existing plot}
 }
 \description{
 Plot herd immunity duration
 }
+\details{
+It is best to use \code{\link{x_in_exact}} when
+calculating \code{t_herd}.
+}
 \examples{
-plot_t_herd(delta = 0.01)
+## plot tH with x_in as dotted under tH with x_in_exact as solid:
+plot_t_herd(x_in_fun = x_in, lty="dotted")
+plot_t_herd(add=TRUE)
 
 }
 \seealso{

@@ -16,7 +16,7 @@
 ##'
 ##' @examples
 ##' op <- par(mfrow = c(1,2))
-##' plot_t_herd(col = c("darkred", "darkgreen", "darkblue"))
+##' plot_t_herd(col = c("darkred", "darkgreen", "darkblue"), main="")
 ##' epsilonseq <- seq(0,0.03,length=1001)
 ##' plot(epsilonseq, t_herd(R0=1.5,epsilonseq), type="l", lwd=2, bty="L",
 ##'      las=1, col="darkred", ylim=c(0,60),
@@ -24,6 +24,7 @@
 ##' lines(epsilonseq, t_herd(R0=3,epsilonseq), lwd=2, col="darkgreen")
 ##' lines(epsilonseq, t_herd(R0=4.5,epsilonseq), lwd=2, col="darkblue")
 ##' par(mfrow = op)
+##' title(main=latex2exp::TeX("Duration of herd immunity $t_{H}$"))
 ##'
 ##' @export
 ##' 
@@ -36,32 +37,48 @@ t_herd <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##'
 ##' @inheritParams t_herd
 ##' @inheritParams base::plot
+##' @param x_in_fun function to use to estimate \eqn{x_{\rm in}}
 ##' @param col,lwd,ylim,... see \code{\link{graphical parameters}}
+##' @param add if \code{TRUE} then add to existing plot
 ##'
 ##' @seealso \code{\link{t_herd}}
 ##'
 ##' @importFrom graphics title
 ##'
+##' @details It is best to use \code{\link{x_in_exact}} when
+##'     calculating \code{t_herd}.
+##'
 ##' @export
 ##'
 ##' @examples
-##' plot_t_herd(delta = 0.01)
+##' ## plot tH with x_in as dotted under tH with x_in_exact as solid:
+##' plot_t_herd(x_in_fun = x_in, lty="dotted")
+##' plot_t_herd(add=TRUE)
 ##'
-plot_t_herd <- function(R0 = exp(seq(log(1.001),log(2),length=1001)),
+plot_t_herd <- function(R0 = exp(seq(log(1.001),log(5),length=1001)),
                         epsilon = c(0.01, 0.02, 0.03)
+                      , x_in_fun = x_in_exact
                       , col = 1:length(epsilon)
                         ##col = c("darkred", "darkgreen", "darkblue")
                       , lwd=2
                         ##, log="x"
+                      , lty="solid"
                       , ylim=c(0,60)
+                      , main=latex2exp::TeX("Duration of herd immunity $t_{H}$")
+                      , add=FALSE
                       , ...
                         ) {
-    plot(R0, t_herd(R0,epsilon=epsilon[1]), type="l", lwd=lwd, bty="L",
-         las=1, col=col[1], ylim=ylim,
-         xlab = expression(R[0]), ylab = expression(t[H]), ...)
-    title(main = latex2exp::TeX("Duration of herd immunity $t_{H}$"))
-    for (iepsilon in 2:length(epsilon)) {
-        lines(R0, t_herd(R0,epsilon=epsilon[iepsilon]), lwd=2, col=col[iepsilon])
+    tH_fun <- function(R0,epsilon) {
+        t_herd(R0,epsilon,xin=x_in_fun(R0,epsilon))
+    }
+    if (!add) {
+        plot(R0, tH_fun(R0,epsilon=epsilon[1]), type="n", lwd=lwd, bty="L",
+             las=1, col=col[1], ylim=ylim,
+             xlab = expression(R[0]), ylab = expression(t[H]), ...)
+        title(main = main)
+    }
+    for (iepsilon in seq_along(epsilon)) {
+        lines(R0, tH_fun(R0,epsilon=epsilon[iepsilon]), lwd=2, col=col[iepsilon], lty=lty)
     }
     legend("topright", bty="n", title=expression(epsilon),
            legend = epsilon, col = col, lwd=lwd)

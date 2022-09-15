@@ -29,7 +29,7 @@ proportion susceptible next rises above the threshold.
 }
 \examples{
 op <- par(mfrow = c(1,2))
-plot_t_herd(col = c("darkred", "darkgreen", "darkblue"))
+plot_t_herd(col = c("darkred", "darkgreen", "darkblue"), main="")
 epsilonseq <- seq(0,0.03,length=1001)
 plot(epsilonseq, t_herd(R0=1.5,epsilonseq), type="l", lwd=2, bty="L",
      las=1, col="darkred", ylim=c(0,60),
@@ -37,5 +37,6 @@ plot(epsilonseq, t_herd(R0=1.5,epsilonseq), type="l", lwd=2, bty="L",
 lines(epsilonseq, t_herd(R0=3,epsilonseq), lwd=2, col="darkgreen")
 lines(epsilonseq, t_herd(R0=4.5,epsilonseq), lwd=2, col="darkblue")
 par(mfrow = op)
+title(main=latex2exp::TeX("Duration of herd immunity $t_{H}$"))
 
 }
