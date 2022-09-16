@@ -36,9 +36,9 @@ t_herd <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' Plot herd immunity duration
 ##'
 ##' @inheritParams t_herd
-##' @inheritParams base::plot
 ##' @param x_in_fun function to use to estimate \eqn{x_{\rm in}}
-##' @param col,lwd,ylim,... see \code{\link{graphical parameters}}
+##' @param col,lwd,ylim,lty,main,xlab,ylab,... see \code{\link{graphical parameters}}
+##' @param show.legend if \code{TRUE} then show legend
 ##' @param add if \code{TRUE} then add to existing plot
 ##'
 ##' @seealso \code{\link{t_herd}}
@@ -64,7 +64,10 @@ plot_t_herd <- function(R0 = exp(seq(log(1.001),log(5),length=1001)),
                         ##, log="x"
                       , lty="solid"
                       , ylim=c(0,60)
+                      , xlab=expression(R[0])
+                      , ylab=expression(t[H])
                       , main=latex2exp::TeX("Duration of herd immunity $t_{H}$")
+                      , show.legend = TRUE
                       , add=FALSE
                       , ...
                         ) {
@@ -74,12 +77,13 @@ plot_t_herd <- function(R0 = exp(seq(log(1.001),log(5),length=1001)),
     if (!add) {
         plot(R0, tH_fun(R0,epsilon=epsilon[1]), type="n", lwd=lwd, bty="L",
              las=1, col=col[1], ylim=ylim,
-             xlab = expression(R[0]), ylab = expression(t[H]), ...)
+             xlab = xlab, ylab = ylab, ...)
         title(main = main)
     }
     for (iepsilon in seq_along(epsilon)) {
         lines(R0, tH_fun(R0,epsilon=epsilon[iepsilon]), lwd=2, col=col[iepsilon], lty=lty)
     }
-    legend("topright", bty="n", title=expression(epsilon),
-           legend = epsilon, col = col, lwd=lwd)
+    if (show.legend) legend("topright", bty="n",
+                            title=expression(epsilon),
+                            legend = epsilon, col = col, lwd=lwd)
 }

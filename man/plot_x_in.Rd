@@ -13,9 +13,12 @@ plot_x_in(
   xin_fun = x_in,
   col = 1:length(epsilon),
   lwd = 2,
+  lty = "solid",
   log = "x",
+  main = "Susceptible proportion at\\nentry to boundary layer",
   xlim = if (xvar == "R0") c(1, Rmax) else c(0, 1),
   ylim = if (xvar == "R0") c(0, 1) else c(0, max(1/R0)),
+  add = FALSE,
   ...
 )
 }
@@ -34,7 +37,9 @@ is the desired independent variable}
 \item{xin_fun}{function of \code{R0} and \code{epsilon} that
 returns susceptible proportion at entry to boundary layer}
 
-\item{col, log, lwd, xlim, ylim, ...}{see \code{\link{graphical parameters}}}
+\item{col, log, lwd, xlim, ylim, lty, main, ...}{see \code{\link{graphical parameters}}}
+
+\item{add}{if \code{TRUE} then add to existing plot}
 }
 \description{
 Plot \eqn{x_{\rm in}}

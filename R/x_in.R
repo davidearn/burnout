@@ -52,8 +52,8 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
-    xin <- ifelse (yeqm < ymax
-        , -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
+    xin <- ifelse (yeqm < ymax 
+       , -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
             epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
         , # epsilon correction is garbage so ignore it
           -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
@@ -114,11 +114,11 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
     xf <- 1-Z
-    if (yeqm < ymax) {
-        xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
-    } else { # epsilon correction is garbage so ignore it
-        xin <- 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)))
-    }
+    xin <- ifelse (yeqm < ymax
+                 , 1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)) * (ymax/yeqm)^((epsilon/R0)/pc))
+                 , # else epsilon correction is garbage so ignore it
+                   1 + pc * Wm1(-(Z/pc)*exp(-(Z/pc)))
+                   )
     return(xin)
 }
 
@@ -231,12 +231,12 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
 ##' Plot \eqn{x_{\rm in}}
 ##' 
 ##' @inheritParams x_in
-##' @inheritParams graphics::par
 ##' @inheritParams compare_funs
 ##'
 ##' @param xvar string indicating whether \code{R0} or \code{epsilon}
 ##'     is the desired independent variable
-##' @param col,log,lwd,xlim,ylim,... see \code{\link{graphical parameters}}
+##' @param col,log,lwd,xlim,ylim,lty,main,... see \code{\link{graphical parameters}}
+##' @param add if \code{TRUE} then add to existing plot
 ##' @param xin_fun function of \code{R0} and \code{epsilon} that
 ##'     returns susceptible proportion at entry to boundary layer
 ##'
@@ -266,9 +266,12 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
                     , col = 1:length(epsilon)
                       ##col = c("darkred", "darkgreen", "darkblue")
                     , lwd=2
+                    , lty="solid"
                     , log="x"
+                    , main="Susceptible proportion at\nentry to boundary layer"
                     , xlim = if (xvar == "R0") c(1,Rmax) else c(0,1)
                     , ylim = if (xvar == "R0") c(0,1) else c(0,max(1/R0))
+                    , add=FALSE
                     , ...
                       ) {
     if (xvar == "R0") {
@@ -277,17 +280,20 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
     } else {
         cat("plot_x_in: plotting as a function of epsilon...\n")
         xx <- epsilon
-        if (length(R0) != 1) stop("only one R0 value allow if xvar is epsilon")
+        if (length(R0) != 1) stop("only one R0 value allowed if xvar is epsilon")
     }
     
     ## show naive approx (eqm susceptible proportion) as dashed line first:
     plot(xx,
          if (xvar == "R0") 1/R0 else rep(1/R0,length(xx)),
-         type="l", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
+         type="n", log=log, lwd=lwd/2, bty="L", lty="dashed", las=1,
          xlim=xlim, ylim=ylim, xaxs="i", yaxs="i",
          xlab = if (xvar == "R0") expression(R[0]) else expression(epsilon),
          ylab = expression(x[i][n]), ...)
-    title(main = "Susceptible proportion at\nentry to boundary layer")
+    title(main = main)
+    lines(xx,
+         if (xvar == "R0") 1/R0 else rep(1/R0,length(xx)),
+         lwd=lwd/2, lty="dashed", ...)
 
     if (xvar == "R0") {
         ## curves with peak prevalence estimate from approximation of integral:
@@ -321,8 +327,8 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
 ##' Plot all approximations to \eqn{x_{\rm in}}
 ##' 
 ##' @inheritParams plot_x_in
-##' @inheritParams graphics::par
 ##' @inheritParams compare_funs
+##' @param col,lwd,xlim,ylim,log,... see \code{\link{graphical parameters}}
 ##'
 ##' @seealso \code{\link{plot_x_in}}, \code{\link{x_in}},
 ##'     \code{\link{x_in_exact}}

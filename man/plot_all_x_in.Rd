@@ -30,7 +30,7 @@ lifetime, i.e., no mortality)}
 \item{xvar}{string indicating whether \code{R0} or \code{epsilon}
 is the desired independent variable}
 
-\item{col, log, lwd, xlim, ylim, ...}{see \code{\link{graphical parameters}}}
+\item{col, lwd, xlim, ylim, log, ...}{see \code{\link{graphical parameters}}}
 }
 \description{
 Plot all approximations to \eqn{x_{\rm in}}

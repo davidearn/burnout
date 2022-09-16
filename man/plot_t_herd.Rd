@@ -12,7 +12,10 @@ plot_t_herd(
   lwd = 2,
   lty = "solid",
   ylim = c(0, 60),
+  xlab = expression(R[0]),
+  ylab = expression(t[H]),
   main = latex2exp::TeX("Duration of herd immunity $t_{H}$"),
+  show.legend = TRUE,
   add = FALSE,
   ...
 )
@@ -26,7 +29,9 @@ lifetime, i.e., no mortality)}
 
 \item{x_in_fun}{function to use to estimate \eqn{x_{\rm in}}}
 
-\item{col, lwd, ylim, ...}{see \code{\link{graphical parameters}}}
+\item{col, lwd, ylim, lty, main, xlab, ylab, ...}{see \code{\link{graphical parameters}}}
+
+\item{show.legend}{if \code{TRUE} then show legend}
 
 \item{add}{if \code{TRUE} then add to existing plot}
 }
