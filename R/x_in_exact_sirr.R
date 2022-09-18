@@ -5,18 +5,21 @@
 ##' @inheritParams x_in
 ##' @param I0 initial prevalence (proportion)
 ##' @param nt number of time steps
-##' @param tmax max integration time (default is 100/(R0-1))
+##' @param tmin minimum integration time
+##' @param tmax integration time (default is max(tmin, 100/(R0-1)))
 ##' @param return_traj (logical) return trajectory?
 ##' 
 ##' @importFrom deSolve lsodar
 ##' @importFrom utils tail
-x_in_exact_scalar <- function(R0, epsilon, I0=1e-6, tmax = NULL,
-                               nt = 100,
-                               return_traj = FALSE) {
+x_in_exact_scalar <- function(R0, epsilon, I0=1e-6,
+                              tmin = 20,
+                              tmax = NULL,
+                              nt = 100,
+                              return_traj = FALSE) {
 
     ## reasonable guess at an approximate max time for a specified R0
     ## (given default I0)
-    if (is.null(tmax)) tmax <- 100/(R0-1)
+    if (is.null(tmax)) tmax <- max(tmin, 100/(R0-1))
 
     ## precompute useful factors, as well as hard-coding vars[i]
     ## lookup below rather than using with(as.list(...)), for speed
@@ -62,6 +65,7 @@ x_in_exact_scalar <- function(R0, epsilon, I0=1e-6, tmax = NULL,
                                         terminalroot = 2))
 
     if (return_traj) return(dd)
+    if (max(dd[, "time"]) == tmax) stop("reached maximum time")
     tail(dd[,"S"], 1)
 }
 

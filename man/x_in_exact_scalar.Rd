@@ -9,12 +9,21 @@ x_in_exact_scalar(
   R0,
   epsilon,
   I0 = 1e-06,
+  tmin = 20,
   tmax = NULL,
   nt = 100,
   return_traj = FALSE
 )
 
-x_in_exact(R0, epsilon, I0 = 1e-06, tmax = NULL, nt = 100, return_traj = FALSE)
+x_in_exact(
+  R0,
+  epsilon,
+  I0 = 1e-06,
+  tmin = 20,
+  tmax = NULL,
+  nt = 100,
+  return_traj = FALSE
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -25,7 +34,9 @@ lifetime, i.e., no mortality)}
 
 \item{I0}{initial prevalence (proportion)}
 
-\item{tmax}{max integration time (default is 100/(R0-1))}
+\item{tmin}{minimum integration time}
+
+\item{tmax}{integration time (default is max(tmin, 100/(R0-1)))}
 
 \item{nt}{number of time steps}
 
