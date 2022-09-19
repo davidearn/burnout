@@ -199,6 +199,9 @@ Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 ##' final_size(R0 = 2)
 final_size <- function(R0) {1 + (1/R0)*W0(-R0*exp(-R0))}
 
+## complement of final size (to avoid numeric problems), 1-Z
+comp_final_size <- function(R0) {-(1/R0)*W0(-R0*exp(-R0))}
+
 ##' Susceptibles at boundary layer (higher order corner/boundary layer approximation)
 ##'
 ##' @details
@@ -214,17 +217,36 @@ final_size <- function(R0) {1 + (1/R0)*W0(-R0*exp(-R0))}
 ##' }
 ##' and \eqn{x_{\rm f} = 1 - Z}, where \eqn{Z} is the standard \code{\link{final_size}}.
 ##' @inheritParams x_in
+##' @param debug print debugging output?
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
 ##' 
-x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
+x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...) {
+
+    dfun <- function(x) {
+        if (debug) cat(x, get(x), "\n")
+    }
+
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence [aka y_in]
+    dfun("yeqm")
     ##ymax <- peakprev_fun(R0, epsilon) # peak prevalence [not needed for hocb]
     pc <- 1 - 1/R0 # p_crit
+    dfun("pc")
     Z <- final_size(R0)
-    xf <- 1 - Z
-    xin <- 1 + pc * Wm1(-(Z/pc)*((Z/yeqm)*((1/R0-xf)/xf))^((epsilon/R0)/pc) * exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0)))
-
+    dfun("Z")
+    xf <- comp_final_size(R0)
+    dfun("xf")
+    pc_arg0 <- ((1/R0-xf)/xf)
+    dfun("pc_arg0")
+    pc_arg1 <- ((Z/yeqm)*pc_arg0)
+    dfun("pc_arg1")
+    pc_pow <- ((epsilon/R0)/pc)
+    dfun("pc_pow")
+    pc_arg <- -(Z/pc)*pc_arg1^pc_pow*
+        exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0))
+    dfun("pc_arg")
+    xin <- 1 + pc * Wm1(pc_arg)
+    dfun("xin")
     return(xin)
 }
 
