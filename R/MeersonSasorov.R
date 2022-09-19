@@ -39,7 +39,12 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##' 
 ##' @export
 ##'
-burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
+burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, debug = FALSE, ... ) {
+
+    dfun <- function(x) {
+        if (debug) cat(x, get(x), "\n")
+    }
+
     ## choose units such that gamma+mu = 1, i.e., mean time infected is 1:
     beta <- R0
     mu <- epsilon
@@ -48,11 +53,19 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
     K <- beta/mu
     delta <- 1 - 1/R0
     xm <- (-1/R0) * W0(-R0*exp(-R0)) - 1
-
+    dfun(xm)
+    
     integrand <- function(s) {
         s*(s+delta) / ((1+s)^2 * (s - (1-delta)*log(1+s))) -
             xm / ((1+xm)*(s-xm))
     }
+
+    i_lwr <- integrand(0)
+    dfun(i_lwr)
+
+    i_upr <- integrand(xm)
+    dfun(i_upr)
+    
     Q1 <- try(stats::integrate(f=integrand, lower=0, upper=xm,
                                subdivisions=subdivisions, ...)$value)
     ## FIX: this destroys the automatic vectorization:
@@ -61,8 +74,9 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, ... ) {
     ym <- (delta+xm)*xm/(1+xm)*(-xm/delta)^(K*delta) *
         exp(K*(xm+delta) - (1+1/xm)*Q1)
 
-    C <- ym*delta / (2*pi*(1-delta))
-
+    logC <- log(ym) + log(delta) - log(2*pi) -log1p( -delta)
+    C <- exp(logC)
+    
     S0 <- C * sqrt( 2*pi / (K*delta) )
 
     p0 <- exp(-N * S0)
