@@ -166,8 +166,8 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
     the.integral <-
         try(stats::integrate(f=integrand, lower=xf+tiny, upper=1-tiny
                              , subdivisions=subdivisions
-                             , ...)$value)
-    if ("try-error" %in% class(the.integral)) {
+                             , ...)$value, silent = TRUE)
+    if (inherits(the.integral, "try-error")) {
         warning("Ytilde_1: try error with xf = ", xf, "; returning NA")
         return(NA)
     }
@@ -243,7 +243,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
     pc_pow <- ((epsilon/R0)/pc)
     dfun("pc_pow")
     pc_arg <- -(Z/pc)*pc_arg1^pc_pow*
-        exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0))
+        exp(-(Z/pc) - epsilon*(xf/(Z*pc))*Ytilde_1(xf,R0, tiny = 0))
     dfun("pc_arg")
     xin <- 1 + pc * Wm1(pc_arg)
     dfun("xin")
