@@ -49,7 +49,7 @@ P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
 ##'
 burnout_prob_vanH <- function( R0, epsilon, N=10^6,
                               subdivisions=1000L,
-                              tiny=1e-12,
+                              tiny=0,
                               debug = FALSE,
                               persist = FALSE,
                               ... ) {
