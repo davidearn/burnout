@@ -17,12 +17,12 @@
 ##' @export
 ##'
 P1_prob_vanH <- function(R0, epsilon, k=1, N=10^6, subdivisions=1000L,
-                         persist = FALSE,
+                         persist = FALSE, tiny=0,
                          ... ) {
 
     P1 <- P1_prob_other(R0 = R0, epsilon = epsilon,
                         burnout_prob_fun = burnout_prob_vanH, k = k, N = N,
-                        subdivisions = subdivisions, ... )
+                        subdivisions = subdivisions, tiny = tiny, ... )
     return(P1)
 }
 

@@ -9,7 +9,7 @@ burnout_prob_vanH(
   epsilon,
   N = 10^6,
   subdivisions = 1000L,
-  tiny = 1e-12,
+  tiny = 0,
   debug = FALSE,
   persist = FALSE,
   ...

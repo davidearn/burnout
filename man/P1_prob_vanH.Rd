@@ -11,6 +11,7 @@ P1_prob_vanH(
   N = 10^6,
   subdivisions = 1000L,
   persist = FALSE,
+  tiny = 0,
   ...
 )
 }
@@ -28,6 +29,8 @@ lifetime, i.e., no mortality)}
 \item{subdivisions}{the maximum number of subintervals.}
 
 \item{persist}{return persistence probability rather than burnout probability}
+
+\item{tiny}{avoid integration limits by this amount}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}

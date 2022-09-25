@@ -11,6 +11,7 @@ P1_prob_other(
   k = 1,
   N = 10^6,
   subdivisions = 1000L,
+  tiny = 0,
   ...
 )
 }
@@ -30,6 +31,8 @@ probability (either \code{\link{burnout_prob_vanH}} or
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
+
+\item{tiny}{avoid integration limits by this amount}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}

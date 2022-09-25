@@ -146,6 +146,7 @@ burnout_prob_hocb <- function(R0, epsilon, N=10^6,
 ##' @param burnout_prob_fun function with which to calculate burnout
 ##'     probability (either \code{\link{burnout_prob_vanH}} or
 ##'     \code{\link{burnout_prob_MS}})
+##' @param tiny avoid integration limits by this amount
 ##' @param ... additional arguments pass to
 ##'     \code{\link[stats]{integrate}}
 ##'
@@ -154,11 +155,11 @@ burnout_prob_hocb <- function(R0, epsilon, N=10^6,
 ##' @export
 ##'
 P1_prob_other <- function(R0, epsilon, burnout_prob_fun, k=1, N=10^6,
-                          subdivisions=1000L, ... ) {
+                          subdivisions=1000L, tiny=0, ... ) {
 
     ## Ballard et al (2016) use the notation p0:
     p0 <- burnout_prob_fun(R0 = R0, epsilon = epsilon, N = N,
-                            subdivisions = subdivisions, ...)
+                            subdivisions = subdivisions, tiny=tiny, ...)
 
     ## FIX: This is identical to the code in P1_prob() except that the
     ##      probability of burning out conditional on not fizzling

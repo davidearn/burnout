@@ -12,11 +12,11 @@
 ##' 
 ##' @export
 ##'
-P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
+P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, tiny=0, ... ) {
 
     P1 <- P1_prob_other(R0 = R0, epsilon = epsilon,
                         burnout_prob_fun = burnout_prob_MS, k = k, N = N,
-                        subdivisions = subdivisions, ... )
+                        subdivisions = subdivisions, tiny=tiny, ... )
     return(P1)
 }
 
@@ -31,6 +31,7 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##' @seealso \code{\link{P1_prob_MS}}
 ##'
 ##' @inheritParams P1_prob_MS
+##' @param debug print debugging info?
 ##' 
 ##' @importFrom stats integrate
 ##'
@@ -39,7 +40,7 @@ P1_prob_MS <- function( R0, epsilon, k=1, N=10^6, subdivisions=1000L, ... ) {
 ##' 
 ##' @export
 ##'
-burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, debug = FALSE, ... ) {
+burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, debug = FALSE, tiny=0, ... ) {
 
     dfun <- function(x) {
         if (debug) cat(x, get(x), "\n")
@@ -66,7 +67,7 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, debug = FA
     i_upr <- integrand(xm)
     dfun(i_upr)
     
-    Q1 <- try(stats::integrate(f=integrand, lower=0, upper=xm,
+    Q1 <- try(stats::integrate(f=integrand, lower=0+tiny, upper=xm-tiny,
                                subdivisions=subdivisions, ...)$value)
     ## FIX: this destroys the automatic vectorization:
     if ("try-error" %in% class(Q1)) return(NA)

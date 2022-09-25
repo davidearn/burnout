@@ -4,7 +4,7 @@
 \alias{x_in_hocb}
 \title{Susceptibles at boundary layer (higher order corner/boundary layer approximation)}
 \usage{
-x_in_hocb(R0, epsilon, peakprev_fun = peak_prev, ...)
+x_in_hocb(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -15,6 +15,8 @@ lifetime, i.e., no mortality)}
 
 \item{peakprev_fun}{function of \eqn{{\cal R}_0} and
 \eqn{\varepsilon} to use to compute peak prevalence}
+
+\item{debug}{print debugging output?}
 
 \item{...}{additional arguments are ignored}
 }

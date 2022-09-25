@@ -9,8 +9,9 @@ x_in_exact_scalar(
   R0,
   epsilon,
   I0 = 1e-06,
+  t_int = NULL,
   tmin = 20,
-  tmax = NULL,
+  maxit = 10,
   nt = 100,
   return_traj = FALSE
 )
@@ -19,8 +20,9 @@ x_in_exact(
   R0,
   epsilon,
   I0 = 1e-06,
+  t_int = NULL,
   tmin = 20,
-  tmax = NULL,
+  maxit = 10,
   nt = 100,
   return_traj = FALSE
 )
@@ -34,9 +36,11 @@ lifetime, i.e., no mortality)}
 
 \item{I0}{initial prevalence (proportion)}
 
+\item{t_int}{integration time (default is max(tmin, 100/(R0-1)))}
+
 \item{tmin}{minimum integration time}
 
-\item{tmax}{integration time (default is max(tmin, 100/(R0-1)))}
+\item{maxit}{max number of tries to double integration time}
 
 \item{nt}{number of time steps}
 

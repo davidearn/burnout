@@ -4,7 +4,15 @@
 \alias{burnout_prob_MS}
 \title{Burnout probability based on Meerson and Sasorov (2009)}
 \usage{
-burnout_prob_MS(R0, epsilon, N = 10^6, subdivisions = 1000L, ...)
+burnout_prob_MS(
+  R0,
+  epsilon,
+  N = 10^6,
+  subdivisions = 1000L,
+  debug = FALSE,
+  tiny = 0,
+  ...
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -16,6 +24,10 @@ lifetime, i.e., no mortality)}
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
+
+\item{debug}{print debugging info?}
+
+\item{tiny}{avoid integration limits by this amount}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}

@@ -4,7 +4,7 @@
 \alias{P1_prob_MS}
 \title{Persistence probability via Meerson and Sasorov (2009) approximation}
 \usage{
-P1_prob_MS(R0, epsilon, k = 1, N = 10^6, subdivisions = 1000L, ...)
+P1_prob_MS(R0, epsilon, k = 1, N = 10^6, subdivisions = 1000L, tiny = 0, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -18,6 +18,8 @@ lifetime, i.e., no mortality)}
 \item{N}{population size}
 
 \item{subdivisions}{the maximum number of subintervals.}
+
+\item{tiny}{avoid integration limits by this amount}
 
 \item{...}{additional arguments pass to
 \code{\link[stats]{integrate}}}
