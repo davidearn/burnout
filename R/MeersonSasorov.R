@@ -68,9 +68,10 @@ burnout_prob_MS <- function( R0, epsilon, N=10^6, subdivisions=1000L, debug = FA
     dfun(i_upr)
     
     Q1 <- try(stats::integrate(f=integrand, lower=0+tiny, upper=xm-tiny,
-                               subdivisions=subdivisions, ...)$value)
+                                    subdivisions=subdivisions, ...)$value,
+              silent = TRUE)
     ## FIX: this destroys the automatic vectorization:
-    if ("try-error" %in% class(Q1)) return(NA)
+    if (inherits(Q1, "try-error")) return(NA)
 
     ym <- (delta+xm)*xm/(1+xm)*(-xm/delta)^(K*delta) *
         exp(K*(xm+delta) - (1+1/xm)*Q1)
