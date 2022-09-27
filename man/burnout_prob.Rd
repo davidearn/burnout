@@ -4,7 +4,14 @@
 \alias{burnout_prob}
 \title{Burnout probability based on Kendall's \eqn{q}}
 \usage{
-burnout_prob(R0, epsilon, N = 10^6, xin = x_in(R0, epsilon), q_fun = q_approx)
+burnout_prob(
+  R0,
+  epsilon,
+  N = 10^6,
+  xin = x_in(R0, epsilon),
+  q_fun = q_approx,
+  ystar = epsilon * (1 - 1/R0)
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -18,6 +25,9 @@ lifetime, i.e., no mortality)}
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
 
 \item{q_fun}{function to compute Kendall's \eqn{q}}
+
+\item{ystar}{prevalence at boundary layer (equilibrium prevalence
+by default)}
 }
 \value{
 real number between 0 and 1

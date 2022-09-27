@@ -10,7 +10,8 @@ P1_prob(
   k = 1,
   N = 10^6,
   xin = x_in(R0, epsilon),
-  q_fun = q_approx
+  q_fun = q_approx,
+  ystar = epsilon * (1 - 1/R0)
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ lifetime, i.e., no mortality)}
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
 
 \item{q_fun}{function to compute Kendall's \eqn{q}}
+
+\item{ystar}{prevalence at boundary layer (equilibrium prevalence
+by default)}
 }
 \value{
 real number between 0 and 1
