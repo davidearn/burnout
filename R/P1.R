@@ -38,6 +38,8 @@
 ##' @inheritParams fizzle_prob
 ##' @param N population size
 ##' @param q_fun function to compute Kendall's \eqn{q}
+##' @param ystar prevalence at boundary layer (equilibrium prevalence
+##'     by default)
 ##'
 ##' @return real number between 0 and 1
 ##' @importFrom Rdpack reprompt
@@ -64,13 +66,15 @@
 ##' cat("max(P1) = ", max(P1vals), "\n")
 ##'
 P1_prob <- function(R0, epsilon, k=1, N=10^6, xin = x_in(R0,epsilon),
-                    q_fun = q_approx) {
+                    q_fun = q_approx,
+                    ystar = epsilon * (1 - 1/R0)
+                    ) {
     fizz <- fizzle_prob(R0, k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
     ## burnout probability (conditional on not fizzling):
     burn <- burnout_prob(R0=R0, epsilon=epsilon, N=N, xin = xin,
-                         q_fun=q_fun)
+                         q_fun=q_fun, ystar=ystar)
     ## probability of not fizzling and then burning out:
     notfizz.and.burn <- notfizz * burn
     ## probability of either fizzling or burning out:
@@ -99,11 +103,12 @@ P1_prob <- function(R0, epsilon, k=1, N=10^6, xin = x_in(R0,epsilon),
 ##' 
 ##' @export
 burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
-                         q_fun = q_approx) {
+                         q_fun = q_approx,
+                         ystar = epsilon * (1 - 1/R0)
+                         ) {
     ## Kendall's q:
     q <- q_fun(R0, epsilon, xin)
     ## burnout probability (conditional on not fizzling):
-    ystar <- epsilon * (1 - 1/R0)
     return( q^(N*ystar) )
 }
 
