@@ -1,4 +1,24 @@
-##' Susceptibles at boundary layer (boundary/boundary layer approximation)
+##' Minimum \eqn{{\mathcal R}_0} for which \eqn{x_{\rm in}}
+##' approximation is valid
+##'
+##' @details
+##' \deqn{
+##' 	{\mathcal R}_0 >
+##'     -\frac{W_{-1}\left(-(1-\varepsilon)
+##'      e^{-(1-\varepsilon)}\right)}{1-\varepsilon}
+##' }
+##'
+##' @inheritParams x_in
+##' @export
+##' 
+R0_min_for_x_in <- function(epsilon) {
+    mome <- -(1-epsilon)
+    R0min <- Wm1(mome * exp(mome))/mome
+    return(R0min)
+}
+
+##' Susceptibles at boundary layer (boundary/boundary layer
+##' approximation) (scalar version)
 ##'
 ##' Fraction of hosts that are susceptible when the trajectory enters
 ##' the boundary layer at the end of the first epidemic.
@@ -48,7 +68,9 @@
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
+x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
+    R0min <- R0_min_for_x_in(epsilon)
+    if (R0 <= R0min) return(NA)
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
@@ -64,6 +86,13 @@ x_in <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
 ## from original code for Xb_approx in Xb.R:
 ##  Xb <- -(1/R)*lambertW(-R*exp(R*(Yb-1)), b=0) +
 ##               eps*exp(R*Yb)*(expint_E1(R*Yb) - expint_E1(R*Ymax))
+
+##' Susceptibles at boundary layer (vector version)
+##'
+##' @rdname x_in_scalar
+##' @export
+##' 
+x_in <- Vectorize(x_in_scalar)
 
 ##' Crude "Kermack-McKendrick" version of \eqn{x_{\rm in}}
 ##'
@@ -385,3 +414,4 @@ plot_all_x_in <- function(Rmin=1.0001, Rmax=20,
     plot_x_in(xin_fun = x_in_hocb, ...)
     legend("top", bty="n", legend="x_in_hocb")
 }
+
