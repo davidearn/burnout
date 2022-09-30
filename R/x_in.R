@@ -12,7 +12,7 @@
 ##' @export
 ##' 
 R0_min_for_x_in <- function(epsilon) {
-    mome <- -(1-epsilon)
+    mome <- -(1-epsilon) # mome = minus-one-minus-epsilon
     R0min <- Wm1(mome * exp(mome))/mome
     return(R0min)
 }
