@@ -70,7 +70,7 @@ R0_min_for_x_in <- function(epsilon) {
 ##'
 x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     R0min <- R0_min_for_x_in(epsilon)
-    if (R0 <= R0min) return(NA)
+    if (!is.finite(R0min) || R0 <= R0min) return(NA)
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
@@ -91,8 +91,12 @@ x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
 ##'
 ##' @rdname x_in_scalar
 ##' @export
-##' 
-x_in <- Vectorize(x_in_scalar)
+##'
+x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon"))
+
+## not sure why checks are picking this up ?
+utils::globalVariables("peak_prev")
+
 
 ##' Crude "Kermack-McKendrick" version of \eqn{x_{\rm in}}
 ##'

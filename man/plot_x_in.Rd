@@ -5,7 +5,7 @@
 \title{Plot \eqn{x_{\rm in}}}
 \usage{
 plot_x_in(
-  Rmin = 1.0001 * R0_min_for_x_in(max(epsilon)),
+  Rmin = 1.0001,
   Rmax = 20,
   R0 = seq(Rmin, Rmax, length = 1001),
   epsilon = c(0.01, 0.02, 0.03),
