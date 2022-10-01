@@ -70,6 +70,7 @@ R0_min_for_x_in <- function(epsilon) {
 ##'
 x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     R0min <- R0_min_for_x_in(epsilon)
+    ## R0_min_for_x_in(1) yields NaN, hence:
     if (!is.finite(R0min) || R0 <= R0min) return(NA)
     yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
