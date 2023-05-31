@@ -44,6 +44,7 @@ R0_min_for_x_in <- function(epsilon) {
 ##'     \code{\link{x_in_exact}}
 ##'
 ##' @inheritParams peak_prev
+##' @param xi initial susceptible proportion \eqn{x_{\rm i}}
 ##' @param peakprev_fun function of \eqn{{\cal R}_0} and
 ##'     \eqn{\varepsilon} to use to compute peak prevalence
 ##' @param ... additional arguments are ignored
@@ -68,7 +69,7 @@ R0_min_for_x_in <- function(epsilon) {
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
+x_in_scalar <- function(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...) {
     R0min <- R0_min_for_x_in(epsilon)
     ## R0_min_for_x_in(1) yields NaN, hence:
     if (!is.finite(R0min) || R0 <= R0min) return(NA)
@@ -76,7 +77,7 @@ x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax 
-       , -(1/R0)*W0(-R0*exp(R0*(yeqm-1))) +
+       , -(1/R0)*W0(-R0*exp(R0*(yeqm-xi))) +
             epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
         , # epsilon correction is garbage so ignore it
           -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
@@ -93,7 +94,7 @@ x_in_scalar <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
 ##' @rdname x_in_scalar
 ##' @export
 ##'
-x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon"))
+x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "xi"))
 
 ## not sure why checks are picking this up ?
 utils::globalVariables("peak_prev")

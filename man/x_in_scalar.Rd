@@ -6,9 +6,9 @@
 \title{Susceptibles at boundary layer (boundary/boundary layer
 approximation) (scalar version)}
 \usage{
-x_in_scalar(R0, epsilon, peakprev_fun = peak_prev, ...)
+x_in_scalar(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...)
 
-x_in(R0, epsilon, peakprev_fun = peak_prev, ...)
+x_in(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -16,6 +16,8 @@ x_in(R0, epsilon, peakprev_fun = peak_prev, ...)
 \item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
 lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
 lifetime, i.e., no mortality)}
+
+\item{xi}{initial susceptible proportion \eqn{x_{\rm i}}}
 
 \item{peakprev_fun}{function of \eqn{{\cal R}_0} and
 \eqn{\varepsilon} to use to compute peak prevalence}
