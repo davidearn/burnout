@@ -8,7 +8,7 @@ The `burnout` package requires R ≥ 4.2.0 in order for the documentation to be 
 R CMD Rd2pdf burnout/man/burnout.Rd
 ```
 
-# generating graphs from Parsons _et al_ (2022)
+# generating graphs from Parsons _et al_ (2023)
 
 Generate the analytical curves in Figure 3 via
 ```
