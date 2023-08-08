@@ -77,10 +77,10 @@ x_in_scalar <- function(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...) {
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax 
-       , -(1/R0)*W0(-R0*exp(R0*(yeqm-xi))) +
+       , -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi))) +
             epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
         , # epsilon correction is garbage so ignore it
-          -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
+          -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi)))
     )
     return(xin)
 }
