@@ -48,7 +48,7 @@
 ##' \code{\link[expint]{gammainc}(a,x)},
 ##' \code{\link[gsl]{gamma_inc}(a,x)}).
 ##'
-##' @note [Champredon _et al_ (2018)](https://epubs.siam.org/doi/10.1137/18M1186411)
+##' @note Champredon _et al_ (2018) \doi{10.1137/18M1186411}
 ##'     used the notation \eqn{{\cal G}} for \code{lig}.
 ##'
 ##' @param a shape parameter (non-negative real number)
