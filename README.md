@@ -3,8 +3,8 @@
 burnout (or persistence) after a major outbreak.  It was used to create the figures in
 
    Parsons TL, Bolker BM, Dushoff J, Earn DJD (2024),
-   "The probability of epidemic burnout in the stochastic SIR model with vital dynamics"
-   PNAS, Volume: 121, Issue: 5, DOI: 10.1073/pnas.2313708120
+   "The probability of epidemic burnout in the stochastic SIR model with vital dynamics",
+   PNAS, Volume: 121, Issue: 5, DOI: [10.1073/pnas.2313708120](https://doi.org/10.1073/pnas.2313708120)
 
 The `burnout` package requires R ≥ 4.2.0 in order for the documentation to be displayed as desired.  As mentioned [here](https://cran.r-project.org/doc/manuals/r-devel/NEWS.html), 4.2.0 automatically supports [KaTeX](https://katex.org/docs/support_table.html) and [MathJax](https://www.mathjax.org/), which I use liberally in [roxygen](https://roxygen2.r-lib.org/) documentation.
 
