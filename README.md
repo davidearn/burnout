@@ -2,14 +2,16 @@
 `burnout` is an R package for calculating the probability of epidemic
 burnout (or persistence) after a major outbreak.  It was used to create the figures in
 
-   Parsons TL, Bolker BM, Dushoff J, Earn DJD (2023),
-   "The Probability of Epidemic Burnout in the Stochastic SIR Model with Demography"
+   Parsons TL, Bolker BM, Dushoff J, Earn DJD (2024),
+   "The probability of epidemic burnout in the stochastic SIR model with vital dynamics"
+   PNAS, Volume: 121, Issue: 5, DOI: 10.1073/pnas.2313708120
 
 The `burnout` package requires R ≥ 4.2.0 in order for the documentation to be displayed as desired.  As mentioned [here](https://cran.r-project.org/doc/manuals/r-devel/NEWS.html), 4.2.0 automatically supports [KaTeX](https://katex.org/docs/support_table.html) and [MathJax](https://www.mathjax.org/), which I use liberally in [roxygen](https://roxygen2.r-lib.org/) documentation.
 
 ----
 
-_The remainder of this file currently contains notes for the authors. We will clean this up before the paper is published._
+_The remainder of this file currently contains notes for the
+authors. We will clean this up when time permits._
 
 - LaTeX issues: `\\mathscr` (`mathrsfs` package?, 
    Debugging: `R CMD Rdconv man/burnout.Rd`
@@ -18,7 +20,7 @@ _The remainder of this file currently contains notes for the authors. We will cl
 R CMD Rd2pdf burnout/man/burnout.Rd
 ```
 
-# generating graphs from Parsons _et al_ (2023)
+# generating graphs from Parsons _et al_ (2024)
 
 Generate the analytical curves in Figure 3 via
 ```
