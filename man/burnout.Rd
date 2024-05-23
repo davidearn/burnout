@@ -2,6 +2,7 @@
 % Please edit documentation in R/burnout.R
 \docType{package}
 \name{burnout}
+\alias{burnout-package}
 \alias{burnout}
 \title{burnout: A package for computing infectious disease persistence probabilities}
 \description{
@@ -26,3 +27,12 @@ different implementation via \code{options(burnout.lambertW =
 "emdbook")}.
 }
 
+\author{
+\strong{Maintainer}: David Earn \email{earn@math.mcmaster.ca} (\href{https://orcid.org/0000-0002-7562-1341}{ORCID})
+
+Authors:
+\itemize{
+  \item Ben Bolker (\href{https://orcid.org/0000-0002-2127-0443}{ORCID})
+}
+
+}

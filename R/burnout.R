@@ -19,7 +19,6 @@
 ##' different implementation via \code{options(burnout.lambertW =
 ##' "emdbook")}.
 ##' 
-##' @docType package
 ##' @name burnout
-NULL
-##> NULL
+"_PACKAGE"
+
