@@ -78,6 +78,7 @@ not_fizzle_prob <- function(R0, k=1) {
 ##' @inheritParams fizzle_prob
 ##' @param delta probability threshold
 ##' @seealso plot_fizzle_time
+##' @aliases t_delta
 ##'
 ##' @export
 ##' 

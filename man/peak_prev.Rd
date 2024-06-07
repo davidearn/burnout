@@ -4,7 +4,7 @@
 \alias{peak_prev}
 \title{Peak prevalence}
 \usage{
-peak_prev(R0, epsilon = 0)
+peak_prev(R0, epsilon = 0, eta = 0)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -25,7 +25,7 @@ The peak prevalence is
 \deqn{
   y_{\rm max} \approx 1-
     \frac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big)
-    - \varepsilon 
+    - \varepsilon
   \Big(1-\frac{1}{{\cal R}_0}\Big)
   \frac{(\ln{{\cal R}_0})\big/\big(1-\frac{1}{{\cal R}_0}\big) - 1}
   {(\ln{{\cal R}_0})\big/\big(1-\frac{1}{{\cal R}_0}\big) + {\cal R}_0} \,.
@@ -37,6 +37,7 @@ The expression is exact for \eqn{\varepsilon = 0}.
 peak_prev(R0=2)
 peak_prev(R0=2, epsilon=c(0, 0.001, 0.01, 0.1, 0.9))
 peak_prev(R0=c(2,4), epsilon=0.1)
+peak_prev(R0=2, epsilon=0.001, eta=c(0.01, 0.1))
 peak_prev(R0=c(2,4), epsilon=c(0,0.1)) # FIX: fails when both are vectors
 
 }

@@ -1,3 +1,19 @@
+##' Equilibrium prevalence \eqn{y^\star}
+##'
+##' @details
+##' \deqn{
+##' 	y^\star = \frac{\varepsilon+\eta}{1+\eta}
+##'       \big( 1 - \frac{1}{{\mathcal R}_0} \big)
+##' }
+##'
+##' @inheritParams peak_prev
+##' @export
+##'
+eqm_prev <- function(R0, epsilon, eta=0) {
+    yeqm <- (epsilon+eta)/(1+eta)*(1 - 1/R0)
+    return(yeqm)
+}
+
 ##' Minimum \eqn{{\mathcal R}_0} for which \eqn{x_{\rm in}}
 ##' approximation is valid
 ##'
@@ -10,7 +26,7 @@
 ##'
 ##' @inheritParams x_in
 ##' @export
-##' 
+##'
 R0_min_for_x_in <- function(epsilon) {
     mome <- -(1-epsilon) # mome = minus-one-minus-epsilon
     R0min <- Wm1(mome * exp(mome))/mome
@@ -55,9 +71,9 @@ R0_min_for_x_in <- function(epsilon) {
 ##'
 ##' @references
 ##' \insertRef{Corless1996}{burnout}
-##' 
+##'
 ##' \insertRef{Olver2010}{burnout}
-##' 
+##'
 ##' @export
 ##'
 ##' @examples
@@ -69,16 +85,18 @@ R0_min_for_x_in <- function(epsilon) {
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in_scalar <- function(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...) {
-    R0min <- R0_min_for_x_in(epsilon)
+x_in_scalar <- function(R0, epsilon, eta=0, xi = 1,
+                        peakprev_fun = peak_prev, ...) {
+    R0min <- R0_min_for_x_in(epsilon+eta)
     ## R0_min_for_x_in(1) yields NaN, hence:
     if (!is.finite(R0min) || R0 <= R0min) return(NA)
-    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
-    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
+    yeqm <- eqm_prev(R0, epsilon, eta) # equilibrium prevalence
+    ymax <- peakprev_fun(R0, epsilon, eta) # peak prevalence
     E1 <- expint::expint_E1
-    xin <- ifelse (yeqm < ymax 
+    xin <- ifelse (yeqm < ymax
        , -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi))) +
-            epsilon*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax))
+            (epsilon+eta)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
+            (eta/R0)*(exp(R0*(yeqm-ymax)) - 1)
         , # epsilon correction is garbage so ignore it
           -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi)))
     )
@@ -125,9 +143,9 @@ x_in_KM <- function(R0, ...) {
 ##'
 ##' @inheritParams x_in
 ##' @export
-##' 
+##'
 x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
-    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence
     xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
     return(xin)
 }
@@ -142,9 +160,9 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
 ##' @inheritParams x_in
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
-##' 
+##'
 x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
-    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence
+    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence
     ymax <- peakprev_fun(R0, epsilon) # peak prevalence
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
@@ -174,10 +192,10 @@ x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
 ##'
 ##' @inheritParams peak_prev
 ##' @inheritParams stats::integrate
-##' 
+##'
 ##' @param xf final size (\eqn{0<x_{\rm f}<1})
 ##' @param tiny amount by which to avoid integration limits
-##' 
+##'
 ##' @importFrom stats integrate
 ##' @seealso \code{\link{Ytilde_1}}
 ##'
@@ -187,7 +205,7 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
     integrand <- function(t) {
         ## using tiny adjustment instead of cases:
         ##out <- ifelse(
-        ##    t==1, 
+        ##    t==1,
         ##    (1/(R0*t) - 1)/(R0*t) + (1-xf)/(R0*xf)/(t-xf),
         ##ifelse(
         ##    t==xf,
@@ -219,7 +237,7 @@ Ytilde_1_scalar <- function(xf, R0, tiny=1e-12, subdivisions=1000L, ...) {
 ##' R0 <- 2
 ##' xf <- 1 - final_size(R0)
 ##' Ytilde_1(xf,R0)
-##' 
+##'
 Ytilde_1  <- Vectorize(Ytilde_1_scalar)
 
 ##' Standard final size
@@ -255,14 +273,14 @@ comp_final_size <- function(R0) {-(1/R0)*W0(-R0*exp(-R0))}
 ##' @param debug print debugging output?
 ##' @seealso \code{\link{x_in}}, \code{\link{x_in_cb}}, \code{\link{x_in_exact}}
 ##' @export
-##' 
+##'
 x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...) {
 
     dfun <- function(x) {
         if (debug) cat(x, get(x), "\n")
     }
 
-    yeqm <- epsilon*(1-1/R0) # equilibrium prevalence [aka y_in]
+    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence [aka y_in]
     dfun("yeqm")
     ##ymax <- peakprev_fun(R0, epsilon) # peak prevalence [not needed for hocb]
     pc <- 1 - 1/R0 # p_crit
@@ -286,7 +304,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
 }
 
 ##' Plot \eqn{x_{\rm in}}
-##' 
+##'
 ##' @inheritParams x_in
 ##' @inheritParams compare_funs
 ##'
@@ -339,7 +357,7 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
         xx <- epsilon
         if (length(R0) != 1) stop("only one R0 value allowed if xvar is epsilon")
     }
-    
+
     ## show naive approx (eqm susceptible proportion) as dashed line first:
     plot(xx,
          if (xvar == "R0") 1/R0 else rep(1/R0,length(xx)),
@@ -382,7 +400,7 @@ plot_x_in <- function(Rmin=1.0001, Rmax=20,
 }
 
 ##' Plot all approximations to \eqn{x_{\rm in}}
-##' 
+##'
 ##' @inheritParams plot_x_in
 ##' @inheritParams compare_funs
 ##' @param col,lwd,xlim,ylim,log,... see \code{\link{graphical parameters}}

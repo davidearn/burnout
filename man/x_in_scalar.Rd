@@ -6,9 +6,9 @@
 \title{Susceptibles at boundary layer (boundary/boundary layer
 approximation) (scalar version)}
 \usage{
-x_in_scalar(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...)
+x_in_scalar(R0, epsilon, eta = 0, xi = 1, peakprev_fun = peak_prev, ...)
 
-x_in(R0, epsilon, xi = 1, peakprev_fun = peak_prev, ...)
+x_in(R0, epsilon, eta = 0, xi = 1, peakprev_fun = peak_prev, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}

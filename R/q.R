@@ -37,13 +37,14 @@
 ##' curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_exact(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
-    a <- (R0/epsilon)*(1-1/R0)
-    x <- (R0/epsilon)*(1-xin)
+q_exact <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) {
+    eps.plus.eta <- epsilon + eta
+    a <- (R0/eps.plus.eta)*(1-1/R0)
+    x <- (R0/eps.plus.eta)*(1-xin)
     ##denom <- exp(x) * x^(-a) * lig(a,x)
     log.denom <- x - a*log(x) + llig(a,x)
     denom <- exp(log.denom)
-    q <- 1 / (1 + epsilon/denom)
+    q <- 1 / (1 + eps.plus.eta/denom)
     return(q)
 }
 
@@ -86,14 +87,14 @@ q_exact <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
 ##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_approx(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-q_approx <- function(R0, epsilon, xin = x_in(R0,epsilon)) {
-    a <- (R0/epsilon)*(1 - 1/R0)
-    b <- (R0/epsilon)*(1/R0 - xin)
-    log.fac1 <- (1/2)*(log(2*pi) - log(epsilon*(R0-1)))
+q_approx <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) { 
+    eps.plus.eta <- epsilon + eta
+    a <- (R0/eps.plus.eta)*(1 - 1/R0)
+    b <- (R0/eps.plus.eta)*(1/R0 - xin)
+    log.fac1 <- (1/2)*(log(2*pi) - log(eps.plus.eta*(R0-1)))
     log.fac2 <- a*(log(1-1/R0) - log(1-xin))
     log.messy <- log.fac1 + log.fac2 + b
     denom <- 1 + exp(log.messy)
     q <- (1 + 1/denom)^(-1)
     return(q)
 }
-

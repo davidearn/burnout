@@ -4,7 +4,7 @@
 \alias{q_exact}
 \title{Kendall's \eqn{q} (exact expression)}
 \usage{
-q_exact(R0, epsilon, xin = x_in(R0, epsilon))
+q_exact(R0, epsilon, eta = 0, xin = x_in(R0, epsilon, eta))
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}

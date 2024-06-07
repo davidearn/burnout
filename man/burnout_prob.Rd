@@ -7,10 +7,11 @@
 burnout_prob(
   R0,
   epsilon,
+  eta = 0,
   N = 10^6,
-  xin = x_in(R0, epsilon),
+  xin = x_in(R0, epsilon, eta),
   q_fun = q_approx,
-  ystar = epsilon * (1 - 1/R0)
+  ystar = eqm_prev(R0, epsilon, eta)
 )
 }
 \arguments{

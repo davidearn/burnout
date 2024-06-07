@@ -2,6 +2,7 @@
 % Please edit documentation in R/fizzle.R
 \name{fizzle_time}
 \alias{fizzle_time}
+\alias{t_delta}
 \title{Fizzle time}
 \usage{
 fizzle_time(R0, k, delta)

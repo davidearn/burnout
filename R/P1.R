@@ -11,9 +11,9 @@
 ##'
 ##' where \eqn{q} is Kendall's \eqn{q}, the expected total population
 ##' size is \eqn{N}, and the equilibrium prevalence is
-##' 
+##'
 ##' \deqn{y^\star = \varepsilon\Big(1 - \frac{1}{{\cal R}_0}\Big) \,.}
-##' 
+##'
 ##' Hence, the probability of \emph{either} fizzling before a first
 ##' major outbreak \emph{or} burning out after a first major outbreak
 ##' is
@@ -22,10 +22,10 @@
 ##'      (1-p_k) + p_k q^{Ny^\star} =
 ##'      1 - p_k\big( 1 - q^{Ny^\star} \big) \,.
 ##' }
-##' 
+##'
 ##' Consequently, the probability of \emph{persisting} beyond the
 ##' first epidemic is
-##' 
+##'
 ##' \deqn{
 ##'     {{\cal P}_1}({\cal R}_0,\varepsilon,k,N) =
 ##'       p_k\big( 1 - q^{Ny^\star} \big) \,.
@@ -46,7 +46,7 @@
 ##'
 ##' @references
 ##' \insertRef{Kendall1948b}{burnout}
-##' 
+##'
 ##' @export
 ##'
 ##' @examples
@@ -65,15 +65,16 @@
 ##' plot(xvals, P1vals, las=1, col="blue", type="l", lwd=2, log="x")
 ##' cat("max(P1) = ", max(P1vals), "\n")
 ##'
-P1_prob <- function(R0, epsilon, k=1, N=10^6, xin = x_in(R0,epsilon),
+P1_prob <- function(R0, epsilon, eta=0, k=1, N=10^6,
+                    xin = x_in(R0,epsilon, eta),
                     q_fun = q_approx,
-                    ystar = epsilon * (1 - 1/R0)
+                    ystar = eqm_prev(R0, epsilon, eta)
                     ) {
     fizz <- fizzle_prob(R0, k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
     ## burnout probability (conditional on not fizzling):
-    burn <- burnout_prob(R0=R0, epsilon=epsilon, N=N, xin = xin,
+    burn <- burnout_prob(R0=R0, epsilon=epsilon, eta=eta, N=N, xin = xin,
                          q_fun=q_fun, ystar=ystar)
     ## probability of not fizzling and then burning out:
     notfizz.and.burn <- notfizz * burn
@@ -100,14 +101,15 @@ P1_prob <- function(R0, epsilon, k=1, N=10^6, xin = x_in(R0,epsilon),
 ##'
 ##' @references
 ##' \insertRef{Kendall1948b}{burnout}
-##' 
+##'
 ##' @export
-burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
+burnout_prob <- function(R0, epsilon, eta=0, N=10^6,
+                         xin = x_in(R0,epsilon,eta),
                          q_fun = q_approx,
-                         ystar = epsilon * (1 - 1/R0)
+                         ystar = eqm_prev(R0, epsilon, eta)
                          ) {
-    ## Kendall's q:
-    q <- q_fun(R0, epsilon, xin)
+  ## Kendall's q:
+    q <- q_fun(R0, epsilon, eta, xin)
     ## burnout probability (conditional on not fizzling):
     return( q^(N*ystar) )
 }
@@ -127,7 +129,7 @@ burnout_prob <- function(R0, epsilon, N=10^6, xin = x_in(R0,epsilon),
 ##'
 ##' @references
 ##' \insertRef{Kendall1948b}{burnout}
-##' 
+##'
 ##' @export
 burnout_prob_hocb <- function(R0, epsilon, N=10^6,
                               xin = x_in_hocb(R0,epsilon),
@@ -145,7 +147,7 @@ burnout_prob_hocb <- function(R0, epsilon, N=10^6,
 ##'
 ##' @seealso \code{\link{burnout_prob_MS}},
 ##'     \code{\link{burnout_prob_vanH}}, \code{\link{P1_prob}}
-##' 
+##'
 ##' @inheritParams P1_prob
 ##' @inheritParams stats::integrate
 ##' @param burnout_prob_fun function with which to calculate burnout
