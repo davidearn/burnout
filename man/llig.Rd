@@ -64,7 +64,7 @@ function, which fail for large arguments (e.g.,
 \code{\link[gsl]{gamma_inc}(a,x)}).
 }
 \note{
-\href{https://epubs.siam.org/doi/10.1137/18M1186411}{Champredon \emph{et al} (2018)}
+Champredon \emph{et al} (2018) \doi{10.1137/18M1186411}
 used the notation \eqn{{\cal G}} for \code{lig}.
 }
 \examples{
