@@ -18,9 +18,9 @@ P1_prob_vanH(
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
-lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
-lifetime, i.e., no mortality)}
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
+    0} corresponds to infinite lifetime, i.e., no mortality)}
 
 \item{k}{initial number of infected individuals (\eqn{k})}
 

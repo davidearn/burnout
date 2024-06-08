@@ -27,9 +27,9 @@ plot_x_in(
 
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
-lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
-lifetime, i.e., no mortality)}
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
+    0} corresponds to infinite lifetime, i.e., no mortality)}
 
 \item{xvar}{string indicating whether \code{R0} or \code{epsilon}
 is the desired independent variable}
@@ -45,6 +45,7 @@ returns susceptible proportion at entry to boundary layer}
 Plot \eqn{x_{\rm in}}
 }
 \examples{
+\dontrun{
 op <- par(mfrow = c(1,2))
 plot_x_in(epsilon = 0.01)
 plot_x_in(epsilon = 0.1)
@@ -54,6 +55,7 @@ plot_x_in(R0 = 2, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 plot_x_in(R0 = 5, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 plot_x_in(R0 = 20, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 par(mfrow = op)
+}
 
 }
 \seealso{

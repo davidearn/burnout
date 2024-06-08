@@ -8,9 +8,9 @@ approximation is valid}
 R0_min_for_x_in(epsilon)
 }
 \arguments{
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
-lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
-lifetime, i.e., no mortality)}
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
+    0} corresponds to infinite lifetime, i.e., no mortality)}
 }
 \description{
 Minimum \eqn{{\mathcal R}_0} for which \eqn{x_{\rm in}}

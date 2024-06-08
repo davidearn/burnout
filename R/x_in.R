@@ -322,6 +322,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
 ##' @export
 ##'
 ##' @examples
+##' \dontrun{
 ##' op <- par(mfrow = c(1,2))
 ##' plot_x_in(epsilon = 0.01)
 ##' plot_x_in(epsilon = 0.1)
@@ -331,6 +332,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
 ##' plot_x_in(R0 = 5, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 ##' plot_x_in(R0 = 20, epsilon = seq(0,1,length=101), xvar="epsilon", log="")
 ##' par(mfrow = op)
+##' }
 ##'
 plot_x_in <- function(Rmin=1.0001, Rmax=20,
                       ##R0 = exp(seq(log(Rmin),log(Rmax),length=1001)),

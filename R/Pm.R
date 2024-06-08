@@ -26,6 +26,7 @@
 ##' @export
 ##'
 ##' @examples
+##' \dontrun{
 ##' Pm_prob(R0=2, epsilon=0.01, m=2)
 ##' Pm_prob(R0=2, epsilon=0, m=2)
 ##' Pm_prob(R0=c(2,4), epsilon=0.01, m=2)
@@ -40,6 +41,7 @@
 ##' Pmvals <- Re(Pmvals)
 ##' plot(xvals, Pmvals, las=1, col="blue", type="l", lwd=2, log="x")
 ##' cat("max(Pm) = ", max(Pmvals), "\n")
+##' }
 ##'
 Pm_prob <- function(R0, epsilon, m, k=1, N=10^6,
                     xin = x_in(R0,epsilon),

@@ -1,9 +1,26 @@
-Euler_gamma <- -digamma(1)
-Ein <- function( z ) {E1(z) + log(z) + Euler_gamma} 
 
+##' Ein special function
+##'
+##' \eqn{Ein(z) = E_1(z) + \log(z) + \gamma}
+##'
+##' @param z real or complex number
+##' @seealso \code{\link[expint]{expint_E1}}
+##' @importFrom expint expint_E1
+##' @export
+Ein <- function( z ) {
+    E1 <- expint::expint_E1
+    Euler_gamma <- -digamma(1)
+    return(E1(z) + log(z) + Euler_gamma)
+} 
+
+##' Inverse of Lambert \eqn{W} function
+##'
+##' \eqn{{\mathcal{E}}(x) = x e^x}.
+##' 
+##' @param x real number
+##' @seealso \code{\link[gsl]{lambert_W0}}
+##' @export
 Winv <- function( x ) {x * exp(x)}
-
-## 
 
 ##' Recursive function to compute \eqn{x_{{\rm i},j}}
 ##'

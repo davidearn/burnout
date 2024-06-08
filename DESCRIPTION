@@ -9,10 +9,9 @@ Authors@R: c(person("David", "Earn",
   role = c("aut"),
   comment=c(ORCID="0000-0002-2127-0443"))
   )
-Description: Compute the probability that an infectious disease -- modelled
-    using the standard SIR or SIRS model --
-    persists beyond an initial outbreak
-    (or beyond any number of outbreaks)
+Description: Compute the probability that an infectious disease --
+    modelled using the standard SIR or SIRS model -- persists beyond
+    an initial outbreak (or beyond any number of outbreaks).
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

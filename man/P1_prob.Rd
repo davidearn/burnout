@@ -18,9 +18,13 @@ P1_prob(
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
-lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
-lifetime, i.e., no mortality)}
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
+    0} corresponds to infinite lifetime, i.e., no mortality)}
+
+\item{eta}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean duration of immunity (\eqn{1/\delta};
+\eqn{\eta = 0} corresponds to permanent immunity}
 
 \item{k}{initial number of infected individuals (\eqn{k})}
 

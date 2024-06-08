@@ -18,9 +18,9 @@ Pm_prob(
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a proportion of mean
-lifetime (\eqn{1/\mu}; \eqn{\varepsilon = 0} corresponds to infinite
-lifetime, i.e., no mortality)}
+\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
+    0} corresponds to infinite lifetime, i.e., no mortality)}
 
 \item{m}{epidemic wave number}
 
@@ -52,6 +52,7 @@ This function is recursive and ultimate calls
 \code{\link{P1_prob}}.
 }
 \examples{
+\dontrun{
 Pm_prob(R0=2, epsilon=0.01, m=2)
 Pm_prob(R0=2, epsilon=0, m=2)
 Pm_prob(R0=c(2,4), epsilon=0.01, m=2)
@@ -66,6 +67,7 @@ max(Im(Pmvals))
 Pmvals <- Re(Pmvals)
 plot(xvals, Pmvals, las=1, col="blue", type="l", lwd=2, log="x")
 cat("max(Pm) = ", max(Pmvals), "\n")
+}
 
 }
 \references{
