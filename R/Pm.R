@@ -48,7 +48,9 @@ Pm_prob <- function(R0, epsilon, m, k=1, N=10^6,
                     q_fun = q_approx,
                     ystar = epsilon * (1 - 1/R0)
                     ) {
-    if (m == 1) return(P1_prob(R0, epsilon, k, N, xin, q_fun, ystar))
+    if (m == 1) return(P1_prob(R0, epsilon = epsilon,
+                               k = k, N = N, xin = xin,
+                               q_fun = q_fun, ystar = ystar))
     ## we know m > 1:
     xim <- x_i(R0, j=m)
     xinm <- x_in(R0, epsilon, xi=xim)
