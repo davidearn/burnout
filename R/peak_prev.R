@@ -53,19 +53,18 @@ peak_prev <- function( R0, epsilon=0, eta=0 ) {
 ##'     \frac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big) \,.
 ##' }
 ##'
-##' The optional argument (\code{epsilon}) is ignored if given.  The
-##' reason for including it is so this function can be used as an
-##' alternative to the more accurate \code{\link{peak_prev}} function
-##' that does depend on \eqn{\varepsilon}.
-##'
 ##' @seealso \code{\link{peak_prev}}, \code{\link{x_in}}
+##'
+##' @param ... (ignored) for compatibility 
+##' with the more accurate \code{\link{peak_prev}} function
+##' that takes additional arguments
 ##'
 ##' @inheritParams peak_prev
 ##'
 ##' @return real number between 0 and 1
 ##' @export
 ##'
-peak_prev_nvd <- function( R0, epsilon=0 ) {
+peak_prev_nvd <- function( R0, ... ) {
     ymax <- 1 - (1/R0)*(1 + log(R0))
     return(ymax)
 }
