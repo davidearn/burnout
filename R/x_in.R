@@ -1,6 +1,7 @@
 ##' Equilibrium prevalence \eqn{y^\star}
 ##'
-##' @details
+##' @details If there is no effective waning from antigenic evolution,
+##'     i.e., \eqn{\alpha=0}, then
 ##' \deqn{
 ##' 	y^\star = \frac{\varepsilon+\eta}{1+\eta}
 ##'       \big( 1 - \frac{1}{{\mathcal R}_0} \big)
@@ -13,12 +14,9 @@ eqm_prev <- function(R0, epsilon, eta=0, alpha=0) {
     if (alpha == 0) {
         yeqm <- (epsilon+eta)/(1+eta)*(1 - 1/R0)
     } else {
-        ## alpha > 0 makes sense only if eta = 0:
-        if (eta == 0) stop("eqm_prev: eta = 0 != alpha = ", alpha)
         pc <- 1 - 1/R0
-        ap <- alpha*pc
-        tmp <- 1 + eta*(1 - ap)
-        yeqm <- (sqrt(tmp^2 + 4*eta*(epsilon+eta)*ap) - tmp) / (2*alpha*eta)
+        tmp <- 1 + eta - alpha*pc
+        yeqm <- (sqrt( tmp^2 + 4*alpha*(epsilon+eta)*pc ) - tmp) / (2*alpha)
     }
     return(yeqm)
 }

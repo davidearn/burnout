@@ -25,6 +25,8 @@ immunity waning; rate of immune decay is \eqn{\delta(1+\alpha
 Equilibrium prevalence \eqn{y^\star}
 }
 \details{
+If there is no effective waning from antigenic evolution,
+i.e., \eqn{\alpha=0}, then
 \deqn{
 	y^\star = \frac{\varepsilon+\eta}{1+\eta}
       \big( 1 - \frac{1}{{\mathcal R}_0} \big)
