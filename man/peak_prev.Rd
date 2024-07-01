@@ -4,7 +4,7 @@
 \alias{peak_prev}
 \title{Peak prevalence}
 \usage{
-peak_prev(R0, epsilon = 0, eta = 0)
+peak_prev(R0, epsilon = 0, eta = 0, alpha = 0, xi = 1, yi = 0)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -16,6 +16,14 @@ proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
 \item{eta}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
 proportion of mean duration of immunity (\eqn{1/\delta};
 \eqn{\eta = 0} corresponds to permanent immunity}
+
+\item{alpha}{antigenic evolution enhancement factor for effective
+immunity waning; rate of immune decay is \eqn{\delta(1+\alpha
+    Y)}.}
+
+\item{xi}{initial susceptible proportion \eqn{x_{\rm i}}}
+
+\item{yi}{initial infective proportion \eqn{y_{\rm i}}}
 }
 \value{
 real number between 0 and 1

@@ -34,6 +34,7 @@
 ##' @seealso \code{\link{fizzle_prob}}, \code{\link{x_in}},
 ##'     \code{\link{llig}}, \code{\link{q_approx}}, \code{\link{q_exact}}
 ##'
+##' @inheritParams peak_prev
 ##' @inheritParams q_approx
 ##' @inheritParams fizzle_prob
 ##' @param N population size
@@ -65,16 +66,16 @@
 ##' plot(xvals, P1vals, las=1, col="blue", type="l", lwd=2, log="x")
 ##' cat("max(P1) = ", max(P1vals), "\n")
 ##'
-P1_prob <- function(R0, epsilon, eta=0, k=1, N=10^6,
-                    xin = x_in(R0,epsilon, eta),
+P1_prob <- function(R0, epsilon, eta=0, alpha=0, k=1, N=10^6,
+                    xin = x_in(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha),
                     q_fun = q_approx,
-                    ystar = eqm_prev(R0, epsilon, eta)
+                    ystar = eqm_prev(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha)
                     ) {
     fizz <- fizzle_prob(R0, k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
     ## burnout probability (conditional on not fizzling):
-    burn <- burnout_prob(R0=R0, epsilon=epsilon, eta=eta, N=N, xin = xin,
+    burn <- burnout_prob(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha, N=N, xin = xin,
                          q_fun=q_fun, ystar=ystar)
     ## probability of not fizzling and then burning out:
     notfizz.and.burn <- notfizz * burn
@@ -103,12 +104,12 @@ P1_prob <- function(R0, epsilon, eta=0, k=1, N=10^6,
 ##' \insertRef{Kendall1948b}{burnout}
 ##'
 ##' @export
-burnout_prob <- function(R0, epsilon, eta=0, N=10^6,
-                         xin = x_in(R0,epsilon,eta),
+burnout_prob <- function(R0, epsilon, eta=0, alpha=0, N=10^6,
+                         xin = x_in(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha),
                          q_fun = q_approx,
-                         ystar = eqm_prev(R0, epsilon, eta)
+                         ystar = eqm_prev(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha)
                          ) {
-  ## Kendall's q:
+    ## Kendall's q:
     q <- q_fun(R0, epsilon, eta, xin)
     ## burnout probability (conditional on not fizzling):
     return( q^(N*ystar) )

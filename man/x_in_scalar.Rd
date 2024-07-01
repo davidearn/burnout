@@ -6,9 +6,27 @@
 \title{Susceptibles at boundary layer (boundary/boundary layer
 approximation) (scalar version)}
 \usage{
-x_in_scalar(R0, epsilon, eta = 0, xi = 1, peakprev_fun = peak_prev, ...)
+x_in_scalar(
+  R0,
+  epsilon,
+  eta = 0,
+  alpha = 0,
+  xi = 1,
+  yi = 0,
+  peakprev_fun = peak_prev_nvd,
+  ...
+)
 
-x_in(R0, epsilon, eta = 0, xi = 1, peakprev_fun = peak_prev, ...)
+x_in(
+  R0,
+  epsilon,
+  eta = 0,
+  alpha = 0,
+  xi = 1,
+  yi = 0,
+  peakprev_fun = peak_prev_nvd,
+  ...
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -21,7 +39,13 @@ proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
 proportion of mean duration of immunity (\eqn{1/\delta};
 \eqn{\eta = 0} corresponds to permanent immunity}
 
+\item{alpha}{antigenic evolution enhancement factor for effective
+immunity waning; rate of immune decay is \eqn{\delta(1+\alpha
+    Y)}.}
+
 \item{xi}{initial susceptible proportion \eqn{x_{\rm i}}}
+
+\item{yi}{initial infective proportion \eqn{y_{\rm i}}}
 
 \item{peakprev_fun}{function of \eqn{{\cal R}_0} and
 \eqn{\varepsilon} to use to compute peak prevalence}
@@ -50,6 +74,12 @@ integral function (\insertCite{Olver2010;textual}{burnout}, \href{https://dlmf.n
 \eqn{y^\star=\varepsilon(1-\frac{1}{{\cal R}_0})}
 is the equilibrium prevalence,
 and \eqn{y_{\rm max}} is the \link[=peak_prev]{peak prevalence}.
+}
+\note{
+The initial conditions \eqn{(x_{\rm i},y_{\rm i}} enter the
+boundary layer component only via \eqn{y_{\rm max}}.
+\eqn{x_{\rm i}} also appears in the KM term involving
+\eqn{W_0}.
 }
 \examples{
 x_in(R0=2, epsilon=0.01)

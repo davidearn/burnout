@@ -4,10 +4,14 @@
 \alias{peak_prev_nvd}
 \title{Peak prevalence}
 \usage{
-peak_prev_nvd(R0, ...)
+peak_prev_nvd(R0, xi = 1, yi = 0, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
+
+\item{xi}{initial susceptible proportion \eqn{x_{\rm i}}}
+
+\item{yi}{initial infective proportion \eqn{y_{\rm i}}}
 
 \item{...}{(ignored) for compatibility
 with the more accurate \code{\link{peak_prev}} function

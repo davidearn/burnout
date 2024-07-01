@@ -9,8 +9,17 @@
 ##' @inheritParams peak_prev
 ##' @export
 ##'
-eqm_prev <- function(R0, epsilon, eta=0) {
-    yeqm <- (epsilon+eta)/(1+eta)*(1 - 1/R0)
+eqm_prev <- function(R0, epsilon, eta=0, alpha=0) {
+    if (alpha == 0) {
+        yeqm <- (epsilon+eta)/(1+eta)*(1 - 1/R0)
+    } else {
+        ## alpha > 0 makes sense only if eta = 0:
+        if (eta == 0) stop("eqm_prev: eta = 0 != alpha = ", alpha)
+        pc <- 1 - 1/R0
+        ap <- alpha*pc
+        tmp <- 1 + eta*(1 - ap)
+        yeqm <- (sqrt(tmp^2 + 4*eta*(epsilon+eta)*ap) - tmp) / (2*alpha*eta)
+    }
     return(yeqm)
 }
 
@@ -55,12 +64,16 @@ R0_min_for_x_in <- function(epsilon) {
 ##' is the equilibrium prevalence,
 ##' and \eqn{y_{\rm max}} is the \link[=peak_prev]{peak prevalence}.
 ##'
+##' @note The initial conditions \eqn{(x_{\rm i},y_{\rm i}} enter the
+##'     boundary layer component only via \eqn{y_{\rm max}}.
+##'     \eqn{x_{\rm i}} also appears in the KM term involving
+##'     \eqn{W_0}.
+##'
 ##' @seealso \code{\link{peak_prev}}, \code{\link[gsl]{lambert_W0}},
 ##'     \code{\link[expint]{expint_E1}}, , \code{\link{x_in_cb}},
 ##'     \code{\link{x_in_exact}}
 ##'
 ##' @inheritParams peak_prev
-##' @param xi initial susceptible proportion \eqn{x_{\rm i}}
 ##' @param peakprev_fun function of \eqn{{\cal R}_0} and
 ##'     \eqn{\varepsilon} to use to compute peak prevalence
 ##' @param ... additional arguments are ignored
@@ -85,21 +98,31 @@ R0_min_for_x_in <- function(epsilon) {
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in_scalar <- function(R0, epsilon, eta=0, xi = 1,
-                        peakprev_fun = peak_prev, ...) {
+x_in_scalar <- function(R0, epsilon, eta=0, alpha=0, xi = 1, yi=0,
+                        ## FIX: using nvd version for now because version with
+                        ##      with vital dynamics is currently wrong unless at DFE:
+                        ##peakprev_fun = peak_prev,
+                        peakprev_fun = peak_prev_nvd,
+                        ...) {
     R0min <- R0_min_for_x_in(epsilon+eta)
     ## R0_min_for_x_in(1) yields NaN, hence:
     if (!is.finite(R0min) || R0 <= R0min) return(NA)
-    yeqm <- eqm_prev(R0, epsilon, eta) # equilibrium prevalence
-    ymax <- peakprev_fun(R0, epsilon, eta) # peak prevalence
+    yeqm <- eqm_prev(R0=R0, epsilon=epsilon, eta=eta) # equilibrium prevalence
+    ymax <- peakprev_fun(R0=R0, epsilon=epsilon, eta=eta, xi=xi, yi=yi) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax
-       , -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi))) +
-            (epsilon+eta)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
-            (eta/R0)*(exp(R0*(yeqm-ymax)) - 1)
-        , # epsilon correction is garbage so ignore it
-          -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi)))
-    )
+                  , ## first term is the outer solution, i.e., KM
+                    ## phase plane solution, inverted via Lambert W:
+                   -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-yi-xi))) +
+                   ## then corrections:
+                   (epsilon+eta)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
+                   (eta+alpha/R0)*(exp(R0*(yeqm-ymax)) - 1)/R0 +
+                   (alpha/R0)*(ymax*exp(-R0*(ymax-yeqm)) + (1-yeqm))
+                 , ## epsilon correction is garbage so ignore it (first order
+                   ## correction isn't good enough in this part of parameter
+                   ## space):
+                   -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi)))
+                   )
     return(xin)
 }
 ##
@@ -116,6 +139,7 @@ x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "xi"))
 
 ## not sure why checks are picking this up ?
 utils::globalVariables("peak_prev")
+utils::globalVariables("peak_prev_nvd")
 
 
 ##' Crude "Kermack-McKendrick" version of \eqn{x_{\rm in}}
@@ -163,7 +187,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
 ##'
 x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
     yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence
-    ymax <- peakprev_fun(R0, epsilon) # peak prevalence
+    ymax <- peakprev_fun(R0=R0, epsilon=epsilon) # peak prevalence
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
     xf <- 1-Z
