@@ -4,14 +4,14 @@
 \alias{peak_prev_nvd}
 \title{Peak prevalence}
 \usage{
-peak_prev_nvd(R0, epsilon = 0)
+peak_prev_nvd(R0, ...)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
 
-\item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
-proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
-    0} corresponds to infinite lifetime, i.e., no mortality)}
+\item{...}{(ignored) for compatibility
+with the more accurate \code{\link{peak_prev}} function
+that takes additional arguments}
 }
 \value{
 real number between 0 and 1
@@ -24,11 +24,6 @@ Exact peak prevalence in the SIR model with \emph{no vital dynamics} (nvd).
   y_{\rm max} = 1 -
     \frac{1}{{\cal R}_{0}}\big(1 +\ln{{\cal R}_{0}}\big) \,.
 }
-
-The optional argument (\code{epsilon}) is ignored if given.  The
-reason for including it is so this function can be used as an
-alternative to the more accurate \code{\link{peak_prev}} function
-that does depend on \eqn{\varepsilon}.
 }
 \seealso{
 \code{\link{peak_prev}}, \code{\link{x_in}}
