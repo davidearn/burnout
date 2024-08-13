@@ -133,7 +133,7 @@ x_in_scalar <- function(R0, epsilon, eta=0, alpha=0, xi = 1, yi=0,
 ##' @rdname x_in_scalar
 ##' @export
 ##'
-x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "xi"))
+x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "eta", "alpha", "xi"))
 
 ## not sure why checks are picking this up ?
 utils::globalVariables("peak_prev")

@@ -8,6 +8,8 @@
 x_in_exact_scalar(
   R0,
   epsilon,
+  eta = 0,
+  alpha = 0,
   I0 = 1e-06,
   t_int = NULL,
   tmin = 20,
@@ -19,6 +21,8 @@ x_in_exact_scalar(
 x_in_exact(
   R0,
   epsilon,
+  eta = 0,
+  alpha = 0,
   I0 = 1e-06,
   t_int = NULL,
   tmin = 20,
@@ -33,6 +37,14 @@ x_in_exact(
 \item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
 proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
     0} corresponds to infinite lifetime, i.e., no mortality)}
+
+\item{eta}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
+proportion of mean duration of immunity (\eqn{1/\delta};
+\eqn{\eta = 0} corresponds to permanent immunity}
+
+\item{alpha}{antigenic evolution enhancement factor for effective
+immunity waning; rate of immune decay is \eqn{\delta(1+\alpha
+    Y)}.}
 
 \item{I0}{initial prevalence (proportion)}
 
