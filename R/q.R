@@ -37,7 +37,37 @@
 ##' curve(q_exact(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_exact(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-q_exact <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) {
+q_exact <- function(R0, epsilon, eta.i=0, eta.a=0, xin = x_in(R0,epsilon,eta.i,eta.a)) {
+    if (eta.a == 0) { # use code from burnout version 0.0.3
+        ## FIX: this is the original version to be sure bugs are arising from
+        ##      this function, but we should really be using the cleaner
+        ##      approach below if there are no bugs in it...
+        eta <- eta.i
+        eps.plus.eta <- epsilon + eta
+        a <- (R0/eps.plus.eta)*(1-1/R0)
+        x <- (R0/eps.plus.eta)*(1-xin)
+        ##denom <- exp(x) * x^(-a) * lig(a,x)
+        log.denom <- x - a*log(x) + llig(a,x)
+        denom <- exp(log.denom)
+        q <- 1 / (1 + eps.plus.eta/denom)
+        return(q)
+    }
+    ## FIX: this is identical to q_approx below... not exact... oy... 
+    ##      to 0.0.3 to get exact version with eta.a=0...
+    eps.plus.eta.i <- epsilon + eta.i
+    xstar <- 1/R0
+    if (eta.a == 0) stop("q_exact: eta.a = 0... need orig formula with lim w->oo")
+    w <- R0/eta.a
+    z <- (R0/eps.plus.eta.i)*(1-xin)
+    a <- (R0/eps.plus.eta.i)*(1-xstar)
+    ## see eq:Ilaplace in Fadeout-SIRS.tex:
+    fac <- sqrt( 2*pi / ((R0-1)*(epsilon+eta.i)) )
+    log.denom <- log(fac) + a*log(a/z) + (w+a)*log(1+z/w) - (w+a+1/2)*(1+a/w)
+    denom <- exp(log.denom)
+    q <- (1 + 1/denom)^(-1) # denom is \mathcal{I} in the paper
+    return(q)
+}
+q_exact_ORIG <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) {
     eps.plus.eta <- epsilon + eta
     a <- (R0/eps.plus.eta)*(1-1/R0)
     x <- (R0/eps.plus.eta)*(1-xin)
@@ -87,7 +117,51 @@ q_exact <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) {
 ##' curve(q_approx(x,epsilon=0.01), from=1.01, to=2, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(q_approx(x,epsilon=0.1), from=1.01, to=2, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-q_approx <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) { 
+q_approx <- function(R0, epsilon, eta.i=0, eta.a=0,
+                     xin = x_in(R0,epsilon,eta.i,eta.a),
+                     debug = FALSE) {
+    if (eta.a == 0) { # use code from burnout version 0.0.3
+        ## FIX: this is the original version to be sure bugs are arising from
+        ##      this function, but we should really be using the cleaner
+        ##      approach below if there are no bugs in it...
+        eta <- eta.i
+        eps.plus.eta <- epsilon + eta
+        a <- (R0/eps.plus.eta)*(1 - 1/R0)
+        b <- (R0/eps.plus.eta)*(1/R0 - xin)
+        log.fac1 <- (1/2)*(log(2*pi) - log(eps.plus.eta*(R0-1)))
+        log.fac2 <- a*(log(1-1/R0) - log(1-xin))
+        log.messy <- log.fac1 + log.fac2 + b
+        denom <- 1 + exp(log.messy)
+        q <- (1 + 1/denom)^(-1)
+        q.orig <- q
+    }
+    eps.plus.eta.i <- epsilon + eta.i
+    xstar <- 1/R0
+    z <- (R0/eps.plus.eta.i)*(1-xin)
+    a <- (R0/eps.plus.eta.i)*(1-xstar)
+    ## see eq:Ilaplace in Fadeout-SIRS.tex:
+    fac <- sqrt( 2*pi / ((R0-1)*eps.plus.eta.i) )
+    if (eta.a > 0) {
+        w <- R0/eta.a
+        log.denom <- log(fac) + a*log(a/z) + (w+a)*log(1+z/w) - (w+a+1/2)*log(1+a/w)
+        ## exact alternative:
+        ##denom <- as.numeric(flint::acb_hypgeom_2f1(-w, 1, a+1, -z/w)) / (R0-1)
+        ##log.denom <- log(denom)
+    } else {
+        log.denom <- log(fac) + a*log(a/z) + z-a
+    }
+    denom <- exp(log.denom)
+
+    q <- (1 + 1/denom)^(-1) # denom is \mathcal{I} in the paper
+    if (eta.a == 0) {
+        if (debug) cat("q_approx: q.orig = ", q.orig, ",  q = ", q,
+            ",  diff = ", q-q.orig, "\n")
+        ##return(q.orig)
+    }
+    return(q)
+}
+
+q_approx_ORIG <- function(R0, epsilon, eta=0, xin = x_in(R0,epsilon,eta)) { 
     eps.plus.eta <- epsilon + eta
     a <- (R0/eps.plus.eta)*(1 - 1/R0)
     b <- (R0/eps.plus.eta)*(1/R0 - xin)

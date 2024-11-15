@@ -40,14 +40,14 @@
 ##' peak_prev(R0=2, epsilon=0.001, eta=c(0.01, 0.1))
 ##' peak_prev(R0=c(2,4), epsilon=c(0,0.1)) # FIX: fails when both are vectors
 ##'
-peak_prev <- function( R0, epsilon=0, eta=0, alpha=0, xi=1, yi=0 ) {
+peak_prev <- function( R0, epsilon=0, eta.i=0, eta.a=0, xi=1, yi=0 ) {
     pc <- 1 - 1/R0 # p_crit
     lnR <- log(R0)
     ##ymax <- 1 - (1/R0)*(1 + lnR) - # orig version assuming (xi,yi)=(1,0)
     ymax <- peak_prev_nvd(R0=R0, xi=xi, yi=yi) -
         ## FIX: the corrections assume (xi,yi)=(1,0):
-        (epsilon+eta)*pc*(lnR/pc - 1)/(lnR/pc + R0) +
-        (eta/R0)*(lnR - pc)
+        (epsilon+eta.i+eta.a)*pc*(lnR/pc - 1)/(lnR/pc + R0) +
+        ((eta.i+eta.a)/R0)*(lnR - pc)
     return(ymax)
 }
 

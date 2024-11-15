@@ -12,7 +12,9 @@
 ##' 
 ##' @importFrom deSolve lsodar
 ##' @importFrom utils tail
-x_in_exact_scalar <- function(R0, epsilon, eta=0, alpha=0, I0=1e-6,
+x_in_exact_scalar <- function(R0, epsilon,
+                              eta.i=0, eta.a=0,
+                              I0=1e-6,
                               t_int = NULL,
                               tmin = 20,
                               maxit = 10,
@@ -31,20 +33,23 @@ x_in_exact_scalar <- function(R0, epsilon, eta=0, alpha=0, I0=1e-6,
     ## -> epsilon*(gamma+mu) == mu
     ## -> gamma*epsilon = mu*(1-epsilon)
     ## -> mu = gamma*epsilon/(1-epsilon)
-    Ihat <- epsilon * herdImm
+
+    ## Ihat <- epsilon * herdImm ## WRONG IF IMMUNITY DECAYS!!
+    Ihat <- eqm_prev(R0, epsilon, eta.i, eta.a)
+
     gamma <- 1
     mu <- gamma*epsilon/(1-epsilon)
     beta <- R0*(gamma+mu)
-    delta <- eta*(gamma+mu)
-    alpha.dim <- alpha*(gamma+mu) # alpha with dimensions
+    delta.i <- eta.i*(gamma+mu)
+    delta.a <- eta.a*(gamma+mu)
 
     sirgrad <- function(tau, vars, parms) {
         S <- vars[1]
         I <- exp(vars[2])
         R <- vars[3]
-        dS <- mu * (1-S) - beta*S*I + (delta + alpha.dim*I)*R
+        dS <- mu * (1-S) - beta*S*I + (delta.i + delta.a*R)*R
         dlogI <- beta*S - (gamma + mu)
-        dR <- gamma*I - mu*R - (delta + alpha.dim*I)*R
+        dR <- gamma*I - mu*R - (delta.i + delta.a*R)*R
         return(list(c(dS=dS, dlogI=dlogI, dR=dR)))
     }
 
@@ -69,8 +74,9 @@ x_in_exact_scalar <- function(R0, epsilon, eta=0, alpha=0, I0=1e-6,
                               ## ?? what should length.out be?
                               times = seq(0, t_int, length.out = nt),
                               func = sirgrad,
-                              parms = list(R0 = R0, epsilon = epsilon, delta = delta,
-                                           alpha.dim = alpha.dim),
+                              parms = list(R0 = R0, epsilon = epsilon,
+                                           delta.i = delta.i,
+                                           delta.a = delta.a),
                               rootfunc = rfunc,
                               events = list(func = eventfun, root = TRUE,
                                             ## terminate on criterion 2 (-> I==Ihat for second time)

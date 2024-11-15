@@ -66,16 +66,19 @@
 ##' plot(xvals, P1vals, las=1, col="blue", type="l", lwd=2, log="x")
 ##' cat("max(P1) = ", max(P1vals), "\n")
 ##'
-P1_prob <- function(R0, epsilon, eta=0, alpha=0, k=1, N=10^6,
-                    xin = x_in(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha),
-                    q_fun = q_approx,
-                    ystar = eqm_prev(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha)
-                    ) {
+P1_prob <- function(R0, epsilon,
+              eta.i=0, eta.a=0, k=1, N=10^6,
+              xin = x_in(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a),
+              q_fun = q_approx,
+              ystar = eqm_prev(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a)
+              ) {
     fizz <- fizzle_prob(R0, k)
     ## pk = probability of not fizzling:
     notfizz <- 1 - fizz
     ## burnout probability (conditional on not fizzling):
-    burn <- burnout_prob(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha, N=N, xin = xin,
+    burn <- burnout_prob(R0=R0, epsilon=epsilon,
+                         eta.i=eta.i, eta.a=eta.a,
+                         N=N, xin = xin,
                          q_fun=q_fun, ystar=ystar)
     ## probability of not fizzling and then burning out:
     notfizz.and.burn <- notfizz * burn
@@ -104,13 +107,13 @@ P1_prob <- function(R0, epsilon, eta=0, alpha=0, k=1, N=10^6,
 ##' \insertRef{Kendall1948b}{burnout}
 ##'
 ##' @export
-burnout_prob <- function(R0, epsilon, eta=0, alpha=0, N=10^6,
-                         xin = x_in(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha),
+burnout_prob <- function(R0, epsilon, eta.i=0, eta.a=0, N=10^6,
+                         xin = x_in(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a),
                          q_fun = q_approx,
-                         ystar = eqm_prev(R0=R0, epsilon=epsilon, eta=eta, alpha=alpha)
+                         ystar = eqm_prev(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a)
                          ) {
     ## Kendall's q:
-    q <- q_fun(R0, epsilon, eta, xin)
+    q <- q_fun(R0, epsilon, eta.i, eta.a, xin)
     ## burnout probability (conditional on not fizzling):
     return( q^(N*ystar) )
 }

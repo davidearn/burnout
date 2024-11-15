@@ -10,13 +10,15 @@
 ##' @inheritParams peak_prev
 ##' @export
 ##'
-eqm_prev <- function(R0, epsilon, eta=0, alpha=0) {
-    if (alpha == 0) {
-        yeqm <- (epsilon+eta)/(1+eta)*(1 - 1/R0)
+eqm_prev <- function(R0, epsilon, eta.i=0, eta.a=0) {
+    if (eta.a == 0) {
+        yeqm <- (epsilon+eta.i)/(1+eta.i)*(1 - 1/R0)
     } else {
         pc <- 1 - 1/R0
-        tmp <- 1 + eta - alpha*pc
-        yeqm <- (sqrt( tmp^2 + 4*alpha*(epsilon+eta)*pc ) - tmp) / (2*alpha)
+        ##tmp <- 1 + eta.i - 2*eta.a*pc ## SIGN ERROR
+        tmp <- 1 + eta.i + 2*eta.a*pc
+        yeqm <-tmp/(2*eta.a) - (1/(2*eta.a)) * sqrt(
+            tmp^2 - 4*eta.a*pc*(epsilon + eta.i + eta.a*pc) )
     }
     return(yeqm)
 }
@@ -96,29 +98,33 @@ R0_min_for_x_in <- function(epsilon) {
 ##' curve(x_in(x,epsilon=0.01), from=1.01, to=5, las=1, add=TRUE, col="magenta", n=1001)
 ##' curve(x_in(x,epsilon=0.1), from=1.01, to=5, las=1, add=TRUE, col="cyan", n=1001)
 ##'
-x_in_scalar <- function(R0, epsilon, eta=0, alpha=0, xi = 1, yi=0,
+x_in_scalar <- function(R0, epsilon, eta.i=0, eta.a=0, xi = 1, yi=0,
                         ## FIX: using nvd version for now because version with
                         ##      with vital dynamics is currently wrong unless at DFE:
                         ##peakprev_fun = peak_prev,
                         peakprev_fun = peak_prev_nvd,
                         ...) {
-    R0min <- R0_min_for_x_in(epsilon+eta)
+    R0min <- R0_min_for_x_in(epsilon+eta.i+eta.a) # FIX: I set eta=eta.i+eta.a: OK?
     ## R0_min_for_x_in(1) yields NaN, hence:
     if (!is.finite(R0min) || R0 <= R0min) return(NA)
-    yeqm <- eqm_prev(R0=R0, epsilon=epsilon, eta=eta) # equilibrium prevalence
-    ymax <- peakprev_fun(R0=R0, epsilon=epsilon, eta=eta, xi=xi, yi=yi) # peak prevalence
+    yeqm <- eqm_prev(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a) # equilibrium prevalence
+    ##ymax <- peakprev_fun(R0=R0, epsilon=epsilon, eta.i=eta.i, eta.a=eta.a, xi=xi, yi=yi) # peak prevalence
+    ## x_in expression in Fadeout-SIRS.tex assume ymax is the nvd version:
+    ymax <- peakprev_fun(R0=R0, epsilon=0, eta.i=0, eta.a=0, xi=xi, yi=yi) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax
-                  , ## first term is the outer solution, i.e., KM
-                    ## phase plane solution, inverted via Lambert W:
+                 , ## first term is the outer solution, i.e., KM
+                   ## phase plane solution, inverted via Lambert W:
+                   ## Todd's expression: -(1/R0)*W0(-R0*exp(R0*xi*(yeqm-yi-xi))) +
                    -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-yi-xi))) +
-                   ## then corrections:
-                   (epsilon+eta)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
-                   (eta+alpha/R0)*(exp(R0*(yeqm-ymax)) - 1)/R0 +
-                   (alpha/R0)*(ymax*exp(-R0*(ymax-yeqm)) + (1-yeqm))
+                   ## then corrections: eq:X^0y.eps.etas in Fadeout-SIRS.tex
+                   (epsilon+eta.i+eta.a)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
+                   (eta.i/R0)*(exp(R0*(yeqm-ymax)) - 1) -
+                   (eta.a/R0)*((exp(R0*(yeqm-ymax)) - 1)/R0 +
+                      (ymax-2)*exp(-R0*(ymax-yeqm)) + (2-yeqm))
                  , ## epsilon correction is garbage so ignore it (first order
                    ## correction isn't good enough in this part of parameter
-                   ## space):
+                   ## space where yeqm >= ymax):
                    -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-xi)))
                    )
     return(xin)
@@ -133,7 +139,7 @@ x_in_scalar <- function(R0, epsilon, eta=0, alpha=0, xi = 1, yi=0,
 ##' @rdname x_in_scalar
 ##' @export
 ##'
-x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "eta", "alpha", "xi"))
+x_in <- Vectorize(x_in_scalar, vectorize.args = c("R0", "epsilon", "eta.i", "eta.a", "xi"))
 
 ## not sure why checks are picking this up ?
 utils::globalVariables("peak_prev")
@@ -167,7 +173,7 @@ x_in_KM <- function(R0, ...) {
 ##' @export
 ##'
 x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
-    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence
+    yeqm <- eqm_prev(R0, epsilon, eta.i=0, eta.a=0) # equilibrium prevalence
     xin <- -(1/R0)*W0(-R0*exp(R0*(yeqm-1)))
     return(xin)
 }
@@ -184,7 +190,7 @@ x_in_crude <- function(R0, epsilon, peakprev_fun = NULL, ...) {
 ##' @export
 ##'
 x_in_cb <- function(R0, epsilon, peakprev_fun = peak_prev, ...) {
-    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence
+    yeqm <- eqm_prev(R0, epsilon, eta.i=0, eta.a=0) # equilibrium prevalence
     ymax <- peakprev_fun(R0=R0, epsilon=epsilon) # peak prevalence
     pc <- 1 - 1/R0 # p_crit
     Z <- final_size(R0)
@@ -302,7 +308,7 @@ x_in_hocb <- function(R0, epsilon, peakprev_fun = peak_prev, debug = FALSE, ...)
         if (debug) cat(x, get(x), "\n")
     }
 
-    yeqm <- eqm_prev(R0, epsilon, eta=0) # equilibrium prevalence [aka y_in]
+    yeqm <- eqm_prev(R0, epsilon, eta.i=0, eta.a=0) # equilibrium prevalence [aka y_in]
     dfun("yeqm")
     ##ymax <- peakprev_fun(R0, epsilon) # peak prevalence [not needed for hocb]
     pc <- 1 - 1/R0 # p_crit
