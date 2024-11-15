@@ -9,8 +9,8 @@ approximation) (scalar version)}
 x_in_scalar(
   R0,
   epsilon,
-  eta = 0,
-  alpha = 0,
+  eta.i = 0,
+  eta.a = 0,
   xi = 1,
   yi = 0,
   peakprev_fun = peak_prev_nvd,
@@ -20,8 +20,8 @@ x_in_scalar(
 x_in(
   R0,
   epsilon,
-  eta = 0,
-  alpha = 0,
+  eta.i = 0,
+  eta.a = 0,
   xi = 1,
   yi = 0,
   peakprev_fun = peak_prev_nvd,
@@ -34,14 +34,6 @@ x_in(
 \item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
 proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
     0} corresponds to infinite lifetime, i.e., no mortality)}
-
-\item{eta}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
-proportion of mean duration of immunity (\eqn{1/\delta};
-\eqn{\eta = 0} corresponds to permanent immunity}
-
-\item{alpha}{antigenic evolution enhancement factor for effective
-immunity waning; rate of immune decay is \eqn{\delta(1+\alpha
-    Y)}.}
 
 \item{xi}{initial susceptible proportion \eqn{x_{\rm i}}}
 

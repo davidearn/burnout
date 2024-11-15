@@ -4,7 +4,13 @@
 \alias{q_exact}
 \title{Kendall's \eqn{q} (exact expression)}
 \usage{
-q_exact(R0, epsilon, eta = 0, xin = x_in(R0, epsilon, eta))
+q_exact(
+  R0,
+  epsilon,
+  eta.i = 0,
+  eta.a = 0,
+  xin = x_in(R0, epsilon, eta.i, eta.a)
+)
 }
 \arguments{
 \item{R0}{basic reproduction number (\eqn{{\cal R}_0})}
@@ -12,10 +18,6 @@ q_exact(R0, epsilon, eta = 0, xin = x_in(R0, epsilon, eta))
 \item{epsilon}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
 proportion of mean lifetime (\eqn{1/\mu}; \eqn{\varepsilon =
     0} corresponds to infinite lifetime, i.e., no mortality)}
-
-\item{eta}{mean infectious period (\eqn{1/(\gamma+\mu)}) as a
-proportion of mean duration of immunity (\eqn{1/\delta};
-\eqn{\eta = 0} corresponds to permanent immunity}
 
 \item{xin}{by default set via the approximation coded in \code{\link{x_in}}}
 }
