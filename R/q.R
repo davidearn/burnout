@@ -52,8 +52,6 @@ q_exact <- function(R0, epsilon, eta.i=0, eta.a=0, xin = x_in(R0,epsilon,eta.i,e
         q <- 1 / (1 + eps.plus.eta/denom)
         return(q)
     }
-    ## FIX: this is identical to q_approx below... not exact... oy... 
-    ##      to 0.0.3 to get exact version with eta.a=0...
     eps.plus.eta.i <- epsilon + eta.i
     xstar <- 1/R0
     if (eta.a == 0) stop("q_exact: eta.a = 0... need orig formula with lim w->oo")
@@ -61,9 +59,7 @@ q_exact <- function(R0, epsilon, eta.i=0, eta.a=0, xin = x_in(R0,epsilon,eta.i,e
     z <- (R0/eps.plus.eta.i)*(1-xin)
     a <- (R0/eps.plus.eta.i)*(1-xstar)
     ## see eq:Ilaplace in Fadeout-SIRS.tex:
-    fac <- sqrt( 2*pi / ((R0-1)*(epsilon+eta.i)) )
-    log.denom <- log(fac) + a*log(a/z) + (w+a)*log(1+z/w) - (w+a+1/2)*(1+a/w)
-    denom <- exp(log.denom)
+    denom <- as.numeric(flint::acb_hypgeom_2f1(-w, 1, a+1, -z/w)) / (R0-1)
     q <- (1 + 1/denom)^(-1) # denom is \mathcal{I} in the paper
     return(q)
 }
@@ -144,9 +140,6 @@ q_approx <- function(R0, epsilon, eta.i=0, eta.a=0,
     if (eta.a > 0) {
         w <- R0/eta.a
         log.denom <- log(fac) + a*log(a/z) + (w+a)*log(1+z/w) - (w+a+1/2)*log(1+a/w)
-        ## exact alternative:
-        ##denom <- as.numeric(flint::acb_hypgeom_2f1(-w, 1, a+1, -z/w)) / (R0-1)
-        ##log.denom <- log(denom)
     } else {
         log.denom <- log(fac) + a*log(a/z) + z-a
     }
