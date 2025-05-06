@@ -113,15 +113,14 @@ x_in_scalar <- function(R0, epsilon, eta.i=0, eta.a=0, xi = 1, yi=0,
     ymax <- peakprev_fun(R0=R0, epsilon=0, eta.i=0, eta.a=0, xi=xi, yi=yi) # peak prevalence
     E1 <- expint::expint_E1
     xin <- ifelse (yeqm < ymax
+                   ## see eq:xin and eq:X^0y.eps.etas in SIRiaS.tex:
                  , ## first term is the outer solution, i.e., KM
                    ## phase plane solution, inverted via Lambert W:
-                   ## Todd's expression: -(1/R0)*W0(-R0*exp(R0*xi*(yeqm-yi-xi))) +
-                   -(1/R0)*W0(-R0*xi*exp(R0*(yeqm-yi-xi))) +
-                   ## then corrections: eq:X^0y.eps.etas in Fadeout-SIRS.tex
-                   (epsilon+eta.i+eta.a)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) +
-                   (eta.i/R0)*(exp(R0*(yeqm-ymax)) - 1) -
-                   (eta.a/R0)*((exp(R0*(yeqm-ymax)) - 1)/R0 +
-                      (ymax-2)*exp(-R0*(ymax-yeqm)) + (2-yeqm))
+                   -(1/R0)*W0(-R0*xi*exp(-R0*(xi+yi-yeqm))) +
+                   (epsilon+eta.i+eta.a)*exp(R0*yeqm)*(E1(R0*yeqm) - E1(R0*ymax)) -
+                   (eta.i/R0)*(1 - exp(-R0*(ymax-yeqm))) +
+                   (eta.a/R0)*((1 - exp(-R0*(ymax-yeqm)))/R0 +
+                      exp(-R0*(ymax-yeqm))*(2-ymax) - (2-yeqm))
                  , ## epsilon correction is garbage so ignore it (first order
                    ## correction isn't good enough in this part of parameter
                    ## space where yeqm >= ymax):

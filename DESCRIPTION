@@ -1,6 +1,6 @@
 Package: burnout
 Title: Compute Probability of Epidemic Burnout
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(person("David", "Earn",
   email = "earn@math.mcmaster.ca",
   comment = c(ORCID = "0000-0002-7562-1341"),
