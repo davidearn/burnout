@@ -1,4 +1,5 @@
 ^burnout\.Rproj$
 ^\.Rproj\.user$
+^Makefile$
 ^LICENSE\.md$
 LICENSE
