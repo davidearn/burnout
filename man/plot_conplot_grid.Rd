@@ -8,85 +8,197 @@ plot_conplot_grid(
   epsilon,
   R0,
   prob,
-  label.cex = 0.8,
+  label.cex = 0.5,
   colour.legend = FALSE,
   filled = TRUE,
   levels = NULL,
   high.levels = c(seq(0.1, 0.9, by = 0.1), 0.95),
   low.levels = 10^(-c(1, 2, 4, 8, 12)),
   log = "y",
-  xlim = range(R0),
-  ylim = range(epsilon),
-  xlab = expression(R[0]),
-  ylab = expression(epsilon),
-  main = "Persistence probability",
+  xlim = c(0, 0.02),
+  ylim = c(1, 32),
+  xlab = expression(paste("mean infectious period / mean lifetime (", epsilon, ")")),
+  ylab = expression(paste("basic reproduction number (", R[0], ")")),
+  main = "contours of persistence probability",
   fill.colours = NULL,
+  fill.breaks = NULL,
+  grey.adjust = 0.7,
   contour.col = "black",
-  contour.lwd = 1,
+  contour.lwd = 2,
+  contour.lty = 1,
+  contour.labels = "",
+  show.manual.labels = TRUE,
+  manual.label.x = NULL,
+  manual.label.y = 2,
+  manual.label.point.cex = 2,
+  show.overlays = TRUE,
+  show.quadratic = show.overlays,
+  quadratic.coefficients = c(intercept = 2.572629848, slope = -27.71866282, curvature =
+    -109.8),
+  quadratic.from = xlim[1L],
+  quadratic.to = xlim[2L],
+  quadratic.col = "darkred",
+  quadratic.lty = "dotted",
+  quadratic.lwd = 1,
+  show.local.minimum = show.overlays,
+  local.minimum.xlow = 0.004,
+  local.minimum.ylow = 1.5,
+  local.minimum.yhigh = 5,
+  local.minimum.col = "darkred",
+  local.minimum.lwd = 3,
+  show.diseases = TRUE,
+  disease.data = NULL,
+  disease.names = c("measles", "pertussis", "mumps", "rubella", "chickenpox",
+    "influenza", "smallpox", "scarletfever", "HIV", "covid19", "covid19delta", "ebola",
+    "pneumonicplague"),
+  disease.cex = 0.9,
+  disease.point.cex = 1,
+  disease.point.bg = "darkred",
+  disease.box.col = "white",
+  cex.lab = NULL,
+  cex.axis = NULL,
+  cex.main = NULL,
   ...
 )
 }
 \arguments{
-\item{epsilon}{finite numeric vector of epsilon values for the vertical
-axis. Values must be strictly increasing.}
+\item{epsilon}{finite numeric vector of epsilon values. Values must be
+strictly increasing.}
 
-\item{R0}{finite numeric vector of reproduction-number values for the
-horizontal axis. Values must be strictly increasing.}
+\item{R0}{finite numeric vector of reproduction-number values. Values
+must be strictly increasing.}
 
 \item{prob}{numeric probability matrix with \code{length(epsilon)} rows and
 \code{length(R0)} columns. Values must be in \verb{[0, 1]}; \code{NA} values are
 allowed and are left blank in the plot.}
 
-\item{label.cex}{positive finite scalar controlling contour-label size.}
+\item{label.cex}{positive finite scalar controlling the size of manual
+contour labels and any contour labels drawn by \code{contour()}.}
 
 \item{colour.legend}{logical scalar. If \code{TRUE}, add a right-hand colour
 ramp legend for the filled background.}
 
-\item{filled}{logical scalar. If \code{TRUE}, draw a filled image-like
-background before contour lines.}
+\item{filled}{logical scalar. If \code{TRUE}, draw the original greyscale
+filled background before contour lines.}
 
 \item{levels}{numeric vector of contour levels. If \code{NULL}, the union of
 \code{high.levels} and \code{low.levels} is used.}
 
 \item{high.levels, low.levels}{numeric vectors used to construct contour
-levels when \code{levels = NULL}.}
+levels when \code{levels = NULL}. \code{high.levels} also define the filled
+greyscale break points by default.}
 
 \item{log}{character string passed to base graphics for logarithmic axes.
-The default \code{"y"} uses a logarithmic epsilon axis.}
+The default \code{"y"} uses the original logarithmic \code{R0} axis.}
 
-\item{xlim, ylim}{finite numeric vectors of length two giving plot limits.}
+\item{xlim, ylim}{finite numeric vectors of length two giving plot limits.
+Defaults match the original manuscript figure.}
 
-\item{xlab, ylab, main}{plot labels passed to \code{plot}.}
+\item{xlab, ylab, main}{plot labels.}
 
 \item{fill.colours}{optional vector of colours for the filled background.
-If \code{NULL}, a default slide-friendly colour ramp is used.}
+If \code{NULL}, the original high-level greyscale ramp is used.}
 
-\item{contour.col, contour.lwd}{colour and line width for contour lines.}
+\item{fill.breaks}{optional vector of filled-background break points. If
+\code{NULL}, \code{c(0, high.levels, 1)} is used, as in the original figure.}
 
-\item{...}{additional arguments passed to \code{plot}.}
+\item{grey.adjust}{numeric scalar controlling the original greyscale ramp
+when \code{fill.colours = NULL}.}
+
+\item{contour.col, contour.lwd, contour.lty}{colour, line width, and line
+type for contour lines.}
+
+\item{contour.labels}{labels passed to \code{contour()}. The default \code{""}
+suppresses automatic labels, preserving the original manual label
+placement.}
+
+\item{show.manual.labels}{logical scalar. If \code{TRUE}, add the original
+hand-positioned high- and low-level labels.}
+
+\item{manual.label.x}{epsilon value for high-level labels. If \code{NULL}, use
+\code{xlim[2] - 0.002}, matching the standalone code.}
+
+\item{manual.label.y}{\code{R0} value for low-level labels.}
+
+\item{manual.label.point.cex}{positive finite scalar for the filled points
+behind manual labels.}
+
+\item{show.overlays}{logical scalar controlling both original dark-red
+overlay curves unless \code{show.quadratic} or \code{show.local.minimum} is
+supplied explicitly.}
+
+\item{show.quadratic}{logical scalar. If \code{TRUE}, draw the original dotted
+quadratic curve.}
+
+\item{quadratic.coefficients}{named or unnamed numeric vector with
+intercept, slope, and curvature for the quadratic overlay.}
+
+\item{quadratic.from, quadratic.to}{finite scalars giving the horizontal
+range for the quadratic overlay.}
+
+\item{quadratic.col, quadratic.lty, quadratic.lwd}{graphical parameters for
+the quadratic overlay.}
+
+\item{show.local.minimum}{logical scalar. If \code{TRUE}, draw the original
+local-minimum curve estimated directly from the precomputed grid.}
+
+\item{local.minimum.xlow, local.minimum.ylow, local.minimum.yhigh}{numeric
+limits used when estimating the local-minimum curve.}
+
+\item{local.minimum.col, local.minimum.lwd}{graphical parameters for the
+local-minimum curve.}
+
+\item{show.diseases}{logical scalar. If \code{TRUE}, add the original disease
+point annotations when \code{disease.data} is supplied or the suggested
+\code{sirr} package is available.}
+
+\item{disease.data}{optional data frame with at least \code{epsilon}, \code{R0}, and
+\code{label} columns. If \code{NULL}, compatible data are loaded from
+\code{sirr::diseaseParameters} when available.}
+
+\item{disease.names}{character vector of disease identifiers to show when
+using \code{sirr::diseaseParameters}.}
+
+\item{disease.cex, disease.point.cex}{positive finite scalars controlling
+disease-label and disease-point size.}
+
+\item{disease.point.bg, disease.box.col}{colours for disease points and the
+white-out boxes behind labels.}
+
+\item{cex.lab, cex.axis, cex.main}{optional positive finite scalars passed to
+base graphics for label, axis, and title sizes.}
+
+\item{...}{additional arguments passed to \code{plot()}.}
 }
 \value{
-Invisibly returns a list with plotting metadata, including the
-contour levels, fill breaks, axis ranges, and probability-matrix
-orientation.
+Invisibly returns a list with plotting metadata, including
+contour levels, fill breaks, axis ranges, overlay settings, annotation
+settings, and probability-matrix orientation.
 }
 \description{
 Plot a contour-style figure from precomputed burnout or persistence
 probabilities. This function does not compute probabilities; it only
-plots an existing grid, such as the kind of grid used for the historical
-conplot figure. Future helpers may compute compatible grids directly.
+plots an existing grid, such as the historical \code{prob.RData} reference
+grid. The default graphical choices are designed to reproduce the
+original conplot manuscript figure closely, while allowing slide-oriented
+adjustments.
 }
 \details{
 The probability matrix must have rows corresponding to \code{epsilon} values
-and columns corresponding to \code{R0} values. This is the orientation used by
-the historical \code{prob.RData} reference grid.
+and columns corresponding to \code{R0} values. By default, \code{epsilon} is plotted
+on the horizontal axis and \code{R0} on a logarithmic vertical axis, matching
+the original standalone conplot.
 }
 \examples{
-epsilon <- 10^seq(-4, -1, length.out = 20)
-R0 <- seq(1.05, 4, length.out = 25)
+epsilon <- 10^seq(-5, -1.7, length.out = 30)
+R0 <- 2^seq(0, 5, length.out = 35)
 prob <- outer(
     epsilon, R0,
-    function(epsilon, R0) plogis(2 * log(R0) + log10(epsilon) + 3)
+    function(epsilon, R0) plogis(3 * log(R0) + 180 * epsilon - 8)
 )
-plot_conplot_grid(epsilon, R0, prob, label.cex = 0.7)
+plot_conplot_grid(
+    epsilon, R0, prob,
+    show.diseases = FALSE,
+    show.local.minimum = FALSE
+)
 }

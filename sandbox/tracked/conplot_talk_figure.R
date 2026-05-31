@@ -1,4 +1,4 @@
-## Create a slide-friendly conplot figure from the preserved probability grid.
+## Recreate the manuscript-style conplot from the preserved probability grid.
 ##
 ## Run from the package root:
 ##
@@ -11,6 +11,22 @@
 ## Output:
 ##
 ##     sandbox/conplot_talk_figure.pdf
+
+## Slide/talk settings. The defaults below keep the manuscript-style appearance.
+## Increase label.cex or set colour.legend to TRUE for presentation variants.
+plot.settings <- list(
+    output.file = file.path("sandbox", "conplot_talk_figure.pdf"),
+    width = 6,
+    height = 6,
+    label.cex = 0.5,
+    colour.legend = FALSE,
+    cex.lab = NULL,
+    cex.axis = NULL,
+    cex.main = NULL,
+    show.diseases = TRUE,
+    show.overlays = TRUE,
+    show.manual.labels = TRUE
+)
 
 load_burnout_package <- function(package.root) {
     if (requireNamespace("pkgload", quietly = TRUE)) {
@@ -100,10 +116,16 @@ load_prob_grid <- function(prob.file) {
     list(epsvals = epsvals, Rvals = Rvals, prob = prob)
 }
 
-make_conplot_pdf <- function(grid, output.file) {
+make_conplot_pdf <- function(grid, settings) {
+    output.file <- settings$output.file
     dir.create(dirname(output.file), recursive = TRUE, showWarnings = FALSE)
 
-    grDevices::pdf(output.file, width = 11, height = 6.5, onefile = TRUE)
+    grDevices::pdf(
+        output.file,
+        width = settings$width,
+        height = settings$height,
+        onefile = TRUE
+    )
     pdf.open <- TRUE
     on.exit({
         if (pdf.open) {
@@ -111,22 +133,18 @@ make_conplot_pdf <- function(grid, output.file) {
         }
     }, add = TRUE)
 
-    graphics::par(mar = c(5.2, 5.4, 4.1, 1.2), cex = 1.05)
-
     burnout::plot_conplot_grid(
         epsilon = grid$epsvals,
         R0 = grid$Rvals,
         prob = grid$prob,
-        label.cex = 1.05,
-        colour.legend = TRUE,
-        filled = TRUE,
-        main = "Persistence probability after a major outbreak",
-        xlab = expression(R[0]),
-        ylab = expression(epsilon),
-        contour.lwd = 1.1,
-        cex.lab = 1.25,
-        cex.axis = 1.05,
-        cex.main = 1.15
+        label.cex = settings$label.cex,
+        colour.legend = settings$colour.legend,
+        cex.lab = settings$cex.lab,
+        cex.axis = settings$cex.axis,
+        cex.main = settings$cex.main,
+        show.diseases = settings$show.diseases,
+        show.overlays = settings$show.overlays,
+        show.manual.labels = settings$show.manual.labels
     )
 
     grDevices::dev.off()
@@ -154,7 +172,7 @@ message(
     paste(dim(grid$prob), collapse = " x "), "."
 )
 
-output.file <- file.path(package.root, "sandbox", "conplot_talk_figure.pdf")
-make_conplot_pdf(grid, output.file)
+plot.settings$output.file <- file.path(package.root, plot.settings$output.file)
+make_conplot_pdf(grid, plot.settings)
 
-message("Wrote ", normalizePath(output.file, mustWork = TRUE))
+message("Wrote ", normalizePath(plot.settings$output.file, mustWork = TRUE))
