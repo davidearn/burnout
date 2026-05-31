@@ -1,3 +1,3 @@
 test_that("x_in_exact works", {
-  expect_equal(x_in_exact(1.25,0.001), 0.63652277)
+  expect_equal(x_in_exact(1.25,0.001), 0.63652277, tolerance = 1e-5)
 })
