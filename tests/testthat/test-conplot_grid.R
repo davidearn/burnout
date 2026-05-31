@@ -42,6 +42,8 @@ test_that("plot_conplot_grid returns metadata invisibly for valid grids", {
   expect_equal(result$value$axes, "x: epsilon; y: R0")
   expect_true(all(is.finite(result$value$levels)))
   expect_equal(result$value$fill.breaks, sort(unique(c(0, result$value$high.levels, 1))))
+  expect_equal(result$value$label.bg.cex.mult, 4)
+  expect_equal(result$value$manual.label.point.cex, 0.7 * 4)
 })
 
 test_that("plot_conplot_grid preserves manuscript-style defaults", {
@@ -57,10 +59,96 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_equal(result$xlim, c(0, 0.02))
   expect_equal(result$ylim, c(1, 32))
   expect_equal(result$log, "y")
+  expect_equal(result$label.cex, 0.5)
+  expect_equal(result$manual.label.point.cex, 2)
   expect_true(result$show.manual.labels)
   expect_true(result$show.quadratic)
   expect_true(result$show.local.minimum)
   expect_true(result$diseases.plotted)
+})
+
+test_that("manual label background circles scale with label size", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    small <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      label.cex = 0.5,
+      show.diseases = FALSE
+    )
+  })
+  with_test_pdf({
+    large <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      label.cex = 1,
+      show.diseases = FALSE
+    )
+  })
+
+  expect_equal(unique(small$manual.labels$label.bg.cex), 2)
+  expect_equal(unique(large$manual.labels$label.bg.cex), 4)
+  expect_equal(large$manual.label.point.cex / small$manual.label.point.cex, 2)
+})
+
+test_that("math labels are prepared through earnmisc nice_text", {
+  non.tikz <- burnout:::conplot_nice_label(
+    "basic reproduction number ($\\Rn$)",
+    tikz.mode = FALSE,
+    warn = FALSE
+  )
+  tikz <- burnout:::conplot_nice_label(
+    "basic reproduction number ($\\Rn$)",
+    tikz.mode = TRUE,
+    warn = FALSE
+  )
+
+  expect_s3_class(non.tikz, "latexexpression")
+  expect_true(grepl("\\mathcal R_0", tikz, fixed = TRUE))
+})
+
+test_that("plot_conplot_grid accepts explicit tikz label mode without compiling LaTeX", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    result <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      use.tikz = TRUE,
+      show.diseases = FALSE
+    )
+  })
+
+  expect_true(result$use.tikz)
+})
+
+test_that("plot_conplot_grid honours caller-level use.tikz for labels", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    result <- local({
+      use.tikz <- TRUE
+      plot_conplot_grid(
+        grid$epsilon, grid$R0, grid$prob,
+        show.diseases = FALSE
+      )
+    })
+  })
+
+  expect_true(result$use.tikz)
+})
+
+test_that("plot_conplot_grid works on a normal PDF device", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    result <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      use.tikz = NULL,
+      show.diseases = FALSE
+    )
+  })
+
+  expect_null(result$use.tikz)
+  expect_true(result$show.manual.labels)
 })
 
 test_that("plot_conplot_grid validates probability matrix dimensions", {

@@ -8,18 +8,30 @@
 ##
 ##     ../sources/conplot_standalone/prob.RData
 ##
-## Output:
+## Output by default:
 ##
 ##     sandbox/conplot_talk_figure.pdf
+##
+## Set use.tikz.output to TRUE below to write a standalone tikz .tex file
+## instead. The tikz path uses earnmisc::tikz_open(), so plot labels are
+## prepared automatically for tikz by earnmisc::nice_text().
 
 ## Slide/talk settings. The defaults below keep the manuscript-style appearance.
 ## Increase label.cex or set colour.legend to TRUE for presentation variants.
+use.tikz.output <- FALSE
+
 plot.settings <- list(
-    output.file = file.path("sandbox", "conplot_talk_figure.pdf"),
+    output.file = file.path(
+        "sandbox",
+        if (use.tikz.output) "conplot_talk_figure.tex" else "conplot_talk_figure.pdf"
+    ),
     width = 6,
     height = 6,
-    label.cex = 0.5,
+    ##label.cex = 0.5,
+    label.cex = 1,
+    label.bg.cex.mult = 4,
     colour.legend = FALSE,
+    use.tikz = NULL,
     cex.lab = NULL,
     cex.axis = NULL,
     cex.main = NULL,
@@ -116,19 +128,32 @@ load_prob_grid <- function(prob.file) {
     list(epsvals = epsvals, Rvals = Rvals, prob = prob)
 }
 
-make_conplot_pdf <- function(grid, settings) {
+open_conplot_device <- function(settings, use.tikz.output) {
     output.file <- settings$output.file
     dir.create(dirname(output.file), recursive = TRUE, showWarnings = FALSE)
 
-    grDevices::pdf(
-        output.file,
-        width = settings$width,
-        height = settings$height,
-        onefile = TRUE
-    )
-    pdf.open <- TRUE
+    if (use.tikz.output) {
+        earnmisc::tikz_open(
+            file = output.file,
+            width = settings$width,
+            height = settings$height,
+            standAlone = TRUE
+        )
+    } else {
+        grDevices::pdf(
+            output.file,
+            width = settings$width,
+            height = settings$height,
+            onefile = TRUE
+        )
+    }
+}
+
+make_conplot_figure <- function(grid, settings, use.tikz.output) {
+    open_conplot_device(settings, use.tikz.output)
+    device.open <- TRUE
     on.exit({
-        if (pdf.open) {
+        if (device.open) {
             grDevices::dev.off()
         }
     }, add = TRUE)
@@ -138,7 +163,9 @@ make_conplot_pdf <- function(grid, settings) {
         R0 = grid$Rvals,
         prob = grid$prob,
         label.cex = settings$label.cex,
+        label.bg.cex.mult = settings$label.bg.cex.mult,
         colour.legend = settings$colour.legend,
+        use.tikz = settings$use.tikz,
         cex.lab = settings$cex.lab,
         cex.axis = settings$cex.axis,
         cex.main = settings$cex.main,
@@ -148,7 +175,7 @@ make_conplot_pdf <- function(grid, settings) {
     )
 
     grDevices::dev.off()
-    pdf.open <- FALSE
+    device.open <- FALSE
 }
 
 package.root <- normalizePath(".", mustWork = TRUE)
@@ -173,6 +200,6 @@ message(
 )
 
 plot.settings$output.file <- file.path(package.root, plot.settings$output.file)
-make_conplot_pdf(grid, plot.settings)
+make_conplot_figure(grid, plot.settings, use.tikz.output)
 
 message("Wrote ", normalizePath(plot.settings$output.file, mustWork = TRUE))

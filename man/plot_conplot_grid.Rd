@@ -8,7 +8,10 @@ plot_conplot_grid(
   epsilon,
   R0,
   prob,
-  label.cex = 0.5,
+  label.cex = conplot_default_label_cex(),
+  label.bg.cex.mult = 4,
+  use.tikz = NULL,
+  label.warn = TRUE,
   colour.legend = FALSE,
   filled = TRUE,
   levels = NULL,
@@ -17,8 +20,8 @@ plot_conplot_grid(
   log = "y",
   xlim = c(0, 0.02),
   ylim = c(1, 32),
-  xlab = expression(paste("mean infectious period / mean lifetime (", epsilon, ")")),
-  ylab = expression(paste("basic reproduction number (", R[0], ")")),
+  xlab = "mean infectious period / mean lifetime ($\\\\epsilon$)",
+  ylab = "basic reproduction number ($\\\\Rn$)",
   main = "contours of persistence probability",
   fill.colours = NULL,
   fill.breaks = NULL,
@@ -30,7 +33,7 @@ plot_conplot_grid(
   show.manual.labels = TRUE,
   manual.label.x = NULL,
   manual.label.y = 2,
-  manual.label.point.cex = 2,
+  manual.label.point.cex = NULL,
   show.overlays = TRUE,
   show.quadratic = show.overlays,
   quadratic.coefficients = c(intercept = 2.572629848, slope = -27.71866282, curvature =
@@ -73,7 +76,27 @@ must be strictly increasing.}
 allowed and are left blank in the plot.}
 
 \item{label.cex}{positive finite scalar controlling the size of manual
-contour labels and any contour labels drawn by \code{contour()}.}
+contour labels and any contour labels drawn by \code{contour()}. The default
+is \code{0.7} in interactive sessions and \code{0.5} otherwise,
+preserving manuscript-style scripted output while making RStudio-style
+inspection easier.}
+
+\item{label.bg.cex.mult}{positive finite scalar. Manual contour-label
+background circles are drawn with point size
+\code{label.cex * label.bg.cex.mult} unless \code{manual.label.point.cex} is
+supplied explicitly. The default reproduces the original manuscript
+circle size when \code{label.cex = 0.5}.}
+
+\item{use.tikz}{optional logical scalar passed to
+\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}} for TeX-like labels. If \code{NULL}, a scalar logical
+caller-level \code{use.tikz} variable is honoured when present; otherwise
+\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}} detects an active tikz graphics device. This
+means tikz and ordinary non-tikz devices both work without manual label
+conversion.}
+
+\item{label.warn}{logical scalar passed to \code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}. If
+\code{TRUE}, warn about unsupported TeX macros or missing optional conversion
+support.}
 
 \item{colour.legend}{logical scalar. If \code{TRUE}, add a right-hand colour
 ramp legend for the filled background.}
@@ -94,7 +117,9 @@ The default \code{"y"} uses the original logarithmic \code{R0} axis.}
 \item{xlim, ylim}{finite numeric vectors of length two giving plot limits.
 Defaults match the original manuscript figure.}
 
-\item{xlab, ylab, main}{plot labels.}
+\item{xlab, ylab, main}{plot labels. Character labels are processed with
+\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}. The default reproduction-number label uses the
+\code{"$\\\\Rn$"} macro from \code{earnmisc}.}
 
 \item{fill.colours}{optional vector of colours for the filled background.
 If \code{NULL}, the original high-level greyscale ramp is used.}
@@ -120,8 +145,9 @@ hand-positioned high- and low-level labels.}
 
 \item{manual.label.y}{\code{R0} value for low-level labels.}
 
-\item{manual.label.point.cex}{positive finite scalar for the filled points
-behind manual labels.}
+\item{manual.label.point.cex}{optional positive finite scalar for the
+filled points behind manual labels. If \code{NULL}, it is computed from
+\code{label.cex * label.bg.cex.mult}.}
 
 \item{show.overlays}{logical scalar controlling both original dark-red
 overlay curves unless \code{show.quadratic} or \code{show.local.minimum} is

@@ -20,7 +20,24 @@
 ##'   `length(R0)` columns. Values must be in `[0, 1]`; `NA` values are
 ##'   allowed and are left blank in the plot.
 ##' @param label.cex positive finite scalar controlling the size of manual
-##'   contour labels and any contour labels drawn by `contour()`.
+##'   contour labels and any contour labels drawn by `contour()`. The default
+##'   is `0.7` in interactive sessions and `0.5` otherwise,
+##'   preserving manuscript-style scripted output while making RStudio-style
+##'   inspection easier.
+##' @param label.bg.cex.mult positive finite scalar. Manual contour-label
+##'   background circles are drawn with point size
+##'   `label.cex * label.bg.cex.mult` unless `manual.label.point.cex` is
+##'   supplied explicitly. The default reproduces the original manuscript
+##'   circle size when `label.cex = 0.5`.
+##' @param use.tikz optional logical scalar passed to
+##'   [earnmisc::nice_text()] for TeX-like labels. If `NULL`, a scalar logical
+##'   caller-level `use.tikz` variable is honoured when present; otherwise
+##'   [earnmisc::nice_text()] detects an active tikz graphics device. This
+##'   means tikz and ordinary non-tikz devices both work without manual label
+##'   conversion.
+##' @param label.warn logical scalar passed to [earnmisc::nice_text()]. If
+##'   `TRUE`, warn about unsupported TeX macros or missing optional conversion
+##'   support.
 ##' @param colour.legend logical scalar. If `TRUE`, add a right-hand colour
 ##'   ramp legend for the filled background.
 ##' @param filled logical scalar. If `TRUE`, draw the original greyscale
@@ -34,7 +51,9 @@
 ##'   The default `"y"` uses the original logarithmic `R0` axis.
 ##' @param xlim,ylim finite numeric vectors of length two giving plot limits.
 ##'   Defaults match the original manuscript figure.
-##' @param xlab,ylab,main plot labels.
+##' @param xlab,ylab,main plot labels. Character labels are processed with
+##'   [earnmisc::nice_text()]. The default reproduction-number label uses the
+##'   `"$\\Rn$"` macro from `earnmisc`.
 ##' @param fill.colours optional vector of colours for the filled background.
 ##'   If `NULL`, the original high-level greyscale ramp is used.
 ##' @param fill.breaks optional vector of filled-background break points. If
@@ -51,8 +70,9 @@
 ##' @param manual.label.x epsilon value for high-level labels. If `NULL`, use
 ##'   `xlim[2] - 0.002`, matching the standalone code.
 ##' @param manual.label.y `R0` value for low-level labels.
-##' @param manual.label.point.cex positive finite scalar for the filled points
-##'   behind manual labels.
+##' @param manual.label.point.cex optional positive finite scalar for the
+##'   filled points behind manual labels. If `NULL`, it is computed from
+##'   `label.cex * label.bg.cex.mult`.
 ##' @param show.overlays logical scalar controlling both original dark-red
 ##'   overlay curves unless `show.quadratic` or `show.local.minimum` is
 ##'   supplied explicitly.
@@ -107,7 +127,10 @@
 plot_conplot_grid <- function(epsilon,
                               R0,
                               prob,
-                              label.cex = 0.5,
+                              label.cex = conplot_default_label_cex(),
+                              label.bg.cex.mult = 4,
+                              use.tikz = NULL,
+                              label.warn = TRUE,
                               colour.legend = FALSE,
                               filled = TRUE,
                               levels = NULL,
@@ -116,8 +139,8 @@ plot_conplot_grid <- function(epsilon,
                               log = "y",
                               xlim = c(0, 0.02),
                               ylim = c(1, 32),
-                              xlab = expression(paste("mean infectious period / mean lifetime (", epsilon, ")")),
-                              ylab = expression(paste("basic reproduction number (", R[0], ")")),
+                              xlab = "mean infectious period / mean lifetime ($\\epsilon$)",
+                              ylab = "basic reproduction number ($\\Rn$)",
                               main = "contours of persistence probability",
                               fill.colours = NULL,
                               fill.breaks = NULL,
@@ -129,7 +152,7 @@ plot_conplot_grid <- function(epsilon,
                               show.manual.labels = TRUE,
                               manual.label.x = NULL,
                               manual.label.y = 2,
-                              manual.label.point.cex = 2,
+                              manual.label.point.cex = NULL,
                               show.overlays = TRUE,
                               show.quadratic = show.overlays,
                               quadratic.coefficients = c(
@@ -169,6 +192,15 @@ plot_conplot_grid <- function(epsilon,
     R0 <- validate_conplot_grid_vector(R0, "R0")
     prob <- validate_conplot_prob_matrix(prob, epsilon, R0)
     label.cex <- validate_conplot_positive_scalar(label.cex, "label.cex")
+    label.bg.cex.mult <- validate_conplot_positive_scalar(
+        label.bg.cex.mult, "label.bg.cex.mult"
+    )
+    label.warn <- validate_conplot_logical_scalar(label.warn, "label.warn")
+    use.tikz <- resolve_conplot_use_tikz(
+        use.tikz = use.tikz,
+        envir = parent.frame(),
+        warn = label.warn
+    )
     colour.legend <- validate_conplot_logical_scalar(colour.legend, "colour.legend")
     filled <- validate_conplot_logical_scalar(filled, "filled")
     show.manual.labels <- validate_conplot_logical_scalar(
@@ -215,9 +247,13 @@ plot_conplot_grid <- function(epsilon,
     }
 
     contour.lwd <- validate_conplot_positive_scalar(contour.lwd, "contour.lwd")
-    manual.label.point.cex <- validate_conplot_positive_scalar(
-        manual.label.point.cex, "manual.label.point.cex"
-    )
+    if (is.null(manual.label.point.cex)) {
+        manual.label.point.cex <- label.cex * label.bg.cex.mult
+    } else {
+        manual.label.point.cex <- validate_conplot_positive_scalar(
+            manual.label.point.cex, "manual.label.point.cex"
+        )
+    }
     manual.label.y <- validate_conplot_finite_scalar(manual.label.y, "manual.label.y")
     if (is.null(manual.label.x)) {
         manual.label.x <- xlim[2L] - 0.002
@@ -254,6 +290,10 @@ plot_conplot_grid <- function(epsilon,
     cex.lab <- validate_conplot_optional_positive_scalar(cex.lab, "cex.lab")
     cex.axis <- validate_conplot_optional_positive_scalar(cex.axis, "cex.axis")
     cex.main <- validate_conplot_optional_positive_scalar(cex.main, "cex.main")
+
+    xlab <- conplot_nice_label(xlab, tikz.mode = use.tikz, warn = label.warn)
+    ylab <- conplot_nice_label(ylab, tikz.mode = use.tikz, warn = label.warn)
+    main <- conplot_nice_label(main, tikz.mode = use.tikz, warn = label.warn)
 
     disease.data <- resolve_conplot_disease_data(
         disease.data = disease.data,
@@ -352,7 +392,9 @@ plot_conplot_grid <- function(epsilon,
             y = manual.label.y,
             grey.adjust = grey.adjust,
             point.cex = manual.label.point.cex,
-            label.cex = label.cex
+            label.cex = label.cex,
+            use.tikz = use.tikz,
+            label.warn = label.warn
         )
     }
 
@@ -420,6 +462,9 @@ plot_conplot_grid <- function(epsilon,
         filled = filled,
         colour.legend = colour.legend,
         label.cex = label.cex,
+        label.bg.cex.mult = label.bg.cex.mult,
+        manual.label.point.cex = manual.label.point.cex,
+        use.tikz = use.tikz,
         show.manual.labels = show.manual.labels,
         manual.labels = manual.labels,
         show.quadratic = show.quadratic,
@@ -533,6 +578,53 @@ validate_conplot_optional_positive_scalar <- function(x, name) {
         return(NULL)
     }
     validate_conplot_positive_scalar(x, name)
+}
+
+##' Validate an optional logical scalar
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return `NULL` or a logical scalar.
+##' @noRd
+validate_conplot_optional_logical_scalar <- function(x, name) {
+    if (is.null(x)) {
+        return(NULL)
+    }
+    validate_conplot_logical_scalar(x, name)
+}
+
+##' Resolve tikz label mode for conplot labels
+##'
+##' @param use.tikz explicit tikz mode or `NULL`.
+##' @param envir caller environment.
+##' @param warn logical scalar controlling warnings.
+##'
+##' @return `NULL` or a scalar logical value.
+##' @noRd
+resolve_conplot_use_tikz <- function(use.tikz, envir, warn = TRUE) {
+    warn <- validate_conplot_logical_scalar(warn, "warn")
+
+    if (!is.null(use.tikz)) {
+        return(validate_conplot_logical_scalar(use.tikz, "use.tikz"))
+    }
+
+    if (exists("use.tikz", envir = envir, inherits = FALSE)) {
+        caller.use.tikz <- get("use.tikz", envir = envir, inherits = FALSE)
+        if (is.logical(caller.use.tikz) &&
+            length(caller.use.tikz) == 1L &&
+            !is.na(caller.use.tikz)) {
+            return(caller.use.tikz)
+        }
+        if (warn) {
+            warning(
+                "Ignoring caller-level `use.tikz` because it is not a scalar logical value.",
+                call. = FALSE
+            )
+        }
+    }
+
+    NULL
 }
 
 ##' Validate a probability scalar
@@ -658,6 +750,37 @@ validate_conplot_quadratic_coefficients <- function(x) {
     x
 }
 
+##' Default manual conplot label size
+##'
+##' @return A positive numeric scalar.
+##' @noRd
+conplot_default_label_cex <- function() {
+    if (interactive()) {
+        return(0.7)
+    }
+    0.5
+}
+
+##' Prepare a conplot text label
+##'
+##' @param x label object.
+##' @param tikz.mode optional logical tikz mode.
+##' @param warn logical scalar controlling warnings.
+##'
+##' @return A label suitable for base graphics.
+##' @noRd
+conplot_nice_label <- function(x, tikz.mode = NULL, warn = TRUE) {
+    if (!is.character(x)) {
+        return(x)
+    }
+
+    if (is.null(tikz.mode)) {
+        return(earnmisc::nice_text(x, warn = warn))
+    }
+
+    earnmisc::nice_text(x, use.tikz = tikz.mode, warn = warn)
+}
+
 ##' Interpolate a grid column profile at an epsilon value
 ##'
 ##' @param epsilon epsilon grid.
@@ -732,6 +855,8 @@ conplot_find_crossing <- function(x, z, level) {
 ##' @param grey.adjust greyscale adjustment.
 ##' @param point.cex point size.
 ##' @param label.cex label size.
+##' @param use.tikz optional logical tikz mode.
+##' @param label.warn logical scalar controlling warnings.
 ##'
 ##' @return Data frame of manual label positions.
 ##' @noRd
@@ -744,7 +869,9 @@ draw_conplot_manual_labels <- function(epsilon,
                                        y,
                                        grey.adjust,
                                        point.cex,
-                                       label.cex) {
+                                       label.cex,
+                                       use.tikz,
+                                       label.warn) {
     high.profile <- conplot_profile_at_epsilon(epsilon, R0, prob, x)
     high.y <- vapply(
         high.levels,
@@ -792,27 +919,51 @@ draw_conplot_manual_labels <- function(epsilon,
         graphics::text(
             x = low.x[low.ok],
             y = rep(y, sum(low.ok)),
-            labels = conplot_low_level_labels(low.levels[low.ok]),
+            labels = conplot_low_level_labels(
+                low.levels[low.ok],
+                use.tikz = use.tikz,
+                label.warn = label.warn
+            ),
             col = "black",
             cex = label.cex
         )
     }
 
     rbind(
-        data.frame(type = "high", level = high.levels, x = x, y = high.y),
-        data.frame(type = "low", level = low.levels, x = low.x, y = y)
+        data.frame(
+            type = "high",
+            level = high.levels,
+            x = x,
+            y = high.y,
+            label.cex = label.cex,
+            label.bg.cex = point.cex
+        ),
+        data.frame(
+            type = "low",
+            level = low.levels,
+            x = low.x,
+            y = y,
+            label.cex = label.cex,
+            label.bg.cex = point.cex
+        )
     )
 }
 
 ##' Build low-level label expressions
 ##'
 ##' @param x low-level values.
+##' @param use.tikz optional logical tikz mode.
+##' @param label.warn logical scalar controlling warnings.
 ##'
-##' @return Expression vector.
+##' @return Character vector or expression vector.
 ##' @noRd
-conplot_low_level_labels <- function(x) {
+conplot_low_level_labels <- function(x, use.tikz, label.warn) {
     powers <- as.integer(round(log10(x)))
-    parse(text = paste0("10^", powers))
+    conplot_nice_label(
+        paste0("$10^{", powers, "}$"),
+        tikz.mode = use.tikz,
+        warn = label.warn
+    )
 }
 
 ##' Draw the original quadratic overlay
