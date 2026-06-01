@@ -46,7 +46,13 @@ plot.settings <- list(
     local.minimum.label = "minimum persistence probability",
     local.minimum.label.cex = NULL,
     local.minimum.label.col = NULL,
-    local.minimum.label.position = NULL
+    local.minimum.label.position = NULL,
+    show.n.legend = TRUE,
+    n.legend.label = "$n = 10^6$",
+    n.legend.position = "topright",
+    n.legend.cex = NULL,
+    n.legend.col = "black",
+    n.legend.bty = "n"
 )
 
 load_burnout_package <- function(package.root) {
@@ -185,7 +191,13 @@ make_conplot_figure <- function(grid, settings, use.tikz.output) {
         local.minimum.label = settings$local.minimum.label,
         local.minimum.label.cex = settings$local.minimum.label.cex,
         local.minimum.label.col = settings$local.minimum.label.col,
-        local.minimum.label.position = settings$local.minimum.label.position
+        local.minimum.label.position = settings$local.minimum.label.position,
+        show.n.legend = settings$show.n.legend,
+        n.legend.label = settings$n.legend.label,
+        n.legend.position = settings$n.legend.position,
+        n.legend.cex = settings$n.legend.cex,
+        n.legend.col = settings$n.legend.col,
+        n.legend.bty = settings$n.legend.bty
     )
 
     grDevices::dev.off()

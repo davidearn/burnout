@@ -68,6 +68,12 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_equal(result$local.minimum.label$col, "darkred")
   expect_equal(result$local.minimum.label$cex, result$label.cex)
   expect_true(is.finite(result$local.minimum.label$srt))
+  expect_true(result$show.n.legend)
+  expect_equal(result$n.legend$label, "$n = 10^6$")
+  expect_equal(result$n.legend$position, "topright")
+  expect_equal(result$n.legend$col, "black")
+  expect_equal(result$n.legend$cex, 1)
+  expect_equal(result$n.legend$bty, "n")
   expect_true(result$diseases.plotted)
 })
 
@@ -110,10 +116,16 @@ test_that("math labels are prepared through earnmisc nice_text", {
     tikz.mode = TRUE,
     warn = FALSE
   )
+  tikz.n <- burnout:::conplot_nice_label(
+    "$n = 10^6$",
+    tikz.mode = TRUE,
+    warn = FALSE
+  )
 
   expect_true(grepl("\\varepsilon", tikz.x, fixed = TRUE))
   expect_s3_class(non.tikz, "latexexpression")
   expect_true(grepl("\\mathcal R_0", tikz, fixed = TRUE))
+  expect_true(grepl("n = 10^6", tikz.n, fixed = TRUE))
 })
 
 test_that("plot_conplot_grid accepts explicit tikz label mode without compiling LaTeX", {
@@ -129,6 +141,7 @@ test_that("plot_conplot_grid accepts explicit tikz label mode without compiling 
 
   expect_true(result$use.tikz)
   expect_true(grepl("\\varepsilon", result$labels$xlab, fixed = TRUE))
+  expect_true(grepl("n = 10^6", result$n.legend$plotting.label, fixed = TRUE))
 })
 
 test_that("plot_conplot_grid honours caller-level use.tikz for labels", {
@@ -224,6 +237,50 @@ test_that("local-minimum label requires the local-minimum curve", {
   )
 })
 
+test_that("sample-size legend can be configured and disabled", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    custom <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      n.legend.label = "$n = 10^5$",
+      n.legend.position = c(0.002, 20),
+      n.legend.cex = 0.8,
+      n.legend.col = "blue",
+      n.legend.bty = "o"
+    )
+  })
+  with_test_pdf({
+    disabled <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      show.n.legend = FALSE
+    )
+  })
+
+  expect_equal(custom$n.legend$label, "$n = 10^5$")
+  expect_equal(unname(custom$n.legend$position), c(0.002, 20))
+  expect_equal(custom$n.legend$cex, 0.8)
+  expect_equal(custom$n.legend$col, "blue")
+  expect_equal(custom$n.legend$bty, "o")
+
+  expect_false(disabled$show.n.legend)
+  expect_null(disabled$n.legend)
+})
+
+test_that("sample-size legend position is validated", {
+  grid <- test_conplot_grid_data()
+
+  expect_error(
+    plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      n.legend.position = "upperright"
+    ),
+    "n.legend.position must be a valid legend keyword"
+  )
+})
+
 test_that("plot_conplot_grid validates probability matrix dimensions", {
   grid <- test_conplot_grid_data()
 
@@ -290,6 +347,7 @@ test_that("plot_conplot_grid can disable overlays and annotations", {
       grid$epsilon, grid$R0, grid$prob,
       show.manual.labels = FALSE,
       show.overlays = FALSE,
+      show.n.legend = FALSE,
       show.diseases = FALSE
     )
   })
@@ -298,5 +356,6 @@ test_that("plot_conplot_grid can disable overlays and annotations", {
   expect_false(result$show.quadratic)
   expect_false(result$show.local.minimum)
   expect_false(result$show.local.minimum.label)
+  expect_false(result$show.n.legend)
   expect_false(result$diseases.plotted)
 })

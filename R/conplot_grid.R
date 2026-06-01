@@ -103,6 +103,18 @@
 ##'   length two giving the epsilon and `R0` coordinates for the
 ##'   local-minimum label. If `NULL`, the midpoint of the quadratic overlay
 ##'   range is used with the corresponding quadratic `R0` value.
+##' @param show.n.legend logical scalar. If `TRUE`, draw the original
+##'   top-right sample-size annotation.
+##' @param n.legend.label character label for the sample-size annotation.
+##'   The default is `"$n = 10^6$"` and is processed with
+##'   [earnmisc::nice_text()].
+##' @param n.legend.position character legend position such as `"topright"`,
+##'   or a finite numeric vector of length two giving coordinates. The
+##'   default preserves the original top-right placement.
+##' @param n.legend.cex optional positive finite scalar for the sample-size
+##'   annotation. If `NULL`, the base legend default `1` is used.
+##' @param n.legend.col,n.legend.bty colour and box type passed to
+##'   `legend()` for the sample-size annotation.
 ##' @param show.diseases logical scalar. If `TRUE`, add the original disease
 ##'   point annotations when `disease.data` is supplied or the suggested
 ##'   `sirr` package is available.
@@ -189,6 +201,12 @@ plot_conplot_grid <- function(epsilon,
                               local.minimum.label.col = NULL,
                               local.minimum.label.cex = NULL,
                               local.minimum.label.position = NULL,
+                              show.n.legend = TRUE,
+                              n.legend.label = "$n = 10^6$",
+                              n.legend.position = "topright",
+                              n.legend.cex = NULL,
+                              n.legend.col = "black",
+                              n.legend.bty = "n",
                               show.diseases = TRUE,
                               disease.data = NULL,
                               disease.names = c(
@@ -238,6 +256,7 @@ plot_conplot_grid <- function(epsilon,
             call. = FALSE
         )
     }
+    show.n.legend <- validate_conplot_logical_scalar(show.n.legend, "show.n.legend")
     show.diseases <- validate_conplot_logical_scalar(show.diseases, "show.diseases")
     log <- validate_conplot_log(log, epsilon = epsilon, R0 = R0)
     xlim <- validate_conplot_range(xlim, "xlim")
@@ -325,6 +344,17 @@ plot_conplot_grid <- function(epsilon,
         local.minimum.label.position,
         "local.minimum.label.position"
     )
+    n.legend.position <- validate_conplot_legend_position(
+        n.legend.position, "n.legend.position"
+    )
+    n.legend.cex <- validate_conplot_optional_positive_scalar(
+        n.legend.cex, "n.legend.cex"
+    )
+    if (is.null(n.legend.cex)) {
+        n.legend.cex <- 1
+    }
+    n.legend.col <- validate_conplot_colour_scalar(n.legend.col, "n.legend.col")
+    n.legend.bty <- validate_conplot_character_scalar(n.legend.bty, "n.legend.bty")
 
     disease.cex <- validate_conplot_positive_scalar(disease.cex, "disease.cex")
     disease.point.cex <- validate_conplot_positive_scalar(
@@ -335,12 +365,18 @@ plot_conplot_grid <- function(epsilon,
     cex.main <- validate_conplot_optional_positive_scalar(cex.main, "cex.main")
 
     local.minimum.label.source <- local.minimum.label
+    n.legend.label.source <- n.legend.label
 
     xlab <- conplot_nice_label(xlab, tikz.mode = use.tikz, warn = label.warn)
     ylab <- conplot_nice_label(ylab, tikz.mode = use.tikz, warn = label.warn)
     main <- conplot_nice_label(main, tikz.mode = use.tikz, warn = label.warn)
     local.minimum.label <- conplot_nice_label(
         local.minimum.label,
+        tikz.mode = use.tikz,
+        warn = label.warn
+    )
+    n.legend.label <- conplot_nice_label(
+        n.legend.label,
         tikz.mode = use.tikz,
         warn = label.warn
     )
@@ -504,6 +540,18 @@ plot_conplot_grid <- function(epsilon,
         diseases.plotted <- TRUE
     }
 
+    n.legend.metadata <- NULL
+    if (show.n.legend) {
+        n.legend.metadata <- draw_conplot_n_legend(
+            label = n.legend.label,
+            label.source = n.legend.label.source,
+            position = n.legend.position,
+            col = n.legend.col,
+            cex = n.legend.cex,
+            bty = n.legend.bty
+        )
+    }
+
     graphics::box()
 
     if (colour.legend) {
@@ -537,6 +585,8 @@ plot_conplot_grid <- function(epsilon,
         local.minimum = local.minimum,
         show.local.minimum.label = show.local.minimum.label,
         local.minimum.label = local.minimum.label.metadata,
+        show.n.legend = show.n.legend,
+        n.legend = n.legend.metadata,
         show.diseases = show.diseases,
         diseases.plotted = diseases.plotted,
         labels = list(
@@ -804,6 +854,31 @@ validate_conplot_colours <- function(fill.colours, expected.length) {
     fill.colours
 }
 
+##' Validate a character scalar
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return A character scalar.
+##' @noRd
+validate_conplot_character_scalar <- function(x, name) {
+    if (!is.character(x) || length(x) != 1L || is.na(x)) {
+        stop(name, " must be a character scalar.", call. = FALSE)
+    }
+    x
+}
+
+##' Validate a colour scalar
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return A character scalar.
+##' @noRd
+validate_conplot_colour_scalar <- function(x, name) {
+    validate_conplot_character_scalar(x, name)
+}
+
 ##' Validate an optional colour scalar
 ##'
 ##' @param x object to validate.
@@ -837,6 +912,38 @@ validate_conplot_optional_position <- function(x, name) {
     }
     names(x) <- c("epsilon", "R0")
     x
+}
+
+##' Validate a conplot legend position
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return A character scalar or numeric vector with `x` and `y` entries.
+##' @noRd
+validate_conplot_legend_position <- function(x, name) {
+    if (is.character(x) && length(x) == 1L && !is.na(x)) {
+        valid.positions <- c(
+            "bottomright", "bottom", "bottomleft", "left", "topleft",
+            "top", "topright", "right", "center"
+        )
+        if (!x %in% valid.positions) {
+            stop(
+                name, " must be a valid legend keyword or a finite numeric ",
+                "vector of length 2.",
+                call. = FALSE
+            )
+        }
+        return(x)
+    }
+    if (is.numeric(x) && length(x) == 2L && !anyNA(x) && all(is.finite(x))) {
+        names(x) <- c("x", "y")
+        return(x)
+    }
+    stop(
+        name, " must be a valid legend keyword or a finite numeric vector of length 2.",
+        call. = FALSE
+    )
 }
 
 ##' Validate quadratic coefficients
@@ -1155,6 +1262,46 @@ draw_conplot_local_minimum_label <- function(label,
         col = col,
         cex = cex,
         srt = srt
+    )
+}
+
+##' Draw the sample-size legend
+##'
+##' @param label label to draw.
+##' @param label.source original label before device-specific conversion.
+##' @param position legend keyword or coordinates.
+##' @param col,cex,bty graphical parameters for the legend text.
+##'
+##' @return List of legend metadata.
+##' @noRd
+draw_conplot_n_legend <- function(label,
+                                  label.source,
+                                  position,
+                                  col,
+                                  cex,
+                                  bty) {
+    legend.args <- list(
+        legend = label,
+        text.col = col,
+        cex = cex,
+        bty = bty
+    )
+    if (is.character(position)) {
+        legend.args$x <- position
+    } else {
+        legend.args$x <- position[["x"]]
+        legend.args$y <- position[["y"]]
+    }
+
+    do.call(graphics::legend, legend.args)
+
+    list(
+        label = label.source,
+        plotting.label = label,
+        position = position,
+        col = col,
+        cex = cex,
+        bty = bty
     )
 }
 

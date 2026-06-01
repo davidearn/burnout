@@ -54,6 +54,12 @@ plot_conplot_grid(
   local.minimum.label.col = NULL,
   local.minimum.label.cex = NULL,
   local.minimum.label.position = NULL,
+  show.n.legend = TRUE,
+  n.legend.label = "$n = 10^6$",
+  n.legend.position = "topright",
+  n.legend.cex = NULL,
+  n.legend.col = "black",
+  n.legend.bty = "n",
   show.diseases = TRUE,
   disease.data = NULL,
   disease.names = c("measles", "pertussis", "mumps", "rubella", "chickenpox",
@@ -196,6 +202,23 @@ local-minimum label. If \code{NULL}, the value of \code{label.cex} is used.}
 length two giving the epsilon and \code{R0} coordinates for the
 local-minimum label. If \code{NULL}, the midpoint of the quadratic overlay
 range is used with the corresponding quadratic \code{R0} value.}
+
+\item{show.n.legend}{logical scalar. If \code{TRUE}, draw the original
+top-right sample-size annotation.}
+
+\item{n.legend.label}{character label for the sample-size annotation.
+The default is \code{"$n = 10^6$"} and is processed with
+\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}.}
+
+\item{n.legend.position}{character legend position such as \code{"topright"},
+or a finite numeric vector of length two giving coordinates. The
+default preserves the original top-right placement.}
+
+\item{n.legend.cex}{optional positive finite scalar for the sample-size
+annotation. If \code{NULL}, the base legend default \code{1} is used.}
+
+\item{n.legend.col, n.legend.bty}{colour and box type passed to
+\code{legend()} for the sample-size annotation.}
 
 \item{show.diseases}{logical scalar. If \code{TRUE}, add the original disease
 point annotations when \code{disease.data} is supplied or the suggested
