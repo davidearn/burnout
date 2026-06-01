@@ -6,7 +6,8 @@
 ##
 ## Input:
 ##
-##     ../sources/conplot_standalone/prob.RData
+##     ../sources/conplot_standalone/prob_sir.RData
+##     ../sources/conplot_standalone/prob_sirs.RData
 ##
 ## In an interactive RStudio session, the default draws to the active graphics
 ## device. With Rscript, the default writes:
@@ -25,6 +26,20 @@
 ## Increase label.cex or set colour.legend to TRUE for presentation variants.
 output.mode <- if (interactive()) "device" else "pdf"
 ##output.mode <- "tikz"
+
+conplot.model <- Sys.getenv("BURNOUT_CONPLOT_MODEL", unset = "sirs")
+##conplot.model <- "sir"
+##conplot.model <- "sirs"
+
+prob.file.name <- Sys.getenv("BURNOUT_CONPLOT_FILE", unset = "")
+if (!nzchar(prob.file.name)) {
+    prob.file.name <- switch(
+        conplot.model,
+        sir = "prob_sir.RData",
+        sirs = "prob_sirs.RData",
+        stop("conplot.model must be \"sir\" or \"sirs\".", call. = FALSE)
+    )
+}
 
 plot.settings <- list(
     output.file = NULL,
@@ -51,9 +66,23 @@ plot.settings <- list(
     n.legend.label = "$n = 10^6$",
     n.legend.position = "topright",
     n.legend.cex = NULL,
-    n.legend.col = "black",
+    ##n.legend.col = "black",
+    n.legend.col = "grey95",
     n.legend.bty = "n"
 )
+
+apply_conplot_model_defaults <- function(settings, conplot.model) {
+    if (!conplot.model %in% c("sir", "sirs")) {
+        stop("conplot.model must be \"sir\" or \"sirs\".", call. = FALSE)
+    }
+    if (identical(conplot.model, "sirs")) {
+        settings$show.overlays <- FALSE
+        settings$show.local.minimum.label <- FALSE
+    }
+    settings
+}
+
+plot.settings <- apply_conplot_model_defaults(plot.settings, conplot.model)
 
 resolve_output_mode <- function(output.mode) {
     if (!is.character(output.mode) || length(output.mode) != 1L || is.na(output.mode)) {
@@ -101,7 +130,12 @@ load_burnout_package <- function(package.root) {
     }
 }
 
-find_prob_file <- function(package.root) {
+find_prob_file <- function(package.root, prob.file.name) {
+    if (!is.character(prob.file.name) || length(prob.file.name) != 1L ||
+        is.na(prob.file.name) || !nzchar(prob.file.name)) {
+        stop("prob.file.name must be a non-empty character scalar.", call. = FALSE)
+    }
+
     script.arg <- commandArgs(trailingOnly = FALSE)
     script.arg <- script.arg[grepl("^--file=", script.arg)]
     script.file <- if (length(script.arg)) {
@@ -112,16 +146,16 @@ find_prob_file <- function(package.root) {
     script.dir <- dirname(normalizePath(script.file, mustWork = FALSE))
 
     prob.candidates <- unique(c(
-        file.path(package.root, "../sources/conplot_standalone/prob.RData"),
-        file.path(package.root, "../../sources/conplot_standalone/prob.RData"),
-        file.path(script.dir, "../../../sources/conplot_standalone/prob.RData"),
-        file.path(script.dir, "../../sources/conplot_standalone/prob.RData")
+        file.path(package.root, "../sources/conplot_standalone", prob.file.name),
+        file.path(package.root, "../../sources/conplot_standalone", prob.file.name),
+        file.path(script.dir, "../../../sources/conplot_standalone", prob.file.name),
+        file.path(script.dir, "../../sources/conplot_standalone", prob.file.name)
     ))
 
     exists <- file.exists(prob.candidates)
     if (!any(exists)) {
         stop(
-            "Could not find prob.RData. Tried:\n",
+            "Could not find ", prob.file.name, ". Tried:\n",
             paste("  -", prob.candidates, collapse = "\n"),
             call. = FALSE
         )
@@ -262,11 +296,12 @@ main <- function(output.mode.value) {
 
     load_burnout_package(package.root)
 
-    prob.file <- find_prob_file(package.root)
+    prob.file <- find_prob_file(package.root, prob.file.name)
     grid <- load_prob_grid(prob.file)
 
     message(
-        "Loaded ", basename(prob.file), " with prob dimensions ",
+        "Loaded ", basename(prob.file), " for ", conplot.model,
+        " conplot with prob dimensions ",
         paste(dim(grid$prob), collapse = " x "), "."
     )
 
@@ -287,5 +322,5 @@ main <- function(output.mode.value) {
 }
 
 if (!isTRUE(getOption("burnout.conplot_talk_figure.skip_main", FALSE))) {
-    main(output.mode)
+    plot.info <- main(output.mode)
 }

@@ -3,7 +3,7 @@ test_conplot_grid_data <- function() {
   R0 <- 2^seq(0, 5, length.out = 35)
   prob <- outer(
     epsilon, R0,
-    function(epsilon, R0) plogis(3 * log(R0) + 180 * epsilon - 8)
+    function(epsilon, R0) plogis(3 * (log(R0) - log(3))^2 + 180 * epsilon - 8)
   )
   list(epsilon = epsilon, R0 = R0, prob = prob)
 }
@@ -185,6 +185,23 @@ test_that("plot_conplot_grid works on a normal PDF device", {
   expect_true(result$show.manual.labels)
 })
 
+test_that("manual labels tolerate sparse NA rows and columns", {
+  grid <- test_conplot_grid_data()
+  grid$prob[, 1:3] <- NA_real_
+  grid$prob[1:2, ] <- NA_real_
+
+  with_test_pdf({
+    result <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      show.local.minimum = FALSE
+    )
+  })
+
+  expect_true(result$show.manual.labels)
+  expect_true(anyNA(result$manual.labels$x) || anyNA(result$manual.labels$y))
+})
+
 test_that("local-minimum label can be configured and disabled", {
   grid <- test_conplot_grid_data()
 
@@ -272,6 +289,31 @@ test_that("local-minimum label requires the local-minimum curve", {
   )
 })
 
+test_that("local-minimum overlay is skipped when no finite curve exists", {
+  grid <- test_conplot_grid_data()
+  grid$prob <- outer(
+    grid$epsilon, grid$R0,
+    function(epsilon, R0) plogis(3 * log(R0) + 180 * epsilon - 8)
+  )
+
+  with_test_pdf({
+    result <- NULL
+    expect_warning(
+      result <- plot_conplot_grid(
+        grid$epsilon, grid$R0, grid$prob,
+        show.diseases = FALSE,
+        show.manual.labels = FALSE,
+        show.quadratic = FALSE
+      ),
+      "local-minimum curve has no finite points"
+    )
+  })
+
+  expect_true(result$show.local.minimum)
+  expect_null(result$local.minimum.label)
+  expect_false(any(is.finite(result$local.minimum$y)))
+})
+
 test_that("talk figure helper returns full conplot metadata invisibly", {
   script.candidates <- c(
     file.path("sandbox", "tracked", "conplot_talk_figure.R"),
@@ -283,6 +325,22 @@ test_that("talk figure helper returns full conplot metadata invisibly", {
 
   old.options <- options(burnout.conplot_talk_figure.skip_main = TRUE)
   on.exit(options(old.options), add = TRUE)
+  old.model <- Sys.getenv("BURNOUT_CONPLOT_MODEL", unset = NA_character_)
+  old.file <- Sys.getenv("BURNOUT_CONPLOT_FILE", unset = NA_character_)
+  on.exit({
+    if (is.na(old.model)) {
+      Sys.unsetenv("BURNOUT_CONPLOT_MODEL")
+    } else {
+      Sys.setenv(BURNOUT_CONPLOT_MODEL = old.model)
+    }
+    if (is.na(old.file)) {
+      Sys.unsetenv("BURNOUT_CONPLOT_FILE")
+    } else {
+      Sys.setenv(BURNOUT_CONPLOT_FILE = old.file)
+    }
+  }, add = TRUE)
+  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sir")
+  Sys.unsetenv("BURNOUT_CONPLOT_FILE")
 
   script.env <- new.env(parent = globalenv())
   sys.source(script.file, envir = script.env)
@@ -309,6 +367,50 @@ test_that("talk figure helper returns full conplot metadata invisibly", {
     result$value$local.minimum.label$position[["R0"]],
     result$value$local.minimum.label$curve.position[["R0"]]
   )
+})
+
+test_that("talk figure script selects model-specific grid defaults", {
+  script.candidates <- c(
+    file.path("sandbox", "tracked", "conplot_talk_figure.R"),
+    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure.R")
+  )
+  script.file <- script.candidates[file.exists(script.candidates)]
+  skip_if(!length(script.file), "conplot talk script is unavailable")
+  script.file <- script.file[[1L]]
+
+  old.options <- options(burnout.conplot_talk_figure.skip_main = TRUE)
+  on.exit(options(old.options), add = TRUE)
+  old.model <- Sys.getenv("BURNOUT_CONPLOT_MODEL", unset = NA_character_)
+  old.file <- Sys.getenv("BURNOUT_CONPLOT_FILE", unset = NA_character_)
+  on.exit({
+    if (is.na(old.model)) {
+      Sys.unsetenv("BURNOUT_CONPLOT_MODEL")
+    } else {
+      Sys.setenv(BURNOUT_CONPLOT_MODEL = old.model)
+    }
+    if (is.na(old.file)) {
+      Sys.unsetenv("BURNOUT_CONPLOT_FILE")
+    } else {
+      Sys.setenv(BURNOUT_CONPLOT_FILE = old.file)
+    }
+  }, add = TRUE)
+
+  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sirs")
+  Sys.unsetenv("BURNOUT_CONPLOT_FILE")
+  sirs.env <- new.env(parent = globalenv())
+  sys.source(script.file, envir = sirs.env)
+
+  expect_equal(sirs.env$prob.file.name, "prob_sirs.RData")
+  expect_false(sirs.env$plot.settings$show.overlays)
+  expect_false(sirs.env$plot.settings$show.local.minimum.label)
+
+  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sir")
+  sir.env <- new.env(parent = globalenv())
+  sys.source(script.file, envir = sir.env)
+
+  expect_equal(sir.env$prob.file.name, "prob_sir.RData")
+  expect_true(sir.env$plot.settings$show.overlays)
+  expect_true(sir.env$plot.settings$show.local.minimum.label)
 })
 
 test_that("sample-size legend can be configured and disabled", {

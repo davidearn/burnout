@@ -67,7 +67,9 @@
 ##'   suppresses automatic labels, preserving the original manual label
 ##'   placement.
 ##' @param show.manual.labels logical scalar. If `TRUE`, add the original
-##'   hand-positioned high- and low-level labels.
+##'   hand-positioned high- and low-level labels. Labels whose profiles
+##'   contain too few finite values, for example because an edge row or
+##'   column is all `NA`, are omitted rather than causing the plot to fail.
 ##' @param manual.label.x epsilon value for high-level labels. If `NULL`, use
 ##'   `xlim[2] - 0.002`, matching the standalone code.
 ##' @param manual.label.y `R0` value for low-level labels.
@@ -521,13 +523,22 @@ plot_conplot_grid <- function(epsilon,
             ylow = local.minimum.ylow,
             yhigh = local.minimum.yhigh
         )
-        graphics::lines(
-            local.minimum$x,
-            local.minimum$y,
-            col = local.minimum.col,
-            lwd = local.minimum.lwd
-        )
-        if (show.local.minimum.label) {
+        local.minimum.available <- any(is.finite(local.minimum$x) & is.finite(local.minimum$y))
+        if (local.minimum.available) {
+            graphics::lines(
+                local.minimum$x,
+                local.minimum$y,
+                col = local.minimum.col,
+                lwd = local.minimum.lwd
+            )
+        } else {
+            warning(
+                "local-minimum curve has no finite points; skipping the ",
+                "local-minimum overlay and label.",
+                call. = FALSE
+            )
+        }
+        if (show.local.minimum.label && local.minimum.available) {
             local.minimum.label.metadata <- draw_conplot_local_minimum_label(
                 label = local.minimum.label,
                 label.source = local.minimum.label.source,
@@ -1021,7 +1032,7 @@ conplot_nice_label <- function(x, tikz.mode = NULL, warn = TRUE) {
 conplot_profile_at_epsilon <- function(epsilon, R0, prob, x) {
     vapply(
         seq_along(R0),
-        function(j) stats::approx(epsilon, prob[, j], xout = x, rule = 2)$y,
+        function(j) conplot_approx_or_na(epsilon, prob[, j], xout = x),
         numeric(1L)
     )
 }
@@ -1038,9 +1049,26 @@ conplot_profile_at_epsilon <- function(epsilon, R0, prob, x) {
 conplot_profile_at_R0 <- function(epsilon, R0, prob, y) {
     vapply(
         seq_along(epsilon),
-        function(i) stats::approx(R0, prob[i, ], xout = y, rule = 2)$y,
+        function(i) conplot_approx_or_na(R0, prob[i, ], xout = y),
         numeric(1L)
     )
+}
+
+##' Interpolate a profile when enough finite values are available
+##'
+##' @param x coordinate vector.
+##' @param y profile values.
+##' @param xout coordinate to interpolate.
+##'
+##' @return Interpolated numeric scalar, or `NA_real_` when interpolation is
+##'   unsupported.
+##' @noRd
+conplot_approx_or_na <- function(x, y, xout) {
+    ok <- is.finite(x) & is.finite(y)
+    if (sum(ok) < 2L) {
+        return(NA_real_)
+    }
+    stats::approx(x[ok], y[ok], xout = xout, rule = 2)$y
 }
 
 ##' Find a contour crossing by interpolation

@@ -151,7 +151,9 @@ suppresses automatic labels, preserving the original manual label
 placement.}
 
 \item{show.manual.labels}{logical scalar. If \code{TRUE}, add the original
-hand-positioned high- and low-level labels.}
+hand-positioned high- and low-level labels. Labels whose profiles
+contain too few finite values, for example because an edge row or
+column is all \code{NA}, are omitted rather than causing the plot to fail.}
 
 \item{manual.label.x}{epsilon value for high-level labels. If \code{NULL}, use
 \code{xlim[2] - 0.002}, matching the standalone code.}
