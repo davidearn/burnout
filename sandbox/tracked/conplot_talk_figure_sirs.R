@@ -53,6 +53,7 @@ plot.args <- list(
     cex.axis = NULL,
     cex.main = NULL,
     show.diseases = TRUE,
+    disease.label.style = "contrast",
     show.manual.labels = TRUE,
     show.quadratic = FALSE,
     show.local.minimum = TRUE,

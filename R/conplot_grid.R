@@ -135,8 +135,20 @@
 ##'   using `sirr::diseaseParameters`.
 ##' @param disease.cex,disease.point.cex positive finite scalars controlling
 ##'   disease-label and disease-point size.
-##' @param disease.point.bg,disease.box.col colours for disease points and the
-##'   white-out boxes behind labels.
+##' @param disease.point.bg colour for disease points.
+##' @param disease.box.col,disease.label.bg colours for the white-out boxes
+##'   behind labels when `disease.label.style = "box"`. `disease.box.col` is
+##'   retained for compatibility; `disease.label.bg` is the resolved
+##'   background colour used for new calls.
+##' @param disease.label.style character scalar. `"box"` preserves the
+##'   original black text on a light background box, `"text"` draws text only,
+##'   and `"contrast"` draws text only with an automatically chosen black or
+##'   light label colour based on the underlying filled-contour shade. If the
+##'   local fill value is unavailable, contrast mode falls back to black.
+##' @param disease.label.col optional disease-label colour. If supplied, this
+##'   overrides the automatic contrast calculation and is used for all disease
+##'   labels. If `NULL`, `"box"` and `"text"` use black labels, while
+##'   `"contrast"` chooses black or `grey95` per label.
 ##' @param cex.lab,cex.axis,cex.main optional positive finite scalars passed to
 ##'   base graphics for label, axis, and title sizes.
 ##' @param ... additional arguments passed to `plot()`.
@@ -234,6 +246,9 @@ plot_conplot_grid <- function(epsilon,
                               disease.point.cex = 1,
                               disease.point.bg = "darkred",
                               disease.box.col = "white",
+                              disease.label.style = c("box", "contrast", "text"),
+                              disease.label.col = NULL,
+                              disease.label.bg = disease.box.col,
                               cex.lab = NULL,
                               cex.axis = NULL,
                               cex.main = NULL,
@@ -378,6 +393,19 @@ plot_conplot_grid <- function(epsilon,
     disease.cex <- validate_conplot_positive_scalar(disease.cex, "disease.cex")
     disease.point.cex <- validate_conplot_positive_scalar(
         disease.point.cex, "disease.point.cex"
+    )
+    disease.point.bg <- validate_conplot_colour_scalar(
+        disease.point.bg, "disease.point.bg"
+    )
+    disease.box.col <- validate_conplot_colour_scalar(
+        disease.box.col, "disease.box.col"
+    )
+    disease.label.style <- match.arg(disease.label.style)
+    disease.label.col <- validate_conplot_optional_colour_scalar(
+        disease.label.col, "disease.label.col"
+    )
+    disease.label.bg <- validate_conplot_colour_scalar(
+        disease.label.bg, "disease.label.bg"
     )
     cex.lab <- validate_conplot_optional_positive_scalar(cex.lab, "cex.lab")
     cex.axis <- validate_conplot_optional_positive_scalar(cex.axis, "cex.axis")
@@ -558,13 +586,22 @@ plot_conplot_grid <- function(epsilon,
     }
 
     diseases.plotted <- FALSE
+    disease.labels <- NULL
     if (show.diseases && !is.null(disease.data)) {
-        draw_conplot_diseases(
+        disease.labels <- draw_conplot_diseases(
             disease.data = disease.data,
             point.bg = disease.point.bg,
             point.cex = disease.point.cex,
             label.cex = disease.cex,
-            box.col = disease.box.col
+            label.style = disease.label.style,
+            label.col = disease.label.col,
+            label.bg = disease.label.bg,
+            epsilon = epsilon,
+            R0 = R0,
+            prob = prob,
+            filled = filled,
+            fill.breaks = fill.breaks,
+            fill.colours = fill.colours
         )
         diseases.plotted <- TRUE
     }
@@ -618,6 +655,9 @@ plot_conplot_grid <- function(epsilon,
         n.legend = n.legend.metadata,
         show.diseases = show.diseases,
         diseases.plotted = diseases.plotted,
+        disease.label.style = disease.label.style,
+        disease.label.bg = disease.label.bg,
+        disease.labels = disease.labels,
         labels = list(
             xlab = xlab,
             ylab = ylab,
@@ -1572,26 +1612,64 @@ adjust_conplot_disease_data <- function(disease.data) {
 ##' Draw disease annotations
 ##'
 ##' @param disease.data disease data frame.
-##' @param point.bg,box.col colours.
+##' @param point.bg point colour.
 ##' @param point.cex,label.cex size controls.
+##' @param label.style disease-label style.
+##' @param label.col optional explicit label colour.
+##' @param label.bg label background colour for boxed labels.
+##' @param epsilon,R0,prob probability grid.
+##' @param filled whether the plot has a filled background.
+##' @param fill.breaks,fill.colours filled-background mapping.
 ##'
-##' @return `NULL`, invisibly.
+##' @return Data frame with resolved disease-label metadata.
 ##' @noRd
 draw_conplot_diseases <- function(disease.data,
                                   point.bg,
                                   point.cex,
                                   label.cex,
-                                  box.col) {
+                                  label.style,
+                                  label.col,
+                                  label.bg,
+                                  epsilon,
+                                  R0,
+                                  prob,
+                                  filled,
+                                  fill.breaks,
+                                  fill.colours) {
     if (nrow(disease.data) == 0L) {
-        return(invisible(NULL))
+        return(data.frame(
+            epsilon = numeric(),
+            R0 = numeric(),
+            label = character(),
+            style = character(),
+            label.col = character(),
+            label.bg = character(),
+            prob.value = numeric(),
+            fill.colour = character(),
+            fill.luminance = numeric(),
+            background.drawn = logical()
+        ))
     }
+    label.metadata <- resolve_conplot_disease_label_metadata(
+        disease.data = disease.data,
+        label.style = label.style,
+        label.col = label.col,
+        label.bg = label.bg,
+        epsilon = epsilon,
+        R0 = R0,
+        prob = prob,
+        filled = filled,
+        fill.breaks = fill.breaks,
+        fill.colours = fill.colours
+    )
+
     non.hiv <- disease.data$label != "HIV"
-    if (any(non.hiv)) {
+    if (identical(label.style, "box") && any(non.hiv)) {
         conplot_white_out_string(
             x = disease.data$epsilon[non.hiv],
             y = disease.data$R0[non.hiv],
             string = disease.data$label[non.hiv],
-            col = box.col,
+            col = label.bg,
             cex = label.cex
         )
     }
@@ -1608,9 +1686,142 @@ draw_conplot_diseases <- function(disease.data,
         labels = disease.data$label,
         pos = 4,
         xpd = NA,
-        cex = label.cex
+        cex = label.cex,
+        col = label.metadata$label.col
     )
-    invisible(NULL)
+    label.metadata
+}
+
+##' Resolve disease-label plotting metadata
+##'
+##' @param disease.data disease data frame.
+##' @param label.style disease-label style.
+##' @param label.col optional explicit label colour.
+##' @param label.bg label background colour for boxed labels.
+##' @param epsilon,R0,prob probability grid.
+##' @param filled whether the plot has a filled background.
+##' @param fill.breaks,fill.colours filled-background mapping.
+##'
+##' @return Data frame with resolved label metadata.
+##' @noRd
+resolve_conplot_disease_label_metadata <- function(disease.data,
+                                                   label.style,
+                                                   label.col,
+                                                   label.bg,
+                                                   epsilon,
+                                                   R0,
+                                                   prob,
+                                                   filled,
+                                                   fill.breaks,
+                                                   fill.colours) {
+    n <- nrow(disease.data)
+    prob.value <- rep(NA_real_, n)
+    fill.colour <- rep(NA_character_, n)
+    fill.luminance <- rep(NA_real_, n)
+
+    if (identical(label.style, "contrast") && is.null(label.col) && filled) {
+        prob.value <- conplot_prob_at_points(
+            epsilon = epsilon,
+            R0 = R0,
+            prob = prob,
+            x = disease.data$epsilon,
+            y = disease.data$R0
+        )
+        fill.colour <- conplot_fill_colour_for_probability(
+            prob.value,
+            fill.breaks = fill.breaks,
+            fill.colours = fill.colours
+        )
+        fill.luminance <- conplot_colour_luminance(fill.colour)
+    }
+
+    resolved.col <- if (!is.null(label.col)) {
+        rep(label.col, n)
+    } else if (identical(label.style, "contrast")) {
+        ifelse(is.finite(fill.luminance) & fill.luminance < 0.5, "grey95", "black")
+    } else {
+        rep("black", n)
+    }
+
+    background.drawn <- rep(FALSE, n)
+    if (identical(label.style, "box")) {
+        background.drawn <- disease.data$label != "HIV"
+    }
+
+    data.frame(
+        epsilon = disease.data$epsilon,
+        R0 = disease.data$R0,
+        label = as.character(disease.data$label),
+        style = rep(label.style, n),
+        label.col = resolved.col,
+        label.bg = if (identical(label.style, "box")) rep(label.bg, n) else rep(NA_character_, n),
+        prob.value = prob.value,
+        fill.colour = fill.colour,
+        fill.luminance = fill.luminance,
+        background.drawn = background.drawn,
+        stringsAsFactors = FALSE
+    )
+}
+
+##' Interpolate probability values at disease-label positions
+##'
+##' @param epsilon,R0,prob probability grid.
+##' @param x,y label coordinates.
+##'
+##' @return Numeric vector of interpolated probabilities.
+##' @noRd
+conplot_prob_at_points <- function(epsilon, R0, prob, x, y) {
+    vapply(
+        seq_along(x),
+        function(i) {
+            profile <- conplot_profile_at_epsilon(epsilon, R0, prob, x[[i]])
+            conplot_approx_or_na(R0, profile, xout = y[[i]])
+        },
+        numeric(1L)
+    )
+}
+
+##' Map probability values to conplot fill colours
+##'
+##' @param probability probability values.
+##' @param fill.breaks filled-background break points.
+##' @param fill.colours colours corresponding to break intervals.
+##'
+##' @return Character vector of fill colours, with `NA` for unavailable
+##'   probabilities.
+##' @noRd
+conplot_fill_colour_for_probability <- function(probability, fill.breaks, fill.colours) {
+    out <- rep(NA_character_, length(probability))
+    ok <- is.finite(probability)
+    if (!any(ok)) {
+        return(out)
+    }
+    index <- findInterval(
+        probability[ok],
+        fill.breaks,
+        rightmost.closed = TRUE,
+        all.inside = TRUE
+    )
+    index <- pmin(index, length(fill.colours))
+    out[ok] <- fill.colours[index]
+    out
+}
+
+##' Compute relative luminance for colours
+##'
+##' @param colour colour vector.
+##'
+##' @return Numeric vector of relative luminance values.
+##' @noRd
+conplot_colour_luminance <- function(colour) {
+    out <- rep(NA_real_, length(colour))
+    ok <- !is.na(colour)
+    if (!any(ok)) {
+        return(out)
+    }
+    rgb <- grDevices::col2rgb(colour[ok]) / 255
+    out[ok] <- 0.2126 * rgb[1L, ] + 0.7152 * rgb[2L, ] + 0.0722 * rgb[3L, ]
+    out
 }
 
 ##' White out a label background

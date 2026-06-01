@@ -85,6 +85,54 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_equal(result$n.legend$cex, 1)
   expect_equal(result$n.legend$bty, "n")
   expect_true(result$diseases.plotted)
+  expect_equal(result$disease.label.style, "box")
+  expect_equal(result$disease.label.bg, "white")
+  expect_equal(result$disease.labels$style, rep("box", 2))
+  expect_equal(result$disease.labels$label.col, rep("black", 2))
+  expect_true(all(result$disease.labels$background.drawn))
+})
+
+test_that("disease labels support box, text, and contrast styles", {
+  grid <- test_conplot_grid_data()
+  disease.data <- test_conplot_disease_data()
+
+  with_test_pdf({
+    text <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      disease.data = disease.data,
+      disease.label.style = "text",
+      disease.label.col = "blue"
+    )
+  })
+  with_test_pdf({
+    contrast <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      disease.data = disease.data,
+      disease.label.style = "contrast"
+    )
+  })
+  with_test_pdf({
+    override <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      disease.data = disease.data,
+      disease.label.style = "contrast",
+      disease.label.col = "purple"
+    )
+  })
+
+  expect_equal(text$disease.label.style, "text")
+  expect_equal(text$disease.labels$label.col, rep("blue", 2))
+  expect_false(any(text$disease.labels$background.drawn))
+  expect_true(all(is.na(text$disease.labels$label.bg)))
+
+  expect_equal(contrast$disease.label.style, "contrast")
+  expect_false(any(contrast$disease.labels$background.drawn))
+  expect_true(all(contrast$disease.labels$label.col %in% c("black", "grey95")))
+  expect_true(all(is.finite(contrast$disease.labels$prob.value)))
+  expect_true(all(is.finite(contrast$disease.labels$fill.luminance)))
+
+  expect_equal(override$disease.labels$label.col, rep("purple", 2))
+  expect_true(all(is.na(override$disease.labels$prob.value)))
 })
 
 test_that("manual label background circles scale with label size", {
@@ -403,6 +451,7 @@ test_that("talk figure script selects model-specific grid defaults", {
   expect_true(sirs.env$plot.args$show.local.minimum)
   expect_equal(sirs.env$plot.args$local.minimum.xlow, 0)
   expect_false(sirs.env$plot.args$show.local.minimum.label)
+  expect_equal(sirs.env$plot.args$disease.label.style, "contrast")
 
   sir.env <- new.env(parent = globalenv())
   sys.source(sir.file, envir = sir.env)
@@ -413,6 +462,7 @@ test_that("talk figure script selects model-specific grid defaults", {
   expect_true(sir.env$plot.args$show.local.minimum)
   expect_true(sir.env$plot.args$show.local.minimum.label)
   expect_false("local.minimum.xlow" %in% names(sir.env$plot.args))
+  expect_false("disease.label.style" %in% names(sir.env$plot.args))
 })
 
 test_that("sample-size legend can be configured and disabled", {

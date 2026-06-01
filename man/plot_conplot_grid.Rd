@@ -70,6 +70,9 @@ plot_conplot_grid(
   disease.point.cex = 1,
   disease.point.bg = "darkred",
   disease.box.col = "white",
+  disease.label.style = c("box", "contrast", "text"),
+  disease.label.col = NULL,
+  disease.label.bg = disease.box.col,
   cex.lab = NULL,
   cex.axis = NULL,
   cex.main = NULL,
@@ -246,8 +249,23 @@ using \code{sirr::diseaseParameters}.}
 \item{disease.cex, disease.point.cex}{positive finite scalars controlling
 disease-label and disease-point size.}
 
-\item{disease.point.bg, disease.box.col}{colours for disease points and the
-white-out boxes behind labels.}
+\item{disease.point.bg}{colour for disease points.}
+
+\item{disease.box.col, disease.label.bg}{colours for the white-out boxes
+behind labels when \code{disease.label.style = "box"}. \code{disease.box.col} is
+retained for compatibility; \code{disease.label.bg} is the resolved
+background colour used for new calls.}
+
+\item{disease.label.style}{character scalar. \code{"box"} preserves the
+original black text on a light background box, \code{"text"} draws text only,
+and \code{"contrast"} draws text only with an automatically chosen black or
+light label colour based on the underlying filled-contour shade. If the
+local fill value is unavailable, contrast mode falls back to black.}
+
+\item{disease.label.col}{optional disease-label colour. If supplied, this
+overrides the automatic contrast calculation and is used for all disease
+labels. If \code{NULL}, \code{"box"} and \code{"text"} use black labels, while
+\code{"contrast"} chooses black or \code{grey95} per label.}
 
 \item{cex.lab, cex.axis, cex.main}{optional positive finite scalars passed to
 base graphics for label, axis, and title sizes.}
