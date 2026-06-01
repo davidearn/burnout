@@ -8,6 +8,7 @@
 ##
 ##     ../sources/conplot_standalone/prob_sir.RData
 ##     ../sources/conplot_standalone/prob_sirs.RData
+##     ../sources/conplot_standalone/prob.RData.eta=0.01
 ##
 ## In an interactive RStudio session, the default draws to the active graphics
 ## device. With Rscript, the default writes:
@@ -36,16 +37,19 @@ if (!nzchar(prob.file.name)) {
     prob.file.name <- switch(
         conplot.model,
         sir = "prob_sir.RData",
-        sirs = "prob_sirs.RData",
+        ##sirs = "prob_sirs.RData",
+        sirs = "prob.RData.eta=0.01",
         stop("conplot.model must be \"sir\" or \"sirs\".", call. = FALSE)
     )
 }
 
-plot.settings <- list(
+device.settings <- list(
     output.file = NULL,
     width = 6,
-    height = 6,
-    ##label.cex = 0.5,
+    height = 6
+)
+
+plot.args <- list(
     label.cex = 1,
     label.bg.cex.mult = 4,
     colour.legend = FALSE,
@@ -54,8 +58,9 @@ plot.settings <- list(
     cex.axis = NULL,
     cex.main = NULL,
     show.diseases = TRUE,
-    show.overlays = TRUE,
     show.manual.labels = TRUE,
+    show.quadratic = TRUE,
+    show.local.minimum = TRUE,
     show.local.minimum.label = TRUE,
     local.minimum.label = "minimum persistence probability",
     local.minimum.label.cex = NULL,
@@ -71,18 +76,19 @@ plot.settings <- list(
     n.legend.bty = "n"
 )
 
-apply_conplot_model_defaults <- function(settings, conplot.model) {
+apply_conplot_model_defaults <- function(plot.args, conplot.model) {
     if (!conplot.model %in% c("sir", "sirs")) {
         stop("conplot.model must be \"sir\" or \"sirs\".", call. = FALSE)
     }
     if (identical(conplot.model, "sirs")) {
-        settings$show.overlays <- FALSE
-        settings$show.local.minimum.label <- FALSE
+        plot.args$show.quadratic <- FALSE
+        plot.args$show.local.minimum <- TRUE
+        plot.args$show.local.minimum.label <- FALSE
     }
-    settings
+    plot.args
 }
 
-plot.settings <- apply_conplot_model_defaults(plot.settings, conplot.model)
+plot.args <- apply_conplot_model_defaults(plot.args, conplot.model)
 
 resolve_output_mode <- function(output.mode) {
     if (!is.character(output.mode) || length(output.mode) != 1L || is.na(output.mode)) {
@@ -205,71 +211,62 @@ load_prob_grid <- function(prob.file) {
     list(epsvals = epsvals, Rvals = Rvals, prob = prob)
 }
 
-open_conplot_device <- function(settings, output.mode) {
+open_conplot_device <- function(device.settings, output.mode) {
     output.mode <- resolve_output_mode(output.mode)
     if (identical(output.mode, "device")) {
         return(FALSE)
     }
 
-    output.file <- settings$output.file
+    output.file <- device.settings$output.file
     if (is.null(output.file)) {
-        stop("settings$output.file must be set for pdf or tikz output.", call. = FALSE)
+        stop("device.settings$output.file must be set for pdf or tikz output.", call. = FALSE)
     }
     dir.create(dirname(output.file), recursive = TRUE, showWarnings = FALSE)
 
     if (identical(output.mode, "tikz")) {
         earnmisc::tikz_open(
             file = output.file,
-            width = settings$width,
-            height = settings$height,
+            width = device.settings$width,
+            height = device.settings$height,
             standAlone = TRUE
         )
     } else {
         grDevices::pdf(
             output.file,
-            width = settings$width,
-            height = settings$height,
+            width = device.settings$width,
+            height = device.settings$height,
             onefile = TRUE
         )
     }
     TRUE
 }
 
-make_conplot_figure <- function(grid, settings, output.mode) {
+make_conplot_figure <- function(grid, device.settings, plot.args, output.mode) {
     output.mode <- resolve_output_mode(output.mode)
-    device.open <- open_conplot_device(settings, output.mode)
+    device.open <- open_conplot_device(device.settings, output.mode)
     on.exit({
         if (device.open) {
             grDevices::dev.off()
         }
     }, add = TRUE)
 
-    plot.info <- burnout::plot_conplot_grid(
+    protected.args <- c("epsilon", "R0", "prob")
+    protected.present <- intersect(protected.args, names(plot.args))
+    if (length(protected.present)) {
+        stop(
+            "plot.args must not contain core grid argument(s): ",
+            paste(protected.present, collapse = ", "),
+            call. = FALSE
+        )
+    }
+
+    plot.info <- do.call(
+        burnout::plot_conplot_grid,
+        c(list(
         epsilon = grid$epsvals,
         R0 = grid$Rvals,
-        prob = grid$prob,
-        label.cex = settings$label.cex,
-        label.bg.cex.mult = settings$label.bg.cex.mult,
-        colour.legend = settings$colour.legend,
-        use.tikz = settings$use.tikz,
-        cex.lab = settings$cex.lab,
-        cex.axis = settings$cex.axis,
-        cex.main = settings$cex.main,
-        show.diseases = settings$show.diseases,
-        show.overlays = settings$show.overlays,
-        show.manual.labels = settings$show.manual.labels,
-        show.local.minimum.label = settings$show.local.minimum.label,
-        local.minimum.label = settings$local.minimum.label,
-        local.minimum.label.cex = settings$local.minimum.label.cex,
-        local.minimum.label.col = settings$local.minimum.label.col,
-        local.minimum.label.position = settings$local.minimum.label.position,
-        local.minimum.label.offset.lines = settings$local.minimum.label.offset.lines,
-        show.n.legend = settings$show.n.legend,
-        n.legend.label = settings$n.legend.label,
-        n.legend.position = settings$n.legend.position,
-        n.legend.cex = settings$n.legend.cex,
-        n.legend.col = settings$n.legend.col,
-        n.legend.bty = settings$n.legend.bty
+        prob = grid$prob
+        ), plot.args)
     )
 
     if (device.open) {
@@ -305,17 +302,22 @@ main <- function(output.mode.value) {
         paste(dim(grid$prob), collapse = " x "), "."
     )
 
-    plot.settings$output.file <- resolve_output_file(
+    device.settings$output.file <- resolve_output_file(
         package.root,
         output.mode,
-        plot.settings$output.file
+        device.settings$output.file
     )
-    plot.info <- make_conplot_figure(grid, plot.settings, output.mode)
+    plot.info <- make_conplot_figure(
+        grid = grid,
+        device.settings = device.settings,
+        plot.args = plot.args,
+        output.mode = output.mode
+    )
 
     if (identical(output.mode, "device")) {
         message("Drew conplot on the active graphics device.")
     } else {
-        message("Wrote ", normalizePath(plot.settings$output.file, mustWork = TRUE))
+        message("Wrote ", normalizePath(device.settings$output.file, mustWork = TRUE))
     }
 
     invisible(plot.info)

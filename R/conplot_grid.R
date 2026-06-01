@@ -78,17 +78,20 @@
 ##'   `label.cex * label.bg.cex.mult`.
 ##' @param show.overlays logical scalar controlling both original dark-red
 ##'   overlay curves unless `show.quadratic` or `show.local.minimum` is
-##'   supplied explicitly.
+##'   supplied explicitly. The two overlays are independent: the quadratic
+##'   curve is a hard-coded approximation from the original SIR figure,
+##'   whereas the local-minimum curve is estimated from the supplied grid.
 ##' @param show.quadratic logical scalar. If `TRUE`, draw the original dotted
-##'   quadratic curve.
+##'   quadratic approximation curve.
 ##' @param quadratic.coefficients named or unnamed numeric vector with
 ##'   intercept, slope, and curvature for the quadratic overlay.
 ##' @param quadratic.from,quadratic.to finite scalars giving the horizontal
 ##'   range for the quadratic overlay.
 ##' @param quadratic.col,quadratic.lty,quadratic.lwd graphical parameters for
 ##'   the quadratic overlay.
-##' @param show.local.minimum logical scalar. If `TRUE`, draw the original
-##'   local-minimum curve estimated directly from the precomputed grid.
+##' @param show.local.minimum logical scalar. If `TRUE`, draw the
+##'   data-derived local-minimum curve estimated directly from the
+##'   precomputed grid.
 ##' @param local.minimum.xlow,local.minimum.ylow,local.minimum.yhigh numeric
 ##'   limits used when estimating the local-minimum curve.
 ##' @param local.minimum.col,local.minimum.lwd graphical parameters for the

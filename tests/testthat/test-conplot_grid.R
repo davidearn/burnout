@@ -289,6 +289,27 @@ test_that("local-minimum label requires the local-minimum curve", {
   )
 })
 
+test_that("local-minimum curve tolerates sparse edge profiles", {
+  grid <- test_conplot_grid_data()
+  grid$prob[, 1:3] <- NA_real_
+  grid$prob[1:2, ] <- NA_real_
+
+  with_test_pdf({
+    result <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      show.manual.labels = FALSE,
+      show.quadratic = FALSE,
+      show.local.minimum = TRUE,
+      show.local.minimum.label = FALSE
+    )
+  })
+
+  expect_true(result$show.local.minimum)
+  expect_true(any(is.finite(result$local.minimum$y)))
+  expect_null(result$local.minimum.label)
+})
+
 test_that("local-minimum overlay is skipped when no finite curve exists", {
   grid <- test_conplot_grid_data()
   grid$prob <- outer(
@@ -346,15 +367,17 @@ test_that("talk figure helper returns full conplot metadata invisibly", {
   sys.source(script.file, envir = script.env)
 
   grid <- test_conplot_grid_data()
-  settings <- script.env$plot.settings
-  settings$show.diseases <- FALSE
-  settings$show.n.legend <- FALSE
+  plot.args <- script.env$plot.args
+  plot.args$show.diseases <- FALSE
+  plot.args$show.n.legend <- FALSE
+  plot.args$filled <- FALSE
 
   with_test_pdf({
     result <- withVisible(
       script.env$make_conplot_figure(
         grid = list(epsvals = grid$epsilon, Rvals = grid$R0, prob = grid$prob),
-        settings = settings,
+        device.settings = script.env$device.settings,
+        plot.args = plot.args,
         output.mode = "device"
       )
     )
@@ -367,6 +390,7 @@ test_that("talk figure helper returns full conplot metadata invisibly", {
     result$value$local.minimum.label$position[["R0"]],
     result$value$local.minimum.label$curve.position[["R0"]]
   )
+  expect_false(result$value$filled)
 })
 
 test_that("talk figure script selects model-specific grid defaults", {
@@ -400,17 +424,19 @@ test_that("talk figure script selects model-specific grid defaults", {
   sirs.env <- new.env(parent = globalenv())
   sys.source(script.file, envir = sirs.env)
 
-  expect_equal(sirs.env$prob.file.name, "prob_sirs.RData")
-  expect_false(sirs.env$plot.settings$show.overlays)
-  expect_false(sirs.env$plot.settings$show.local.minimum.label)
+  expect_equal(sirs.env$prob.file.name, "prob.RData.eta=0.01")
+  expect_false(sirs.env$plot.args$show.quadratic)
+  expect_true(sirs.env$plot.args$show.local.minimum)
+  expect_false(sirs.env$plot.args$show.local.minimum.label)
 
   Sys.setenv(BURNOUT_CONPLOT_MODEL = "sir")
   sir.env <- new.env(parent = globalenv())
   sys.source(script.file, envir = sir.env)
 
   expect_equal(sir.env$prob.file.name, "prob_sir.RData")
-  expect_true(sir.env$plot.settings$show.overlays)
-  expect_true(sir.env$plot.settings$show.local.minimum.label)
+  expect_true(sir.env$plot.args$show.quadratic)
+  expect_true(sir.env$plot.args$show.local.minimum)
+  expect_true(sir.env$plot.args$show.local.minimum.label)
 })
 
 test_that("sample-size legend can be configured and disabled", {

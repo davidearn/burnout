@@ -166,10 +166,12 @@ filled points behind manual labels. If \code{NULL}, it is computed from
 
 \item{show.overlays}{logical scalar controlling both original dark-red
 overlay curves unless \code{show.quadratic} or \code{show.local.minimum} is
-supplied explicitly.}
+supplied explicitly. The two overlays are independent: the quadratic
+curve is a hard-coded approximation from the original SIR figure,
+whereas the local-minimum curve is estimated from the supplied grid.}
 
 \item{show.quadratic}{logical scalar. If \code{TRUE}, draw the original dotted
-quadratic curve.}
+quadratic approximation curve.}
 
 \item{quadratic.coefficients}{named or unnamed numeric vector with
 intercept, slope, and curvature for the quadratic overlay.}
@@ -180,8 +182,9 @@ range for the quadratic overlay.}
 \item{quadratic.col, quadratic.lty, quadratic.lwd}{graphical parameters for
 the quadratic overlay.}
 
-\item{show.local.minimum}{logical scalar. If \code{TRUE}, draw the original
-local-minimum curve estimated directly from the precomputed grid.}
+\item{show.local.minimum}{logical scalar. If \code{TRUE}, draw the
+data-derived local-minimum curve estimated directly from the
+precomputed grid.}
 
 \item{local.minimum.xlow, local.minimum.ylow, local.minimum.yhigh}{numeric
 limits used when estimating the local-minimum curve.}
