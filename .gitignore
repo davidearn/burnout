@@ -27,6 +27,8 @@ vignettes/*.pdf
 # Generated sandbox outputs
 sandbox/*.pdf
 sandbox/*.tex
+sandbox/*.aux
+sandbox/*.log
 sandbox/*_colors.tex
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3

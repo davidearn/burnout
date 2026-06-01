@@ -20,7 +20,7 @@ plot_conplot_grid(
   log = "y",
   xlim = c(0, 0.02),
   ylim = c(1, 32),
-  xlab = "mean infectious period / mean lifetime ($\\\\epsilon$)",
+  xlab = "mean infectious period / mean lifetime ($\\\\varepsilon$)",
   ylab = "basic reproduction number ($\\\\Rn$)",
   main = "contours of persistence probability",
   fill.colours = NULL,
@@ -49,6 +49,11 @@ plot_conplot_grid(
   local.minimum.yhigh = 5,
   local.minimum.col = "darkred",
   local.minimum.lwd = 3,
+  show.local.minimum.label = show.local.minimum,
+  local.minimum.label = "minimum persistence probability",
+  local.minimum.label.col = NULL,
+  local.minimum.label.cex = NULL,
+  local.minimum.label.position = NULL,
   show.diseases = TRUE,
   disease.data = NULL,
   disease.names = c("measles", "pertussis", "mumps", "rubella", "chickenpox",
@@ -118,7 +123,8 @@ The default \code{"y"} uses the original logarithmic \code{R0} axis.}
 Defaults match the original manuscript figure.}
 
 \item{xlab, ylab, main}{plot labels. Character labels are processed with
-\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}. The default reproduction-number label uses the
+\code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}. The default epsilon label uses
+\code{"$\\\\varepsilon$"} and the default reproduction-number label uses the
 \code{"$\\\\Rn$"} macro from \code{earnmisc}.}
 
 \item{fill.colours}{optional vector of colours for the filled background.
@@ -173,6 +179,23 @@ limits used when estimating the local-minimum curve.}
 
 \item{local.minimum.col, local.minimum.lwd}{graphical parameters for the
 local-minimum curve.}
+
+\item{show.local.minimum.label}{logical scalar. If \code{TRUE}, label the
+local-minimum curve. The default follows \code{show.local.minimum}.}
+
+\item{local.minimum.label}{character label for the local-minimum curve.
+The label is processed with \code{\link[earnmisc:nice_text]{earnmisc::nice_text()}}.}
+
+\item{local.minimum.label.col}{optional label colour. If \code{NULL}, the
+label uses \code{local.minimum.col}.}
+
+\item{local.minimum.label.cex}{optional positive finite scalar for the
+local-minimum label. If \code{NULL}, the value of \code{label.cex} is used.}
+
+\item{local.minimum.label.position}{optional finite numeric vector of
+length two giving the epsilon and \code{R0} coordinates for the
+local-minimum label. If \code{NULL}, the midpoint of the quadratic overlay
+range is used with the corresponding quadratic \code{R0} value.}
 
 \item{show.diseases}{logical scalar. If \code{TRUE}, add the original disease
 point annotations when \code{disease.data} is supplied or the suggested

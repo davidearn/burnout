@@ -64,6 +64,10 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_true(result$show.manual.labels)
   expect_true(result$show.quadratic)
   expect_true(result$show.local.minimum)
+  expect_true(result$show.local.minimum.label)
+  expect_equal(result$local.minimum.label$col, "darkred")
+  expect_equal(result$local.minimum.label$cex, result$label.cex)
+  expect_true(is.finite(result$local.minimum.label$srt))
   expect_true(result$diseases.plotted)
 })
 
@@ -91,6 +95,11 @@ test_that("manual label background circles scale with label size", {
 })
 
 test_that("math labels are prepared through earnmisc nice_text", {
+  tikz.x <- burnout:::conplot_nice_label(
+    "mean infectious period / mean lifetime ($\\varepsilon$)",
+    tikz.mode = TRUE,
+    warn = FALSE
+  )
   non.tikz <- burnout:::conplot_nice_label(
     "basic reproduction number ($\\Rn$)",
     tikz.mode = FALSE,
@@ -102,6 +111,7 @@ test_that("math labels are prepared through earnmisc nice_text", {
     warn = FALSE
   )
 
+  expect_true(grepl("\\varepsilon", tikz.x, fixed = TRUE))
   expect_s3_class(non.tikz, "latexexpression")
   expect_true(grepl("\\mathcal R_0", tikz, fixed = TRUE))
 })
@@ -118,6 +128,7 @@ test_that("plot_conplot_grid accepts explicit tikz label mode without compiling 
   })
 
   expect_true(result$use.tikz)
+  expect_true(grepl("\\varepsilon", result$labels$xlab, fixed = TRUE))
 })
 
 test_that("plot_conplot_grid honours caller-level use.tikz for labels", {
@@ -149,6 +160,68 @@ test_that("plot_conplot_grid works on a normal PDF device", {
 
   expect_null(result$use.tikz)
   expect_true(result$show.manual.labels)
+})
+
+test_that("local-minimum label can be configured and disabled", {
+  grid <- test_conplot_grid_data()
+
+  with_test_pdf({
+    default <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE
+    )
+  })
+  with_test_pdf({
+    custom <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      local.minimum.label.col = "blue",
+      local.minimum.label.cex = 0.8,
+      local.minimum.label.position = c(0.012, 2.2)
+    )
+  })
+  with_test_pdf({
+    inherited.colour <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      local.minimum.col = "purple",
+      local.minimum.label.col = NULL
+    )
+  })
+  with_test_pdf({
+    disabled <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      show.local.minimum.label = FALSE
+    )
+  })
+
+  expect_equal(default$local.minimum.label$col, "darkred")
+  expect_equal(default$local.minimum.label$label, "minimum persistence probability")
+  expect_equal(default$local.minimum.label$position[["epsilon"]], 0.01)
+  expect_true(is.finite(default$local.minimum.label$position[["R0"]]))
+  expect_true(is.finite(default$local.minimum.label$srt))
+
+  expect_equal(custom$local.minimum.label$col, "blue")
+  expect_equal(custom$local.minimum.label$cex, 0.8)
+  expect_equal(unname(custom$local.minimum.label$position), c(0.012, 2.2))
+  expect_equal(inherited.colour$local.minimum.label$col, "purple")
+
+  expect_false(disabled$show.local.minimum.label)
+  expect_null(disabled$local.minimum.label)
+})
+
+test_that("local-minimum label requires the local-minimum curve", {
+  grid <- test_conplot_grid_data()
+
+  expect_error(
+    plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.local.minimum = FALSE,
+      show.local.minimum.label = TRUE
+    ),
+    "show.local.minimum.label = TRUE requires show.local.minimum = TRUE"
+  )
 })
 
 test_that("plot_conplot_grid validates probability matrix dimensions", {
@@ -224,5 +297,6 @@ test_that("plot_conplot_grid can disable overlays and annotations", {
   expect_false(result$show.manual.labels)
   expect_false(result$show.quadratic)
   expect_false(result$show.local.minimum)
+  expect_false(result$show.local.minimum.label)
   expect_false(result$diseases.plotted)
 })

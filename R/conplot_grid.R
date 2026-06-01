@@ -52,7 +52,8 @@
 ##' @param xlim,ylim finite numeric vectors of length two giving plot limits.
 ##'   Defaults match the original manuscript figure.
 ##' @param xlab,ylab,main plot labels. Character labels are processed with
-##'   [earnmisc::nice_text()]. The default reproduction-number label uses the
+##'   [earnmisc::nice_text()]. The default epsilon label uses
+##'   `"$\\varepsilon$"` and the default reproduction-number label uses the
 ##'   `"$\\Rn$"` macro from `earnmisc`.
 ##' @param fill.colours optional vector of colours for the filled background.
 ##'   If `NULL`, the original high-level greyscale ramp is used.
@@ -90,6 +91,18 @@
 ##'   limits used when estimating the local-minimum curve.
 ##' @param local.minimum.col,local.minimum.lwd graphical parameters for the
 ##'   local-minimum curve.
+##' @param show.local.minimum.label logical scalar. If `TRUE`, label the
+##'   local-minimum curve. The default follows `show.local.minimum`.
+##' @param local.minimum.label character label for the local-minimum curve.
+##'   The label is processed with [earnmisc::nice_text()].
+##' @param local.minimum.label.col optional label colour. If `NULL`, the
+##'   label uses `local.minimum.col`.
+##' @param local.minimum.label.cex optional positive finite scalar for the
+##'   local-minimum label. If `NULL`, the value of `label.cex` is used.
+##' @param local.minimum.label.position optional finite numeric vector of
+##'   length two giving the epsilon and `R0` coordinates for the
+##'   local-minimum label. If `NULL`, the midpoint of the quadratic overlay
+##'   range is used with the corresponding quadratic `R0` value.
 ##' @param show.diseases logical scalar. If `TRUE`, add the original disease
 ##'   point annotations when `disease.data` is supplied or the suggested
 ##'   `sirr` package is available.
@@ -139,7 +152,7 @@ plot_conplot_grid <- function(epsilon,
                               log = "y",
                               xlim = c(0, 0.02),
                               ylim = c(1, 32),
-                              xlab = "mean infectious period / mean lifetime ($\\epsilon$)",
+                              xlab = "mean infectious period / mean lifetime ($\\varepsilon$)",
                               ylab = "basic reproduction number ($\\Rn$)",
                               main = "contours of persistence probability",
                               fill.colours = NULL,
@@ -171,6 +184,11 @@ plot_conplot_grid <- function(epsilon,
                               local.minimum.yhigh = 5,
                               local.minimum.col = "darkred",
                               local.minimum.lwd = 3,
+                              show.local.minimum.label = show.local.minimum,
+                              local.minimum.label = "minimum persistence probability",
+                              local.minimum.label.col = NULL,
+                              local.minimum.label.cex = NULL,
+                              local.minimum.label.position = NULL,
                               show.diseases = TRUE,
                               disease.data = NULL,
                               disease.names = c(
@@ -211,6 +229,15 @@ plot_conplot_grid <- function(epsilon,
     show.local.minimum <- validate_conplot_logical_scalar(
         show.local.minimum, "show.local.minimum"
     )
+    show.local.minimum.label <- validate_conplot_logical_scalar(
+        show.local.minimum.label, "show.local.minimum.label"
+    )
+    if (show.local.minimum.label && !show.local.minimum) {
+        stop(
+            "show.local.minimum.label = TRUE requires show.local.minimum = TRUE.",
+            call. = FALSE
+        )
+    }
     show.diseases <- validate_conplot_logical_scalar(show.diseases, "show.diseases")
     log <- validate_conplot_log(log, epsilon = epsilon, R0 = R0)
     xlim <- validate_conplot_range(xlim, "xlim")
@@ -282,6 +309,22 @@ plot_conplot_grid <- function(epsilon,
     local.minimum.lwd <- validate_conplot_positive_scalar(
         local.minimum.lwd, "local.minimum.lwd"
     )
+    local.minimum.label.col <- validate_conplot_optional_colour_scalar(
+        local.minimum.label.col, "local.minimum.label.col"
+    )
+    if (is.null(local.minimum.label.col)) {
+        local.minimum.label.col <- local.minimum.col
+    }
+    local.minimum.label.cex <- validate_conplot_optional_positive_scalar(
+        local.minimum.label.cex, "local.minimum.label.cex"
+    )
+    if (is.null(local.minimum.label.cex)) {
+        local.minimum.label.cex <- label.cex
+    }
+    local.minimum.label.position <- validate_conplot_optional_position(
+        local.minimum.label.position,
+        "local.minimum.label.position"
+    )
 
     disease.cex <- validate_conplot_positive_scalar(disease.cex, "disease.cex")
     disease.point.cex <- validate_conplot_positive_scalar(
@@ -291,9 +334,16 @@ plot_conplot_grid <- function(epsilon,
     cex.axis <- validate_conplot_optional_positive_scalar(cex.axis, "cex.axis")
     cex.main <- validate_conplot_optional_positive_scalar(cex.main, "cex.main")
 
+    local.minimum.label.source <- local.minimum.label
+
     xlab <- conplot_nice_label(xlab, tikz.mode = use.tikz, warn = label.warn)
     ylab <- conplot_nice_label(ylab, tikz.mode = use.tikz, warn = label.warn)
     main <- conplot_nice_label(main, tikz.mode = use.tikz, warn = label.warn)
+    local.minimum.label <- conplot_nice_label(
+        local.minimum.label,
+        tikz.mode = use.tikz,
+        warn = label.warn
+    )
 
     disease.data <- resolve_conplot_disease_data(
         disease.data = disease.data,
@@ -411,6 +461,7 @@ plot_conplot_grid <- function(epsilon,
     }
 
     local.minimum <- NULL
+    local.minimum.label.metadata <- NULL
     if (show.local.minimum) {
         local.minimum <- conplot_local_min_curve(
             epsilon,
@@ -426,6 +477,19 @@ plot_conplot_grid <- function(epsilon,
             col = local.minimum.col,
             lwd = local.minimum.lwd
         )
+        if (show.local.minimum.label) {
+            local.minimum.label.metadata <- draw_conplot_local_minimum_label(
+                label = local.minimum.label,
+                label.source = local.minimum.label.source,
+                coefficients = quadratic.coefficients,
+                from = quadratic.from,
+                to = quadratic.to,
+                position = local.minimum.label.position,
+                col = local.minimum.label.col,
+                cex = local.minimum.label.cex,
+                log = log
+            )
+        }
     }
 
     diseases.plotted <- FALSE
@@ -471,8 +535,15 @@ plot_conplot_grid <- function(epsilon,
         quadratic.points = quadratic.points,
         show.local.minimum = show.local.minimum,
         local.minimum = local.minimum,
+        show.local.minimum.label = show.local.minimum.label,
+        local.minimum.label = local.minimum.label.metadata,
         show.diseases = show.diseases,
         diseases.plotted = diseases.plotted,
+        labels = list(
+            xlab = xlab,
+            ylab = ylab,
+            main = main
+        ),
         orientation = "rows: epsilon; columns: R0",
         axes = "x: epsilon; y: R0"
     )
@@ -733,6 +804,41 @@ validate_conplot_colours <- function(fill.colours, expected.length) {
     fill.colours
 }
 
+##' Validate an optional colour scalar
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return `NULL` or a character scalar.
+##' @noRd
+validate_conplot_optional_colour_scalar <- function(x, name) {
+    if (is.null(x)) {
+        return(NULL)
+    }
+    if (!is.character(x) || length(x) != 1L || is.na(x)) {
+        stop(name, " must be NULL or a character scalar.", call. = FALSE)
+    }
+    x
+}
+
+##' Validate an optional two-coordinate position
+##'
+##' @param x object to validate.
+##' @param name argument name for error messages.
+##'
+##' @return `NULL` or a numeric vector with `epsilon` and `R0` entries.
+##' @noRd
+validate_conplot_optional_position <- function(x, name) {
+    if (is.null(x)) {
+        return(NULL)
+    }
+    if (!is.numeric(x) || length(x) != 2L || anyNA(x) || any(!is.finite(x))) {
+        stop(name, " must be NULL or a finite numeric vector of length 2.", call. = FALSE)
+    }
+    names(x) <- c("epsilon", "R0")
+    x
+}
+
 ##' Validate quadratic coefficients
 ##'
 ##' @param x coefficient vector.
@@ -976,11 +1082,131 @@ conplot_low_level_labels <- function(x, use.tikz, label.warn) {
 ##' @noRd
 draw_conplot_quadratic <- function(coefficients, from, to, col, lty, lwd) {
     x <- seq(from, to, length.out = 200L)
-    y <- coefficients[["intercept"]] +
-        coefficients[["slope"]] * x +
-        coefficients[["curvature"]] * x^2
+    y <- conplot_quadratic_value(coefficients, x)
     graphics::lines(x, y, col = col, lty = lty, lwd = lwd)
     data.frame(x = x, y = y)
+}
+
+##' Evaluate the quadratic conplot overlay
+##'
+##' @param coefficients quadratic coefficients.
+##' @param x epsilon values.
+##'
+##' @return Numeric `R0` values on the quadratic overlay.
+##' @noRd
+conplot_quadratic_value <- function(coefficients, x) {
+    coefficients[["intercept"]] +
+        coefficients[["slope"]] * x +
+        coefficients[["curvature"]] * x^2
+}
+
+##' Draw the local-minimum-curve label
+##'
+##' @param label label to draw.
+##' @param label.source original label before device-specific conversion.
+##' @param coefficients quadratic coefficients used for placement and slope.
+##' @param from,to horizontal range for the quadratic overlay.
+##' @param position optional explicit label position.
+##' @param col,cex graphical parameters for the label.
+##' @param log base-graphics log setting.
+##'
+##' @return List of label metadata.
+##' @noRd
+draw_conplot_local_minimum_label <- function(label,
+                                             label.source,
+                                             coefficients,
+                                             from,
+                                             to,
+                                             position,
+                                             col,
+                                             cex,
+                                             log) {
+    if (is.null(position)) {
+        x <- mean(c(from, to))
+        position <- c(
+            epsilon = x,
+            R0 = conplot_quadratic_value(coefficients, x)
+        )
+    }
+
+    srt <- conplot_quadratic_label_angle(
+        coefficients = coefficients,
+        x = position[["epsilon"]],
+        from = from,
+        to = to,
+        log = log
+    )
+
+    graphics::text(
+        x = position[["epsilon"]],
+        y = position[["R0"]],
+        labels = label,
+        col = col,
+        cex = cex,
+        srt = srt,
+        adj = c(0.5, 0.5),
+        xpd = NA
+    )
+
+    list(
+        label = label.source,
+        plotting.label = label,
+        position = position,
+        col = col,
+        cex = cex,
+        srt = srt
+    )
+}
+
+##' Compute visual rotation for the quadratic conplot overlay
+##'
+##' @param coefficients quadratic coefficients.
+##' @param x epsilon value at the label centre.
+##' @param from,to horizontal range for the quadratic overlay.
+##' @param log base-graphics log setting.
+##'
+##' @return Rotation angle in degrees for `text(srt = ...)`.
+##' @noRd
+conplot_quadratic_label_angle <- function(coefficients, x, from, to, log) {
+    span <- to - from
+    dx <- span * 0.01
+    x1 <- max(from, x - dx)
+    x2 <- min(to, x + dx)
+    if (x1 >= x2) {
+        return(0)
+    }
+
+    y1 <- conplot_quadratic_value(coefficients, x1)
+    y2 <- conplot_quadratic_value(coefficients, x2)
+    if (!all(is.finite(c(x1, x2, y1, y2))) ||
+        (grepl("x", log, fixed = TRUE) && any(c(x1, x2) <= 0)) ||
+        (grepl("y", log, fixed = TRUE) && any(c(y1, y2) <= 0))) {
+        return(0)
+    }
+
+    plot.x <- conplot_log_transform(c(x1, x2), axis = "x", log = log)
+    plot.y <- conplot_log_transform(c(y1, y2), axis = "y", log = log)
+    if (!all(is.finite(c(plot.x, plot.y)))) {
+        return(0)
+    }
+    inch.x <- graphics::grconvertX(plot.x, from = "user", to = "inches")
+    inch.y <- graphics::grconvertY(plot.y, from = "user", to = "inches")
+    as.numeric(atan2(diff(inch.y), diff(inch.x)) * 180 / pi)
+}
+
+##' Transform coordinates to base-graphics user coordinates for log axes
+##'
+##' @param x coordinate values.
+##' @param axis `"x"` or `"y"`.
+##' @param log base-graphics log setting.
+##'
+##' @return Numeric coordinates in the active plot's user coordinate system.
+##' @noRd
+conplot_log_transform <- function(x, axis, log) {
+    if (grepl(axis, log, fixed = TRUE)) {
+        return(log10(x))
+    }
+    x
 }
 
 ##' Estimate the original local-minimum curve

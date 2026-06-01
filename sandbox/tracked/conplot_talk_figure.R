@@ -8,17 +8,21 @@
 ##
 ##     ../sources/conplot_standalone/prob.RData
 ##
-## Output by default:
+## PDF output when use.tikz.output is FALSE:
 ##
 ##     sandbox/conplot_talk_figure.pdf
 ##
-## Set use.tikz.output to TRUE below to write a standalone tikz .tex file
-## instead. The tikz path uses earnmisc::tikz_open(), so plot labels are
-## prepared automatically for tikz by earnmisc::nice_text().
+## Tikz output when use.tikz.output is TRUE:
+##
+##     sandbox/conplot_talk_figure.tex
+##
+## The tikz path uses earnmisc::tikz_open(), so plot labels are prepared
+## automatically for tikz by earnmisc::nice_text().
 
 ## Slide/talk settings. The defaults below keep the manuscript-style appearance.
 ## Increase label.cex or set colour.legend to TRUE for presentation variants.
-use.tikz.output <- FALSE
+##use.tikz.output <- FALSE
+use.tikz.output <- TRUE
 
 plot.settings <- list(
     output.file = file.path(
@@ -37,7 +41,12 @@ plot.settings <- list(
     cex.main = NULL,
     show.diseases = TRUE,
     show.overlays = TRUE,
-    show.manual.labels = TRUE
+    show.manual.labels = TRUE,
+    show.local.minimum.label = TRUE,
+    local.minimum.label = "minimum persistence probability",
+    local.minimum.label.cex = NULL,
+    local.minimum.label.col = NULL,
+    local.minimum.label.position = NULL
 )
 
 load_burnout_package <- function(package.root) {
@@ -171,7 +180,12 @@ make_conplot_figure <- function(grid, settings, use.tikz.output) {
         cex.main = settings$cex.main,
         show.diseases = settings$show.diseases,
         show.overlays = settings$show.overlays,
-        show.manual.labels = settings$show.manual.labels
+        show.manual.labels = settings$show.manual.labels,
+        show.local.minimum.label = settings$show.local.minimum.label,
+        local.minimum.label = settings$local.minimum.label,
+        local.minimum.label.cex = settings$local.minimum.label.cex,
+        local.minimum.label.col = settings$local.minimum.label.col,
+        local.minimum.label.position = settings$local.minimum.label.position
     )
 
     grDevices::dev.off()
