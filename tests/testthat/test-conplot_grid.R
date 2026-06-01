@@ -16,6 +16,15 @@ test_conplot_disease_data <- function() {
   )
 }
 
+test_conplot_high_prob_disease_data <- function() {
+  data.frame(
+    disease = c("low", "high"),
+    epsilon = c(0.001, 0.003),
+    R0 = c(4, 20),
+    label = c("Low", "High")
+  )
+}
+
 with_test_pdf <- function(code) {
   pdf.file <- tempfile(fileext = ".pdf")
   grDevices::pdf(pdf.file)
@@ -90,6 +99,7 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_equal(result$disease.labels$style, rep("box", 2))
   expect_equal(result$disease.labels$label.col, rep("black", 2))
   expect_true(all(result$disease.labels$background.drawn))
+  expect_false(any(result$disease.labels$high.prob.override))
 })
 
 test_that("disease labels support box, text, and contrast styles", {
@@ -130,8 +140,51 @@ test_that("disease labels support box, text, and contrast styles", {
   expect_true(all(contrast$disease.labels$label.col %in% c("black", "grey95")))
   expect_true(all(is.finite(contrast$disease.labels$prob.value)))
   expect_true(all(is.finite(contrast$disease.labels$fill.luminance)))
+  expect_false(any(contrast$disease.labels$high.prob.override))
 
   expect_equal(override$disease.labels$label.col, rep("purple", 2))
+  expect_true(all(is.na(override$disease.labels$prob.value)))
+  expect_false(any(override$disease.labels$high.prob.override))
+})
+
+test_that("contrast disease labels use high-probability colour override", {
+  grid <- test_conplot_grid_data()
+  disease.data <- test_conplot_high_prob_disease_data()
+
+  with_test_pdf({
+    contrast <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      disease.data = disease.data,
+      disease.names = c("low", "high"),
+      disease.label.style = "contrast",
+      disease.label.high.prob.threshold = 0.8,
+      disease.label.high.prob.col = "grey95"
+    )
+  })
+  with_test_pdf({
+    override <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      disease.data = disease.data,
+      disease.names = c("low", "high"),
+      disease.label.style = "contrast",
+      disease.label.col = "purple",
+      disease.label.high.prob.threshold = 0.8,
+      disease.label.high.prob.col = "grey95"
+    )
+  })
+
+  expect_equal(contrast$disease.label.high.prob.threshold, 0.8)
+  expect_equal(contrast$disease.label.high.prob.col, "grey95")
+  expect_equal(contrast$disease.labels$disease, c("low", "high"))
+  expect_lt(contrast$disease.labels$prob.value[[1L]], 0.8)
+  expect_gte(contrast$disease.labels$prob.value[[2L]], 0.8)
+  expect_false(contrast$disease.labels$high.prob.override[[1L]])
+  expect_true(contrast$disease.labels$high.prob.override[[2L]])
+  expect_equal(contrast$disease.labels$label.col[[1L]], "black")
+  expect_equal(contrast$disease.labels$label.col[[2L]], "grey95")
+
+  expect_equal(override$disease.labels$label.col, rep("purple", 2))
+  expect_false(any(override$disease.labels$high.prob.override))
   expect_true(all(is.na(override$disease.labels$prob.value)))
 })
 
@@ -452,6 +505,8 @@ test_that("talk figure script selects model-specific grid defaults", {
   expect_equal(sirs.env$plot.args$local.minimum.xlow, 0)
   expect_false(sirs.env$plot.args$show.local.minimum.label)
   expect_equal(sirs.env$plot.args$disease.label.style, "contrast")
+  expect_equal(sirs.env$plot.args$disease.label.high.prob.threshold, 0.8)
+  expect_equal(sirs.env$plot.args$disease.label.high.prob.col, "grey95")
 
   sir.env <- new.env(parent = globalenv())
   sys.source(sir.file, envir = sir.env)

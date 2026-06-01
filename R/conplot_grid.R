@@ -146,9 +146,17 @@
 ##'   light label colour based on the underlying filled-contour shade. If the
 ##'   local fill value is unavailable, contrast mode falls back to black.
 ##' @param disease.label.col optional disease-label colour. If supplied, this
-##'   overrides the automatic contrast calculation and is used for all disease
-##'   labels. If `NULL`, `"box"` and `"text"` use black labels, while
-##'   `"contrast"` chooses black or `grey95` per label.
+##'   overrides the automatic contrast calculation and high-probability rule,
+##'   and is used for all disease labels. If `NULL`, `"box"` and `"text"` use
+##'   black labels, while `"contrast"` chooses black or `grey95` per label.
+##' @param disease.label.high.prob.threshold probability threshold used only
+##'   when `disease.label.style = "contrast"` and `disease.label.col = NULL`.
+##'   Disease labels with interpolated probabilities greater than or equal to
+##'   this threshold use `disease.label.high.prob.col` before falling back to
+##'   luminance-based contrast. This is a simple pointwise rule; labels that
+##'   span mixed light and dark regions may still need manual colour overrides.
+##' @param disease.label.high.prob.col colour used for high-probability
+##'   contrast labels.
 ##' @param cex.lab,cex.axis,cex.main optional positive finite scalars passed to
 ##'   base graphics for label, axis, and title sizes.
 ##' @param ... additional arguments passed to `plot()`.
@@ -249,6 +257,8 @@ plot_conplot_grid <- function(epsilon,
                               disease.label.style = c("box", "contrast", "text"),
                               disease.label.col = NULL,
                               disease.label.bg = disease.box.col,
+                              disease.label.high.prob.threshold = 0.8,
+                              disease.label.high.prob.col = "grey95",
                               cex.lab = NULL,
                               cex.axis = NULL,
                               cex.main = NULL,
@@ -406,6 +416,14 @@ plot_conplot_grid <- function(epsilon,
     )
     disease.label.bg <- validate_conplot_colour_scalar(
         disease.label.bg, "disease.label.bg"
+    )
+    disease.label.high.prob.threshold <- validate_conplot_probability_scalar(
+        disease.label.high.prob.threshold,
+        "disease.label.high.prob.threshold"
+    )
+    disease.label.high.prob.col <- validate_conplot_colour_scalar(
+        disease.label.high.prob.col,
+        "disease.label.high.prob.col"
     )
     cex.lab <- validate_conplot_optional_positive_scalar(cex.lab, "cex.lab")
     cex.axis <- validate_conplot_optional_positive_scalar(cex.axis, "cex.axis")
@@ -596,6 +614,8 @@ plot_conplot_grid <- function(epsilon,
             label.style = disease.label.style,
             label.col = disease.label.col,
             label.bg = disease.label.bg,
+            high.prob.threshold = disease.label.high.prob.threshold,
+            high.prob.col = disease.label.high.prob.col,
             epsilon = epsilon,
             R0 = R0,
             prob = prob,
@@ -657,6 +677,8 @@ plot_conplot_grid <- function(epsilon,
         diseases.plotted = diseases.plotted,
         disease.label.style = disease.label.style,
         disease.label.bg = disease.label.bg,
+        disease.label.high.prob.threshold = disease.label.high.prob.threshold,
+        disease.label.high.prob.col = disease.label.high.prob.col,
         disease.labels = disease.labels,
         labels = list(
             xlab = xlab,
@@ -1617,6 +1639,8 @@ adjust_conplot_disease_data <- function(disease.data) {
 ##' @param label.style disease-label style.
 ##' @param label.col optional explicit label colour.
 ##' @param label.bg label background colour for boxed labels.
+##' @param high.prob.threshold high-probability label threshold.
+##' @param high.prob.col high-probability label colour.
 ##' @param epsilon,R0,prob probability grid.
 ##' @param filled whether the plot has a filled background.
 ##' @param fill.breaks,fill.colours filled-background mapping.
@@ -1630,6 +1654,8 @@ draw_conplot_diseases <- function(disease.data,
                                   label.style,
                                   label.col,
                                   label.bg,
+                                  high.prob.threshold,
+                                  high.prob.col,
                                   epsilon,
                                   R0,
                                   prob,
@@ -1647,6 +1673,7 @@ draw_conplot_diseases <- function(disease.data,
             prob.value = numeric(),
             fill.colour = character(),
             fill.luminance = numeric(),
+            high.prob.override = logical(),
             background.drawn = logical()
         ))
     }
@@ -1655,6 +1682,8 @@ draw_conplot_diseases <- function(disease.data,
         label.style = label.style,
         label.col = label.col,
         label.bg = label.bg,
+        high.prob.threshold = high.prob.threshold,
+        high.prob.col = high.prob.col,
         epsilon = epsilon,
         R0 = R0,
         prob = prob,
@@ -1698,6 +1727,8 @@ draw_conplot_diseases <- function(disease.data,
 ##' @param label.style disease-label style.
 ##' @param label.col optional explicit label colour.
 ##' @param label.bg label background colour for boxed labels.
+##' @param high.prob.threshold high-probability label threshold.
+##' @param high.prob.col high-probability label colour.
 ##' @param epsilon,R0,prob probability grid.
 ##' @param filled whether the plot has a filled background.
 ##' @param fill.breaks,fill.colours filled-background mapping.
@@ -1708,6 +1739,8 @@ resolve_conplot_disease_label_metadata <- function(disease.data,
                                                    label.style,
                                                    label.col,
                                                    label.bg,
+                                                   high.prob.threshold,
+                                                   high.prob.col,
                                                    epsilon,
                                                    R0,
                                                    prob,
@@ -1718,8 +1751,9 @@ resolve_conplot_disease_label_metadata <- function(disease.data,
     prob.value <- rep(NA_real_, n)
     fill.colour <- rep(NA_character_, n)
     fill.luminance <- rep(NA_real_, n)
+    high.prob.override <- rep(FALSE, n)
 
-    if (identical(label.style, "contrast") && is.null(label.col) && filled) {
+    if (identical(label.style, "contrast") && is.null(label.col)) {
         prob.value <- conplot_prob_at_points(
             epsilon = epsilon,
             R0 = R0,
@@ -1727,18 +1761,23 @@ resolve_conplot_disease_label_metadata <- function(disease.data,
             x = disease.data$epsilon,
             y = disease.data$R0
         )
-        fill.colour <- conplot_fill_colour_for_probability(
-            prob.value,
-            fill.breaks = fill.breaks,
-            fill.colours = fill.colours
-        )
-        fill.luminance <- conplot_colour_luminance(fill.colour)
+        if (filled) {
+            fill.colour <- conplot_fill_colour_for_probability(
+                prob.value,
+                fill.breaks = fill.breaks,
+                fill.colours = fill.colours
+            )
+            fill.luminance <- conplot_colour_luminance(fill.colour)
+        }
+        high.prob.override <- is.finite(prob.value) & prob.value >= high.prob.threshold
     }
 
     resolved.col <- if (!is.null(label.col)) {
         rep(label.col, n)
     } else if (identical(label.style, "contrast")) {
-        ifelse(is.finite(fill.luminance) & fill.luminance < 0.5, "grey95", "black")
+        col <- ifelse(is.finite(fill.luminance) & fill.luminance < 0.5, "grey95", "black")
+        col[high.prob.override] <- high.prob.col
+        col
     } else {
         rep("black", n)
     }
@@ -1749,6 +1788,11 @@ resolve_conplot_disease_label_metadata <- function(disease.data,
     }
 
     data.frame(
+        disease = if ("disease" %in% names(disease.data)) {
+            as.character(disease.data$disease)
+        } else {
+            as.character(disease.data$label)
+        },
         epsilon = disease.data$epsilon,
         R0 = disease.data$R0,
         label = as.character(disease.data$label),
@@ -1758,6 +1802,7 @@ resolve_conplot_disease_label_metadata <- function(disease.data,
         prob.value = prob.value,
         fill.colour = fill.colour,
         fill.luminance = fill.luminance,
+        high.prob.override = high.prob.override,
         background.drawn = background.drawn,
         stringsAsFactors = FALSE
     )

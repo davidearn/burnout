@@ -73,6 +73,8 @@ plot_conplot_grid(
   disease.label.style = c("box", "contrast", "text"),
   disease.label.col = NULL,
   disease.label.bg = disease.box.col,
+  disease.label.high.prob.threshold = 0.8,
+  disease.label.high.prob.col = "grey95",
   cex.lab = NULL,
   cex.axis = NULL,
   cex.main = NULL,
@@ -263,9 +265,19 @@ light label colour based on the underlying filled-contour shade. If the
 local fill value is unavailable, contrast mode falls back to black.}
 
 \item{disease.label.col}{optional disease-label colour. If supplied, this
-overrides the automatic contrast calculation and is used for all disease
-labels. If \code{NULL}, \code{"box"} and \code{"text"} use black labels, while
-\code{"contrast"} chooses black or \code{grey95} per label.}
+overrides the automatic contrast calculation and high-probability rule,
+and is used for all disease labels. If \code{NULL}, \code{"box"} and \code{"text"} use
+black labels, while \code{"contrast"} chooses black or \code{grey95} per label.}
+
+\item{disease.label.high.prob.threshold}{probability threshold used only
+when \code{disease.label.style = "contrast"} and \code{disease.label.col = NULL}.
+Disease labels with interpolated probabilities greater than or equal to
+this threshold use \code{disease.label.high.prob.col} before falling back to
+luminance-based contrast. This is a simple pointwise rule; labels that
+span mixed light and dark regions may still need manual colour overrides.}
+
+\item{disease.label.high.prob.col}{colour used for high-probability
+contrast labels.}
 
 \item{cex.lab, cex.axis, cex.main}{optional positive finite scalars passed to
 base graphics for label, axis, and title sizes.}

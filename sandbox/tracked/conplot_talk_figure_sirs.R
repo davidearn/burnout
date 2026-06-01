@@ -54,6 +54,8 @@ plot.args <- list(
     cex.main = NULL,
     show.diseases = TRUE,
     disease.label.style = "contrast",
+    disease.label.high.prob.threshold = 0.8,
+    disease.label.high.prob.col = "grey95",
     show.manual.labels = TRUE,
     show.quadratic = FALSE,
     show.local.minimum = TRUE,
