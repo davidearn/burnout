@@ -8,27 +8,26 @@
 ##
 ##     ../sources/conplot_standalone/prob.RData
 ##
-## PDF output when use.tikz.output is FALSE:
+## In an interactive RStudio session, the default draws to the active graphics
+## device. With Rscript, the default writes:
 ##
 ##     sandbox/conplot_talk_figure.pdf
 ##
-## Tikz output when use.tikz.output is TRUE:
+## Set output.mode to "tikz" to write:
 ##
 ##     sandbox/conplot_talk_figure.tex
 ##
-## The tikz path uses earnmisc::tikz_open(), so plot labels are prepared
-## automatically for tikz by earnmisc::nice_text().
+## Supported output.mode values are "device", "pdf", and "tikz". The tikz
+## path uses earnmisc::tikz_open(), so plot labels are prepared automatically
+## for tikz by earnmisc::nice_text().
 
 ## Slide/talk settings. The defaults below keep the manuscript-style appearance.
 ## Increase label.cex or set colour.legend to TRUE for presentation variants.
-##use.tikz.output <- FALSE
-use.tikz.output <- TRUE
+output.mode <- if (interactive()) "device" else "pdf"
+##output.mode <- "tikz"
 
 plot.settings <- list(
-    output.file = file.path(
-        "sandbox",
-        if (use.tikz.output) "conplot_talk_figure.tex" else "conplot_talk_figure.pdf"
-    ),
+    output.file = NULL,
     width = 6,
     height = 6,
     ##label.cex = 0.5,
@@ -47,6 +46,7 @@ plot.settings <- list(
     local.minimum.label.cex = NULL,
     local.minimum.label.col = NULL,
     local.minimum.label.position = NULL,
+    local.minimum.label.offset.lines = 1,
     show.n.legend = TRUE,
     n.legend.label = "$n = 10^6$",
     n.legend.position = "topright",
@@ -54,6 +54,34 @@ plot.settings <- list(
     n.legend.col = "black",
     n.legend.bty = "n"
 )
+
+resolve_output_mode <- function(output.mode) {
+    if (!is.character(output.mode) || length(output.mode) != 1L || is.na(output.mode)) {
+        stop("output.mode must be one of \"device\", \"pdf\", or \"tikz\".", call. = FALSE)
+    }
+    if (!output.mode %in% c("device", "pdf", "tikz")) {
+        stop("output.mode must be one of \"device\", \"pdf\", or \"tikz\".", call. = FALSE)
+    }
+    output.mode
+}
+
+resolve_output_file <- function(package.root, output.mode, output.file = NULL) {
+    output.mode <- resolve_output_mode(output.mode)
+    if (identical(output.mode, "device")) {
+        return(NULL)
+    }
+    if (is.null(output.file)) {
+        output.file <- file.path(
+            "sandbox",
+            if (identical(output.mode, "tikz")) {
+                "conplot_talk_figure.tex"
+            } else {
+                "conplot_talk_figure.pdf"
+            }
+        )
+    }
+    normalizePath(file.path(package.root, output.file), mustWork = FALSE)
+}
 
 load_burnout_package <- function(package.root) {
     if (requireNamespace("pkgload", quietly = TRUE)) {
@@ -143,11 +171,19 @@ load_prob_grid <- function(prob.file) {
     list(epsvals = epsvals, Rvals = Rvals, prob = prob)
 }
 
-open_conplot_device <- function(settings, use.tikz.output) {
+open_conplot_device <- function(settings, output.mode) {
+    output.mode <- resolve_output_mode(output.mode)
+    if (identical(output.mode, "device")) {
+        return(FALSE)
+    }
+
     output.file <- settings$output.file
+    if (is.null(output.file)) {
+        stop("settings$output.file must be set for pdf or tikz output.", call. = FALSE)
+    }
     dir.create(dirname(output.file), recursive = TRUE, showWarnings = FALSE)
 
-    if (use.tikz.output) {
+    if (identical(output.mode, "tikz")) {
         earnmisc::tikz_open(
             file = output.file,
             width = settings$width,
@@ -162,18 +198,19 @@ open_conplot_device <- function(settings, use.tikz.output) {
             onefile = TRUE
         )
     }
+    TRUE
 }
 
-make_conplot_figure <- function(grid, settings, use.tikz.output) {
-    open_conplot_device(settings, use.tikz.output)
-    device.open <- TRUE
+make_conplot_figure <- function(grid, settings, output.mode) {
+    output.mode <- resolve_output_mode(output.mode)
+    device.open <- open_conplot_device(settings, output.mode)
     on.exit({
         if (device.open) {
             grDevices::dev.off()
         }
     }, add = TRUE)
 
-    burnout::plot_conplot_grid(
+    plot.info <- burnout::plot_conplot_grid(
         epsilon = grid$epsvals,
         R0 = grid$Rvals,
         prob = grid$prob,
@@ -192,6 +229,7 @@ make_conplot_figure <- function(grid, settings, use.tikz.output) {
         local.minimum.label.cex = settings$local.minimum.label.cex,
         local.minimum.label.col = settings$local.minimum.label.col,
         local.minimum.label.position = settings$local.minimum.label.position,
+        local.minimum.label.offset.lines = settings$local.minimum.label.offset.lines,
         show.n.legend = settings$show.n.legend,
         n.legend.label = settings$n.legend.label,
         n.legend.position = settings$n.legend.position,
@@ -200,32 +238,54 @@ make_conplot_figure <- function(grid, settings, use.tikz.output) {
         n.legend.bty = settings$n.legend.bty
     )
 
-    grDevices::dev.off()
-    device.open <- FALSE
+    if (device.open) {
+        grDevices::dev.off()
+        device.open <- FALSE
+    }
+
+    invisible(plot.info)
 }
 
-package.root <- normalizePath(".", mustWork = TRUE)
-description.file <- file.path(package.root, "DESCRIPTION")
-if (!file.exists(description.file)) {
-    stop("Run this script from the burnout package root.", call. = FALSE)
+main <- function(output.mode.value) {
+    output.mode <- output.mode.value
+    output.mode <- resolve_output_mode(output.mode)
+    package.root <- normalizePath(".", mustWork = TRUE)
+    description.file <- file.path(package.root, "DESCRIPTION")
+    if (!file.exists(description.file)) {
+        stop("Run this script from the burnout package root.", call. = FALSE)
+    }
+
+    package.name <- read.dcf(description.file)[1L, "Package"]
+    if (!identical(unname(package.name), "burnout")) {
+        stop("Run this script from the burnout package root.", call. = FALSE)
+    }
+
+    load_burnout_package(package.root)
+
+    prob.file <- find_prob_file(package.root)
+    grid <- load_prob_grid(prob.file)
+
+    message(
+        "Loaded ", basename(prob.file), " with prob dimensions ",
+        paste(dim(grid$prob), collapse = " x "), "."
+    )
+
+    plot.settings$output.file <- resolve_output_file(
+        package.root,
+        output.mode,
+        plot.settings$output.file
+    )
+    plot.info <- make_conplot_figure(grid, plot.settings, output.mode)
+
+    if (identical(output.mode, "device")) {
+        message("Drew conplot on the active graphics device.")
+    } else {
+        message("Wrote ", normalizePath(plot.settings$output.file, mustWork = TRUE))
+    }
+
+    invisible(plot.info)
 }
 
-package.name <- read.dcf(description.file)[1L, "Package"]
-if (!identical(unname(package.name), "burnout")) {
-    stop("Run this script from the burnout package root.", call. = FALSE)
+if (!isTRUE(getOption("burnout.conplot_talk_figure.skip_main", FALSE))) {
+    main(output.mode)
 }
-
-load_burnout_package(package.root)
-
-prob.file <- find_prob_file(package.root)
-grid <- load_prob_grid(prob.file)
-
-message(
-    "Loaded ", basename(prob.file), " with prob dimensions ",
-    paste(dim(grid$prob), collapse = " x "), "."
-)
-
-plot.settings$output.file <- file.path(package.root, plot.settings$output.file)
-make_conplot_figure(grid, plot.settings, use.tikz.output)
-
-message("Wrote ", normalizePath(plot.settings$output.file, mustWork = TRUE))

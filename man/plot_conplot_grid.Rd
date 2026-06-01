@@ -54,6 +54,7 @@ plot_conplot_grid(
   local.minimum.label.col = NULL,
   local.minimum.label.cex = NULL,
   local.minimum.label.position = NULL,
+  local.minimum.label.offset.lines = 1,
   show.n.legend = TRUE,
   n.legend.label = "$n = 10^6$",
   n.legend.position = "topright",
@@ -199,9 +200,15 @@ label uses \code{local.minimum.col}.}
 local-minimum label. If \code{NULL}, the value of \code{label.cex} is used.}
 
 \item{local.minimum.label.position}{optional finite numeric vector of
-length two giving the epsilon and \code{R0} coordinates for the
-local-minimum label. If \code{NULL}, the midpoint of the quadratic overlay
-range is used with the corresponding quadratic \code{R0} value.}
+length two giving the epsilon and \code{R0} coordinates used as the
+local-minimum label anchor before applying the vertical offset. If
+\code{NULL}, the midpoint of the quadratic overlay range is used with the
+corresponding quadratic \code{R0} value.}
+
+\item{local.minimum.label.offset.lines}{finite numeric scalar giving the
+vertical label offset in text-line heights. Positive values place the
+label visually above the curve; the default avoids overlap with the
+dark-red curves on the logarithmic \code{R0} axis.}
 
 \item{show.n.legend}{logical scalar. If \code{TRUE}, draw the original
 top-right sample-size annotation.}
@@ -245,7 +252,11 @@ base graphics for label, axis, and title sizes.}
 \value{
 Invisibly returns a list with plotting metadata, including
 contour levels, fill breaks, axis ranges, overlay settings, annotation
-settings, and probability-matrix orientation.
+settings, probability-matrix orientation, and resolved label metadata.
+In particular, \code{local.minimum.label$position} contains the actual
+offset label coordinates used for plotting, and
+\code{local.minimum.label$curve.position} contains the unoffset curve-anchor
+coordinates.
 }
 \description{
 Plot a contour-style figure from precomputed burnout or persistence

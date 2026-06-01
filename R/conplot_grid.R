@@ -100,9 +100,14 @@
 ##' @param local.minimum.label.cex optional positive finite scalar for the
 ##'   local-minimum label. If `NULL`, the value of `label.cex` is used.
 ##' @param local.minimum.label.position optional finite numeric vector of
-##'   length two giving the epsilon and `R0` coordinates for the
-##'   local-minimum label. If `NULL`, the midpoint of the quadratic overlay
-##'   range is used with the corresponding quadratic `R0` value.
+##'   length two giving the epsilon and `R0` coordinates used as the
+##'   local-minimum label anchor before applying the vertical offset. If
+##'   `NULL`, the midpoint of the quadratic overlay range is used with the
+##'   corresponding quadratic `R0` value.
+##' @param local.minimum.label.offset.lines finite numeric scalar giving the
+##'   vertical label offset in text-line heights. Positive values place the
+##'   label visually above the curve; the default avoids overlap with the
+##'   dark-red curves on the logarithmic `R0` axis.
 ##' @param show.n.legend logical scalar. If `TRUE`, draw the original
 ##'   top-right sample-size annotation.
 ##' @param n.legend.label character label for the sample-size annotation.
@@ -133,7 +138,11 @@
 ##'
 ##' @return Invisibly returns a list with plotting metadata, including
 ##'   contour levels, fill breaks, axis ranges, overlay settings, annotation
-##'   settings, and probability-matrix orientation.
+##'   settings, probability-matrix orientation, and resolved label metadata.
+##'   In particular, `local.minimum.label$position` contains the actual
+##'   offset label coordinates used for plotting, and
+##'   `local.minimum.label$curve.position` contains the unoffset curve-anchor
+##'   coordinates.
 ##'
 ##' @export
 ##'
@@ -201,6 +210,7 @@ plot_conplot_grid <- function(epsilon,
                               local.minimum.label.col = NULL,
                               local.minimum.label.cex = NULL,
                               local.minimum.label.position = NULL,
+                              local.minimum.label.offset.lines = 1,
                               show.n.legend = TRUE,
                               n.legend.label = "$n = 10^6$",
                               n.legend.position = "topright",
@@ -343,6 +353,10 @@ plot_conplot_grid <- function(epsilon,
     local.minimum.label.position <- validate_conplot_optional_position(
         local.minimum.label.position,
         "local.minimum.label.position"
+    )
+    local.minimum.label.offset.lines <- validate_conplot_finite_scalar(
+        local.minimum.label.offset.lines,
+        "local.minimum.label.offset.lines"
     )
     n.legend.position <- validate_conplot_legend_position(
         n.legend.position, "n.legend.position"
@@ -521,6 +535,7 @@ plot_conplot_grid <- function(epsilon,
                 from = quadratic.from,
                 to = quadratic.to,
                 position = local.minimum.label.position,
+                offset.lines = local.minimum.label.offset.lines,
                 col = local.minimum.label.col,
                 cex = local.minimum.label.cex,
                 log = log
@@ -1213,7 +1228,8 @@ conplot_quadratic_value <- function(coefficients, x) {
 ##' @param label.source original label before device-specific conversion.
 ##' @param coefficients quadratic coefficients used for placement and slope.
 ##' @param from,to horizontal range for the quadratic overlay.
-##' @param position optional explicit label position.
+##' @param position optional explicit curve-anchor position.
+##' @param offset.lines vertical offset in text-line heights.
 ##' @param col,cex graphical parameters for the label.
 ##' @param log base-graphics log setting.
 ##'
@@ -1225,6 +1241,7 @@ draw_conplot_local_minimum_label <- function(label,
                                              from,
                                              to,
                                              position,
+                                             offset.lines,
                                              col,
                                              cex,
                                              log) {
@@ -1235,18 +1252,26 @@ draw_conplot_local_minimum_label <- function(label,
             R0 = conplot_quadratic_value(coefficients, x)
         )
     }
+    curve.position <- position
+    offset <- conplot_offset_position_above(
+        position = curve.position,
+        cex = cex,
+        offset.lines = offset.lines,
+        log = log
+    )
+    label.position <- offset$position
 
     srt <- conplot_quadratic_label_angle(
         coefficients = coefficients,
-        x = position[["epsilon"]],
+        x = curve.position[["epsilon"]],
         from = from,
         to = to,
         log = log
     )
 
     graphics::text(
-        x = position[["epsilon"]],
-        y = position[["R0"]],
+        x = label.position[["epsilon"]],
+        y = label.position[["R0"]],
         labels = label,
         col = col,
         cex = cex,
@@ -1258,11 +1283,51 @@ draw_conplot_local_minimum_label <- function(label,
     list(
         label = label.source,
         plotting.label = label,
-        position = position,
+        position = label.position,
+        curve.position = curve.position,
+        offset.lines = offset.lines,
+        offset.inches = offset$offset.inches,
         col = col,
         cex = cex,
         srt = srt
     )
+}
+
+##' Offset a label position visually upward
+##'
+##' @param position numeric vector with `epsilon` and `R0` entries.
+##' @param cex text expansion factor.
+##' @param offset.lines offset in text-line heights.
+##' @param log base-graphics log setting.
+##'
+##' @return List with the offset position and physical offset in inches.
+##' @noRd
+conplot_offset_position_above <- function(position, cex, offset.lines, log) {
+    offset.inches <- offset.lines * graphics::strheight(
+        "M",
+        units = "inches",
+        cex = cex
+    )
+    if (offset.inches == 0) {
+        return(list(position = position, offset.inches = offset.inches))
+    }
+
+    user.y <- conplot_log_transform(position[["R0"]], axis = "y", log = log)
+    inch.y <- graphics::grconvertY(user.y, from = "user", to = "inches")
+    shifted.user.y <- graphics::grconvertY(
+        inch.y + offset.inches,
+        from = "inches",
+        to = "user"
+    )
+    shifted.y <- conplot_inverse_log_transform(
+        shifted.user.y,
+        axis = "y",
+        log = log
+    )
+
+    out <- position
+    out[["R0"]] <- shifted.y
+    list(position = out, offset.inches = offset.inches)
 }
 
 ##' Draw the sample-size legend
@@ -1352,6 +1417,21 @@ conplot_quadratic_label_angle <- function(coefficients, x, from, to, log) {
 conplot_log_transform <- function(x, axis, log) {
     if (grepl(axis, log, fixed = TRUE)) {
         return(log10(x))
+    }
+    x
+}
+
+##' Transform base-graphics user coordinates back from log axes
+##'
+##' @param x coordinate values in active plot user coordinates.
+##' @param axis `"x"` or `"y"`.
+##' @param log base-graphics log setting.
+##'
+##' @return Numeric coordinates on the original plotting scale.
+##' @noRd
+conplot_inverse_log_transform <- function(x, axis, log) {
+    if (grepl(axis, log, fixed = TRUE)) {
+        return(10^x)
     }
     x
 }

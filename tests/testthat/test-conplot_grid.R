@@ -67,6 +67,16 @@ test_that("plot_conplot_grid preserves manuscript-style defaults", {
   expect_true(result$show.local.minimum.label)
   expect_equal(result$local.minimum.label$col, "darkred")
   expect_equal(result$local.minimum.label$cex, result$label.cex)
+  expect_equal(result$local.minimum.label$offset.lines, 1)
+  expect_true(is.finite(result$local.minimum.label$offset.inches))
+  expect_true(all(is.finite(result$local.minimum.label$position)))
+  expect_true(all(is.finite(result$local.minimum.label$curve.position)))
+  expect_equal(result$local.minimum.label$position[["epsilon"]], 0.01)
+  expect_equal(result$local.minimum.label$curve.position[["epsilon"]], 0.01)
+  expect_gt(
+    result$local.minimum.label$position[["R0"]],
+    result$local.minimum.label$curve.position[["R0"]]
+  )
   expect_true(is.finite(result$local.minimum.label$srt))
   expect_true(result$show.n.legend)
   expect_equal(result$n.legend$label, "$n = 10^6$")
@@ -190,7 +200,15 @@ test_that("local-minimum label can be configured and disabled", {
       show.diseases = FALSE,
       local.minimum.label.col = "blue",
       local.minimum.label.cex = 0.8,
-      local.minimum.label.position = c(0.012, 2.2)
+      local.minimum.label.position = c(0.012, 2.2),
+      local.minimum.label.offset.lines = 0
+    )
+  })
+  with_test_pdf({
+    raised <- plot_conplot_grid(
+      grid$epsilon, grid$R0, grid$prob,
+      show.diseases = FALSE,
+      local.minimum.label.offset.lines = 2
     )
   })
   with_test_pdf({
@@ -212,12 +230,29 @@ test_that("local-minimum label can be configured and disabled", {
   expect_equal(default$local.minimum.label$col, "darkred")
   expect_equal(default$local.minimum.label$label, "minimum persistence probability")
   expect_equal(default$local.minimum.label$position[["epsilon"]], 0.01)
+  expect_equal(default$local.minimum.label$curve.position[["epsilon"]], 0.01)
   expect_true(is.finite(default$local.minimum.label$position[["R0"]]))
+  expect_gt(
+    default$local.minimum.label$position[["R0"]],
+    default$local.minimum.label$curve.position[["R0"]]
+  )
+  expect_equal(default$local.minimum.label$offset.lines, 1)
+  expect_gt(default$local.minimum.label$offset.inches, 0)
   expect_true(is.finite(default$local.minimum.label$srt))
 
   expect_equal(custom$local.minimum.label$col, "blue")
   expect_equal(custom$local.minimum.label$cex, 0.8)
+  expect_equal(custom$local.minimum.label$offset.lines, 0)
   expect_equal(unname(custom$local.minimum.label$position), c(0.012, 2.2))
+  expect_equal(unname(custom$local.minimum.label$curve.position), c(0.012, 2.2))
+  expect_gt(
+    raised$local.minimum.label$position[["R0"]],
+    default$local.minimum.label$position[["R0"]]
+  )
+  expect_gt(
+    raised$local.minimum.label$offset.inches,
+    default$local.minimum.label$offset.inches
+  )
   expect_equal(inherited.colour$local.minimum.label$col, "purple")
 
   expect_false(disabled$show.local.minimum.label)
@@ -234,6 +269,45 @@ test_that("local-minimum label requires the local-minimum curve", {
       show.local.minimum.label = TRUE
     ),
     "show.local.minimum.label = TRUE requires show.local.minimum = TRUE"
+  )
+})
+
+test_that("talk figure helper returns full conplot metadata invisibly", {
+  script.candidates <- c(
+    file.path("sandbox", "tracked", "conplot_talk_figure.R"),
+    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure.R")
+  )
+  script.file <- script.candidates[file.exists(script.candidates)]
+  skip_if(!length(script.file), "conplot talk script is unavailable")
+  script.file <- script.file[[1L]]
+
+  old.options <- options(burnout.conplot_talk_figure.skip_main = TRUE)
+  on.exit(options(old.options), add = TRUE)
+
+  script.env <- new.env(parent = globalenv())
+  sys.source(script.file, envir = script.env)
+
+  grid <- test_conplot_grid_data()
+  settings <- script.env$plot.settings
+  settings$show.diseases <- FALSE
+  settings$show.n.legend <- FALSE
+
+  with_test_pdf({
+    result <- withVisible(
+      script.env$make_conplot_figure(
+        grid = list(epsvals = grid$epsilon, Rvals = grid$R0, prob = grid$prob),
+        settings = settings,
+        output.mode = "device"
+      )
+    )
+  })
+
+  expect_false(result$visible)
+  expect_type(result$value, "list")
+  expect_true(all(is.finite(result$value$local.minimum.label$position)))
+  expect_gt(
+    result$value$local.minimum.label$position[["R0"]],
+    result$value$local.minimum.label$curve.position[["R0"]]
   )
 })
 
