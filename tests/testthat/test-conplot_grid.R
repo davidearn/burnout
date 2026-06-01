@@ -337,46 +337,28 @@ test_that("local-minimum overlay is skipped when no finite curve exists", {
 
 test_that("talk figure helper returns full conplot metadata invisibly", {
   script.candidates <- c(
-    file.path("sandbox", "tracked", "conplot_talk_figure.R"),
-    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure.R")
+    file.path("sandbox", "tracked", "conplot_funs.R"),
+    file.path("..", "..", "sandbox", "tracked", "conplot_funs.R")
   )
   script.file <- script.candidates[file.exists(script.candidates)]
-  skip_if(!length(script.file), "conplot talk script is unavailable")
+  skip_if(!length(script.file), "conplot talk helper is unavailable")
   script.file <- script.file[[1L]]
-
-  old.options <- options(burnout.conplot_talk_figure.skip_main = TRUE)
-  on.exit(options(old.options), add = TRUE)
-  old.model <- Sys.getenv("BURNOUT_CONPLOT_MODEL", unset = NA_character_)
-  old.file <- Sys.getenv("BURNOUT_CONPLOT_FILE", unset = NA_character_)
-  on.exit({
-    if (is.na(old.model)) {
-      Sys.unsetenv("BURNOUT_CONPLOT_MODEL")
-    } else {
-      Sys.setenv(BURNOUT_CONPLOT_MODEL = old.model)
-    }
-    if (is.na(old.file)) {
-      Sys.unsetenv("BURNOUT_CONPLOT_FILE")
-    } else {
-      Sys.setenv(BURNOUT_CONPLOT_FILE = old.file)
-    }
-  }, add = TRUE)
-  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sir")
-  Sys.unsetenv("BURNOUT_CONPLOT_FILE")
 
   script.env <- new.env(parent = globalenv())
   sys.source(script.file, envir = script.env)
 
   grid <- test_conplot_grid_data()
-  plot.args <- script.env$plot.args
-  plot.args$show.diseases <- FALSE
-  plot.args$show.n.legend <- FALSE
-  plot.args$filled <- FALSE
+  plot.args <- list(
+    show.diseases = FALSE,
+    show.n.legend = FALSE,
+    filled = FALSE
+  )
 
   with_test_pdf({
     result <- withVisible(
       script.env$make_conplot_figure(
         grid = list(epsvals = grid$epsilon, Rvals = grid$R0, prob = grid$prob),
-        device.settings = script.env$device.settings,
+        device.settings = list(output.file = NULL, width = 6, height = 6),
         plot.args = plot.args,
         output.mode = "device"
       )
@@ -394,49 +376,43 @@ test_that("talk figure helper returns full conplot metadata invisibly", {
 })
 
 test_that("talk figure script selects model-specific grid defaults", {
-  script.candidates <- c(
-    file.path("sandbox", "tracked", "conplot_talk_figure.R"),
-    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure.R")
+  sirs.candidates <- c(
+    file.path("sandbox", "tracked", "conplot_talk_figure_sirs.R"),
+    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure_sirs.R")
   )
-  script.file <- script.candidates[file.exists(script.candidates)]
-  skip_if(!length(script.file), "conplot talk script is unavailable")
-  script.file <- script.file[[1L]]
+  sir.candidates <- c(
+    file.path("sandbox", "tracked", "conplot_talk_figure_sir.R"),
+    file.path("..", "..", "sandbox", "tracked", "conplot_talk_figure_sir.R")
+  )
+  sirs.file <- sirs.candidates[file.exists(sirs.candidates)]
+  sir.file <- sir.candidates[file.exists(sir.candidates)]
+  skip_if(!length(sirs.file), "SIRS conplot talk script is unavailable")
+  skip_if(!length(sir.file), "SIR conplot talk script is unavailable")
+  sirs.file <- sirs.file[[1L]]
+  sir.file <- sir.file[[1L]]
 
   old.options <- options(burnout.conplot_talk_figure.skip_main = TRUE)
   on.exit(options(old.options), add = TRUE)
-  old.model <- Sys.getenv("BURNOUT_CONPLOT_MODEL", unset = NA_character_)
-  old.file <- Sys.getenv("BURNOUT_CONPLOT_FILE", unset = NA_character_)
-  on.exit({
-    if (is.na(old.model)) {
-      Sys.unsetenv("BURNOUT_CONPLOT_MODEL")
-    } else {
-      Sys.setenv(BURNOUT_CONPLOT_MODEL = old.model)
-    }
-    if (is.na(old.file)) {
-      Sys.unsetenv("BURNOUT_CONPLOT_FILE")
-    } else {
-      Sys.setenv(BURNOUT_CONPLOT_FILE = old.file)
-    }
-  }, add = TRUE)
 
-  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sirs")
-  Sys.unsetenv("BURNOUT_CONPLOT_FILE")
   sirs.env <- new.env(parent = globalenv())
-  sys.source(script.file, envir = sirs.env)
+  sys.source(sirs.file, envir = sirs.env)
 
   expect_equal(sirs.env$prob.file.name, "prob.RData.eta=0.01")
+  expect_equal(sirs.env$output.basename, "conplot_talk_figure_sirs")
   expect_false(sirs.env$plot.args$show.quadratic)
   expect_true(sirs.env$plot.args$show.local.minimum)
+  expect_equal(sirs.env$plot.args$local.minimum.xlow, 0)
   expect_false(sirs.env$plot.args$show.local.minimum.label)
 
-  Sys.setenv(BURNOUT_CONPLOT_MODEL = "sir")
   sir.env <- new.env(parent = globalenv())
-  sys.source(script.file, envir = sir.env)
+  sys.source(sir.file, envir = sir.env)
 
   expect_equal(sir.env$prob.file.name, "prob_sir.RData")
+  expect_equal(sir.env$output.basename, "conplot_talk_figure_sir")
   expect_true(sir.env$plot.args$show.quadratic)
   expect_true(sir.env$plot.args$show.local.minimum)
   expect_true(sir.env$plot.args$show.local.minimum.label)
+  expect_false("local.minimum.xlow" %in% names(sir.env$plot.args))
 })
 
 test_that("sample-size legend can be configured and disabled", {
