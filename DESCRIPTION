@@ -27,6 +27,7 @@ Imports:
     ggplot2,
     rlang,
     deSolve
+Remotes: github::davidearn/earnmisc
 RdMacros: Rdpack
 Suggests:
     testthat (>= 3.0.0),
