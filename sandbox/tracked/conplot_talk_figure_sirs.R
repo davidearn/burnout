@@ -27,8 +27,8 @@ if (!length(helper.file)) {
 }
 source(helper.file[[1L]], local = TRUE)
 
-output.mode <- if (interactive()) "device" else "pdf"
-##output.mode <- "tikz"
+##output.mode <- if (interactive()) "device" else "pdf"
+output.mode <- "tikz"
 
 conplot.model <- "sirs"
 prob.file.name <- "prob.RData.eta=0.01"
@@ -55,7 +55,8 @@ plot.args <- list(
     show.diseases = TRUE,
     disease.label.style = "contrast",
     disease.label.high.prob.threshold = 0.8,
-    disease.label.high.prob.col = "grey95",
+    ##disease.label.high.prob.col = "grey95",
+    disease.label.high.prob.col = "white",
     show.manual.labels = TRUE,
     show.quadratic = FALSE,
     show.local.minimum = TRUE,

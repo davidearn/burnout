@@ -27,8 +27,8 @@ if (!length(helper.file)) {
 }
 source(helper.file[[1L]], local = TRUE)
 
-output.mode <- if (interactive()) "device" else "pdf"
-##output.mode <- "tikz"
+##output.mode <- if (interactive()) "device" else "pdf"
+output.mode <- "tikz"
 
 conplot.model <- "sir"
 prob.file.name <- "prob_sir.RData"
