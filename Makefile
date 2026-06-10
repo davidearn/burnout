@@ -1,45 +1,79 @@
 PKG := $(shell Rscript -e 'cat(read.dcf("DESCRIPTION")[1,"Package"])')
 VERSION := $(shell Rscript -e 'cat(read.dcf("DESCRIPTION")[1,"Version"])')
 TARBALL := $(PKG)_$(VERSION).tar.gz
+TEST ?=
+INSTALL_LIB ?= $(shell Rscript -e 'cat(Sys.getenv("R_LIBS_USER", unset = .libPaths()[[1L]]))')
 
-.PHONY: help document test build check install install.tarball install.fresh quick clean clean-check distclean
+.PHONY: help document test test.focus test.quick build check check.quick install install.quick install.tarball install.fresh quick verify.quick verify.full clean clean-check distclean
 
 help:
 	@echo "Targets:"
-	@echo "  make document        # regenerate roxygen documentation"
-	@echo "  make test            # run package-aware testthat tests"
-	@echo "  make build           # build source tarball without building vignettes"
-	@echo "  make check           # run R CMD check on built tarball without building vignettes"
-	@echo "  make install         # install current package source"
-	@echo "  make install.tarball # build tarball without building vignettes and install it"
-	@echo "  make install.fresh   # document, test, build, check, install tarball"
-	@echo "  make quick           # document, test, install from source"
-	@echo "  make clean           # remove build/check artefacts"
-	@echo "  make clean-check     # remove R CMD check directories"
-	@echo "  make distclean       # clean + remove generated docs"
+	@echo "  make document                         # regenerate roxygen documentation"
+	@echo "  make test                             # run full package-aware testthat tests"
+	@echo "  make test.focus TEST=path/to/test.R   # run one test file after pkgload::load_all()"
+	@echo "  make test.quick                       # run routine tests with quick-test environment"
+	@echo "  make build                            # build source tarball without building vignettes"
+	@echo "  make check                            # run full R CMD check on built tarball without building vignettes"
+	@echo "  make check.quick                      # run R CMD check with quick-test environment"
+	@echo "  make install [INSTALL_LIB=path]       # install current package source; defaults to R_LIBS_USER"
+	@echo "  make install.quick [INSTALL_LIB=path] # install source without check; defaults to R_LIBS_USER"
+	@echo "  make install.tarball                  # build tarball without building vignettes and install it"
+	@echo "  make install.fresh                    # document, test, build, check, install tarball"
+	@echo "  make verify.quick                     # document, quick test, diff check, install.quick"
+	@echo "  make verify.full                      # alias for install.fresh"
+	@echo "  make quick                            # alias for verify.quick"
+	@echo "  make clean                            # remove build/check artefacts"
+	@echo "  make clean-check                      # remove R CMD check directories"
+	@echo "  make distclean                        # clean + remove generated docs"
+	@echo ""
+	@echo "During iteration, use test.focus or verify.quick."
+	@echo "Before committing, use verify.full or install.fresh."
 
 document:
 	Rscript -e 'if (!requireNamespace("roxygen2", quietly = TRUE)) stop("Install the roxygen2 package first: install.packages(\"roxygen2\")"); roxygen2::roxygenise(".", roclets = c("rd","namespace"))'
 
 test:
-	Rscript -e 'if (!requireNamespace("testthat", quietly = TRUE)) stop("Install the testthat package first: install.packages(\"testthat\")"); testthat::test_local(".", reporter = "summary")'
+	RUN_SLOW_TESTS=true RUN_TIKZ_TESTS=true Rscript -e 'if (!requireNamespace("testthat", quietly = TRUE)) stop("Install the testthat package first: install.packages(\"testthat\")"); testthat::test_local(".", reporter = "summary")'
+
+test.focus:
+	@test -n "$(TEST)" || { echo "Usage: make test.focus TEST=tests/testthat/test-file.R"; exit 2; }
+	RUN_SLOW_TESTS=true RUN_TIKZ_TESTS=true Rscript -e 'if (!requireNamespace("pkgload", quietly = TRUE)) stop("Install the pkgload package first: install.packages(\"pkgload\")"); if (!requireNamespace("testthat", quietly = TRUE)) stop("Install the testthat package first: install.packages(\"testthat\")"); pkgload::load_all("."); testthat::test_file("$(TEST)")'
+
+test.quick:
+	RUN_SLOW_TESTS=false RUN_TIKZ_TESTS=false Rscript -e 'if (!requireNamespace("testthat", quietly = TRUE)) stop("Install the testthat package first: install.packages(\"testthat\")"); testthat::test_local(".", reporter = "summary")'
 
 build:
 	R CMD build --no-build-vignettes .
 
 check: build
-	R CMD check --no-manual --no-build-vignettes "$(TARBALL)"
+	RUN_SLOW_TESTS=true RUN_TIKZ_TESTS=true R CMD check --no-manual --no-build-vignettes "$(TARBALL)"
+
+check.quick: build
+	RUN_SLOW_TESTS=false RUN_TIKZ_TESTS=false R CMD check --no-manual --no-build-vignettes "$(TARBALL)"
 
 install:
-	R CMD INSTALL .
+	mkdir -p "$(INSTALL_LIB)"
+	R CMD INSTALL --library="$(INSTALL_LIB)" .
+
+install.quick:
+	mkdir -p "$(INSTALL_LIB)"
+	R CMD INSTALL --library="$(INSTALL_LIB)" .
 
 install.tarball: build
-	R CMD INSTALL "$(TARBALL)"
+	mkdir -p "$(INSTALL_LIB)"
+	R CMD INSTALL --library="$(INSTALL_LIB)" "$(TARBALL)"
 
 install.fresh: document test check
-	R CMD INSTALL "$(TARBALL)"
+	mkdir -p "$(INSTALL_LIB)"
+	R CMD INSTALL --library="$(INSTALL_LIB)" "$(TARBALL)"
 
-quick: document test install
+verify.quick: document test.quick
+	git diff --check
+	$(MAKE) install.quick
+
+verify.full: install.fresh
+
+quick: verify.quick
 
 clean-check:
 	rm -rf "$(PKG).Rcheck"
