@@ -86,3 +86,5 @@ clean: clean-check
 distclean: clean
 	rm -f NAMESPACE
 	rm -f man/*.Rd
+
+-include ~/terminal/jdmin.mk
